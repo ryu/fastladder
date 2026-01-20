@@ -1,9 +1,6 @@
 name: Build Container Image
 on:
-  push:
-    branches:
-      - main
-      - master
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -35,4 +32,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
