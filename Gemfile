@@ -5,9 +5,16 @@ require 'erb'
 require 'uri'
 require 'yaml'
 
-gem 'mysql2'
-gem 'pg'
+# DB
 gem 'sqlite3', '< 3.0'
+
+group :mysql do
+  gem 'mysql2'
+end
+
+group :postgres do
+  gem 'pg'
+end
 
 gem 'addressable', require: 'addressable/uri'
 gem 'feed_searcher', git: 'https://github.com/fastladder/feed_searcher'
@@ -42,5 +49,3 @@ gem "propshaft", "~> 1.3.1"
 gem "ostruct", "~> 0.6.3"
 
 gem "stringio", "3.2.0"
-
-
