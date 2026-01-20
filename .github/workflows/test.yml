@@ -1,6 +1,10 @@
 name: Test
 
-on: push
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 env:
   RAILS_ENV: test
@@ -8,14 +12,27 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+
       - uses: mfinelli/setup-imagemagick@v7
+
       - uses: ruby/setup-ruby@v1
         with:
+          ruby-version: 3.4.8
           bundler-cache: true
-      - run: cp config/database.yml.sqlite3 config/database.yml
-      - run: bundle exec rake db:create db:migrate setup
-      - run: ./bin/rails test
+
+      - name: Prepare DB
+        run: |
+          bundle exec rails db:prepare
+
+      - name: Run tests
+        run: |
+          bundle exec rails test
+
       - uses: browser-actions/setup-chrome@v2
-      - run: xvfb-run ./bin/rails test:system
+
+      - name: Run system tests
+        run: |
+          xvfb-run bundle exec rails test:system
