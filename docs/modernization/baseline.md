@@ -15,7 +15,9 @@
 - Ruby version manager: mise
 
 ### ツール
-- Ruby: 3.4.8
+- Ruby:
+  - .ruby-version: 3.4.7
+  - 実行環境: 3.4.8（mise）
 - Bundler: 4.0.1
 - Rails: 8.1.2
 - SQLite: （sqlite3 --version の結果を書く）
