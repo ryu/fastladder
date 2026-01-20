@@ -14,3 +14,6 @@ coverage
 db/*.sqlite3-*
 mysqldata
 .env*
+
+# IDE
+.idea/
