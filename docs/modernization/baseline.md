@@ -1,145 +1,102 @@
 # Baseline Notes (fastladder 現状把握)
 
-このドキュメントは、近代化（Rails 8.1 / SQLite / Hotwire）を安全に進めるための「現状スナップショット」です。  
-**推測で進めない**ために、まず事実をここに集めます。
-
-- Web と crawler の2プロセス構成（foreman で同時起動） 
-- 目的：アップグレードの踏み台と回帰ポイントを明確にする
+このドキュメントは、近代化（Rails 8.1 / SQLite / Hotwire）を安全に進めるための
+「現状スナップショット」です。
+推測は書かず、事実のみを記録します。
 
 ---
 
 ## 1. ローカル環境情報
-### 1.1 OS / 実行環境
-- OS:
-- CPU:
-- Shell:
-- Ruby version manager（mise/rbenv/asdf など）:
 
-### 1.2 ツール
-- Ruby:
-- Bundler:
-- Rails:
-- Node（使っていれば）:
-- Yarn/pnpm（使っていれば）:
-- SQLite:
+### OS / 実行環境
+- OS: macOS
+- CPU: arm64
+- Shell: zsh
+- Ruby version manager: mise
 
-> コマンド例
-- `ruby -v`
-- `bundle -v`
-- `bundle exec rails -v`
-- `node -v`（あれば）
-- `sqlite3 --version`
+### ツール
+- Ruby: 3.4.8
+- Bundler: 4.0.1
+- Rails: 8.1.2
+- SQLite: （sqlite3 --version の結果を書く）
 
 ---
 
-## 2. アプリの起動経路（重要）
+## 2. アプリの起動経路
+
 ### 2.1 Web
-- 起動コマンド: `bundle exec rails server` 
-- ポート:
-- トップURL:
-- ヘルスチェック（最低限見るページ）:
-  - [ ] トップが表示できる
-  - [ ] 主要画面が表示できる（例: フィード一覧など）
+
+- 起動コマンド: `bundle exec rails s`
+- 確認URL: http://localhost:3000/reader/
+- 結果: 表示できた
 
 ### 2.2 crawler
-- 起動コマンド: `bundle exec ruby script/crawler` 
-- 実行サイクル（常駐/単発/ループ）:
-- 入力（何を元に動く？）:
-- 出力（DBのどこを更新？）:
-- エラー時の挙動（リトライ/停止/ログ）:
+
+- 起動コマンド: `bundle exec ruby script/crawler`
+- 起動ログ:
+  - Booting FeedFetcher...
+  - fetch: https://tech.findy.co.jp/feed
+  - HTTP status: 200
+  - parsed: 30 items
+- 備考:
+  - Ctrl+C で停止すると "trapped. Terminating..." と表示されて終了する
 
 ### 2.3 foreman
-- 起動コマンド: `foreman start` 
-- Procfile の役割:
-- 環境変数の読み込み方法（.env など）:
+
+- Procfile:
+  - web: `./bin/rails s`
+  - crawler: `bundle exec ruby script/crawler`
 
 ---
 
 ## 3. 依存関係スナップショット
-### 3.1 Gem
-- Ruby / Rails:
-- DB関連:
-- HTTPクライアント:
-- フィードパーサ:
-- 認証/セッション:
-- キャッシュ:
-- ジョブ/スケジューラ:
-- テスト:
-- デプロイ/運用:
 
-> 取得メモ（貼り付ける）
-- `bundle exec ruby -e 'puts RUBY_VERSION'`
-- `bundle exec rails -v`
-- `bundle list | head -n 80`（長ければ一部でOK）
-
-### 3.2 JS/CSS（あれば）
-- 資産管理（Sprockets/webpacker/importmap/jsbundling等）:
-- CSS（sass/tailwind/手書き）:
-- 画面のJS依存（既読トグル等）:
+### Gem / DB
+- DB設定: SQLite（development / test / production）
+- Gemfile に mysql2 / pg が含まれており、当初 bundle install が mysql2 の
+  native extension ビルドで失敗した
+- mysql2 / pg を任意依存に変更後、bundle install は成功
 
 ---
 
-## 4. DBスナップショット（SQLite）
-- DBファイルの場所:
-- schema 管理方式（schema.rb / structure.sql）:
-- Migration の状態（古い順の課題があれば）:
-- 主なテーブル（ざっくり）:
-  - feeds:
-  - items/entries:
-  - subscriptions:
-  - users/sessions:
-  - その他:
+## 4. DB スナップショット
 
-### 4.1 整合性と性能の注意点（後で埋める）
-- unique制約（重複防止）:
-- 重要index:
-- N+1が疑われる画面:
+- DB種別: SQLite
+- DBファイル:
+  - development: db/development.sqlite3
+  - test: db/test.sqlite3
+  - production: db/production.sqlite3
 
 ---
 
-## 5. 主要ユースケース（回帰ポイント）
-「壊れたら困るもの」を先に書く。CI/テストの最優先対象。
+## 5. テスト / 回帰ポイント
 
-### Web
-- [ ] フィードを追加できる
-- [ ] フィード一覧が表示される
-- [ ] フィードの中身（エントリ）が表示される
-- [ ] 既読/未読の切り替えができる
-- [ ] 更新/リロード（最新取得の反映）ができる
-- [ ] （あれば）ログイン/ログアウトができる
+### テスト実行
+
+- 実行: `bundle exec rails test`
+- 結果:
+  - 232 runs, 481 assertions
+  - 0 failures, 0 errors, 0 skips
+- Warning:
+  - test/models/feed_test.rb:66, 75
+  - "literal string will be frozen in the future"
+
+### Web スモーク
+- /reader/ が表示できる
 
 ### crawler
-- [ ] 1サイクル実行できる（外部HTTPはスタブ可能）
-- [ ] 既存データを壊さない
-- [ ] 同じ入力を2回処理しても重複しない（idempotent）
+- 実フィードを fetch / parse まで実行できる（HTTP 200, 30 items）
 
 ---
 
 ## 6. 既知のレガシー課題（事実ベース）
-- Rails 古さ由来の課題:
-- Ruby 古さ由来の課題:
-- 依存gemの問題:
-- crawler の不安要素（多重起動/重複/例外握りつぶし等）:
-- テストの不足:
-- ドキュメント不足:
+
+- Gemfile に mysql2 / pg がトップレベル依存として含まれていた
+- Ruby の将来挙動に関する warning がテスト時に出ている
 
 ---
 
-## 7. アップグレードの踏み台（案）
-※ここは後で「実測」してから確定する（推測で決めない）
+## 7. 次のマイルストーンへの前提
 
-- Ruby target:
-- Rails target: 8.1.x
-- 段階アップグレード案:
-  - Step 1:
-  - Step 2:
-  - Step 3:
-
----
-
-## 8. 次に作るもの（M2への入口）
-- [ ] CIで `bundle install` → `test` を回す
-- [ ] web のスモーク（最低1ページ）
-- [ ] crawler のスモーク（HTTPスタブで1サイクル）
-- [ ] 失敗時に原因が追えるログの整備（段階導入）
-
+- SQLite 前提で web / crawler / test が動作することを確認済み
+- Rails 8.1.2 で起動・テスト可能
