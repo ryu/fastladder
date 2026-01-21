@@ -30,7 +30,7 @@
   }
 
 :javascript
-  var current = "item-#{params[:item_id]}";
+  var current = "item-#{params[:item_id].to_i}";
 
   const scroll = (id)=>{
     document.querySelectorAll('.item').forEach((e)=> e.style.backgroundColor = '#f9f9f9');

@@ -24,9 +24,8 @@ jobs:
         run: bundle exec bundle-audit check --update
 
       - name: Brakeman security scan
-        run: bundle exec brakeman --no-pager -w3 -i config/brakeman.ignore
+        run: bundle exec brakeman --no-pager -w3
         # -w3 = High confidence warnings only
-        # Ignored warnings tracked in config/brakeman.ignore
 
       - name: RuboCop
         run: bundle exec rubocop --parallel --format github
