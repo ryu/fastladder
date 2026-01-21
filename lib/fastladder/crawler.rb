@@ -166,7 +166,7 @@ module Fastladder
                              link: item.url || "",
                              guid: item.id,
                              title: item.title || "",
-                             body: fixup_relative_links(feed, item.content || item.summary),
+                             body: fixup_relative_links(feed.feedlink, item.content || item.summary, logger: @logger),
                              author: item.author,
                              category: item.try(:categories).try!(:first),
                              enclosure: nil,
@@ -179,22 +179,20 @@ module Fastladder
       }
     end
 
-    def fixup_relative_links(feed, body)
+    def fixup_relative_links(feedlink, body, logger: nil)
       doc = Nokogiri::HTML.fragment(body)
       links = doc.css('a[href]')
-      if links.empty?
-        body
-      else
-        links.each do |link|
-          begin
-            link['href'] = Addressable::URI.join(feed.feedlink, link['href']).normalize.to_s
-          rescue Addressable::URI::InvalidURIError
-            @logger.info "Invalid URL in link: [#{link['href']}] #{feed.feedlink}"
-            next
-          end
+      return body if links.empty?
+
+      links.each do |link|
+        begin
+          link['href'] = Addressable::URI.join(feedlink, link['href']).normalize.to_s
+        rescue Addressable::URI::InvalidURIError
+          logger&.info "Invalid URL in link: [#{link['href']}] #{feedlink}"
         end
-        doc.to_html
       end
+
+      doc.to_html
     end
 
     def cut_off(feed, items)
