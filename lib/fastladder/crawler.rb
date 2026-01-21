@@ -146,11 +146,14 @@ module Fastladder
 
       items = cut_off(feed, items)
       items = reject_duplicated(feed, items)
-      delete_old_items_if_new_items_are_many(feed, items)
-      update_or_insert_items_to_feed(feed, items, result)
-      update_unread_status(feed, result)
-      update_feed_information(feed, parsed)
-      feed.save
+
+      Feed.transaction do
+        delete_old_items_if_new_items_are_many(feed, items)
+        update_or_insert_items_to_feed(feed, items, result)
+        update_unread_status(feed, result)
+        update_feed_information(feed, parsed)
+        feed.save!
+      end
 
       feed.fetch_favicon!
       GC.start
