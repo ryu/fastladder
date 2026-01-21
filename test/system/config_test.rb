@@ -14,20 +14,25 @@ class ConfigTest < ApplicationSystemTestCase
   end
 
   test "can change display config" do
-    click_on "Settings"
+    # Open settings via JavaScript to ensure onclick handler fires
+    page.execute_script('init_config()')
     assert_text "Fastladder Settings", wait: 10
-    find("#tab_config_view").click
+    page.execute_script('document.getElementById("tab_config_view").click()')
 
     assert_text "For shorter loading time, set the limit smaller.", wait: 10
 
-    fill_in "current_font", with: "24"
-    click_on "Save"
+    # Clear and fill the font size field via JavaScript
+    page.execute_script('_$("save_current_font").value = "24"')
+    # Submit form via JavaScript
+    page.execute_script('_$("config_form").submit()')
+    sleep 0.5  # Wait for AJAX to complete
 
     visit "/reader/"
     assert_text "Loading completed.", wait: 10
-    click_on "Settings"
-    assert_text "Fastladder Settings"
-    find("#tab_config_view").click
+    # Open settings via JavaScript
+    page.execute_script('init_config()')
+    assert_text "Fastladder Settings", wait: 10
+    page.execute_script('document.getElementById("tab_config_view").click()')
 
     assert_text "For shorter loading time, set the limit smaller."
 

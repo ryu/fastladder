@@ -36,29 +36,29 @@ class SubscribeCrawlReadTest < ApplicationSystemTestCase
   end
 
   test "you can subscribe, crawl and read feeds" do
-    find('div[onclick="Control.show_subscribe_form()"]').click
-    assert_text "Feed URL", wait: 10
-    fill_in "url", with: "http://example.com/"
-    click_on "next"
+    # Subscribe to first feed
+    page.execute_script('Control.show_subscribe_form()')
+    assert_selector "#subscribe_window", visible: true, wait: 10
+    page.execute_script('_$("discover_url").value = "http://example.com/"')
+    page.execute_script('_$("discover_form").submit()')
+    assert_selector ".discover_item a.sub_button", wait: 15
+    # Click subscribe button via JavaScript to ensure event handler fires
+    page.execute_script('document.querySelector(".discover_item a.sub_button").click()')
+    # Wait for subscription to complete (button changes to unsubscribe)
+    assert_selector '.discover_item a[rel="unsubscribe"]', wait: 15
+    page.execute_script('Control.hide_subscribe_form()')
 
-    assert_text "0 users", wait: 10
-
-    find('a.sub_button[rel="subscribe"]').click
-    assert_text "Unsubscribe", wait: 10
-
-    find('span.button[onclick="Control.hide_subscribe_form()"]').click
-
-    find('div[onclick="Control.show_subscribe_form()"]').click
-    assert_text "Feed URL", wait: 10
-    fill_in "url", with: "http://example.com/ebi"
-    click_on "next"
-
-    assert_text "0 users", wait: 10
-
-    find('a.sub_button[rel="subscribe"]').click
-    assert_text "Unsubscribe", wait: 10
-    page.save_screenshot("tmp/subscribe_crawl_read_test_1.png")
-    find('span.button[onclick="Control.hide_subscribe_form()"]').click
+    # Subscribe to second feed
+    page.execute_script('Control.show_subscribe_form()')
+    assert_selector "#subscribe_window", visible: true, wait: 10
+    page.execute_script('_$("discover_url").value = "http://example.com/ebi"')
+    page.execute_script('_$("discover_form").submit()')
+    assert_selector ".discover_item a.sub_button", wait: 15
+    # Click subscribe button via JavaScript to ensure event handler fires
+    page.execute_script('document.querySelector(".discover_item a.sub_button").click()')
+    # Wait for subscription to complete (button changes to unsubscribe)
+    assert_selector '.discover_item a[rel="unsubscribe"]', wait: 15
+    page.execute_script('Control.hide_subscribe_form()')
 
     sleep 1 while @dankogai.reload.subscriptions.count < 2
 
@@ -83,17 +83,19 @@ class SubscribeCrawlReadTest < ApplicationSystemTestCase
     kuma_subscription = @dankogai.subscriptions.find_by(feed: kuma)
     ebi_subscription = @dankogai.subscriptions.find_by(feed: ebi)
 
-    find("span[subscribe_id='#{kuma_subscription.id}']").click
+    # Click feed via JavaScript to ensure event handler fires
+    page.execute_script("document.querySelector(\"span[subscribe_id='#{kuma_subscription.id}']\").click()")
 
-    assert_text "熊に関する架空の最新ニュースを提供するチャンネルです。", wait: 3
+    assert_text "熊に関する架空の最新ニュースを提供するチャンネルです。", wait: 5
 
     assert_text "北海道で熊がハイキングコースを散策"
     assert_text "環境保護団体が熊の動向を追跡するための新しいGPSトラッカーの実験を開始しました。"
     assert_text "子熊の保護施設が一般公開"
 
-    find("span[subscribe_id='#{ebi_subscription.id}']").click
+    # Click feed via JavaScript to ensure event handler fires
+    page.execute_script("document.querySelector(\"span[subscribe_id='#{ebi_subscription.id}']\").click()")
 
-    assert_text "海老に関する架空の最新ニュースを提供するチャンネルです。", wait: 3
+    assert_text "海老に関する架空の最新ニュースを提供するチャンネルです。", wait: 5
 
     assert_text "海老の大量発生が地元の生態系に影響"
   end

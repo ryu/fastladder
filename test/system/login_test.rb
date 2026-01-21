@@ -3,14 +3,20 @@
 require "application_system_test_case"
 
 class LoginTest < ApplicationSystemTestCase
+  setup do
+    # Clear members to ensure each test starts with clean state
+    Member.delete_all
+  end
+
   test "can create new member" do
+
     assert_equal 0, Member.count
     visit "/"
     assert_current_path "/signup"
 
-    fill_in "member[username]", with: "dankogai"
-    fill_in "member[password]", with: "kogaidan"
-    fill_in "member[password_confirmation]", with: "kogaidan"
+    fill_in "member[username]", with: "newuser"
+    fill_in "member[password]", with: "newpassword"
+    fill_in "member[password_confirmation]", with: "newpassword"
 
     click_on "Sign Up"
 
@@ -19,9 +25,9 @@ class LoginTest < ApplicationSystemTestCase
     assert_equal 1, Member.count
 
     member = Member.first
-    assert_equal "dankogai", member.username
+    assert_equal "newuser", member.username
 
-    assert_equal member.id, Member.authenticate("dankogai", "kogaidan").id
+    assert_equal member.id, Member.authenticate("newuser", "newpassword").id
   end
 
   test "if member is existing, can login" do
