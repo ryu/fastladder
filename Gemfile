@@ -27,7 +27,6 @@ gem 'opml', git: 'https://github.com/ssig33/opml'
 
 group :test do
   gem 'capybara'
-  gem 'factory_bot_rails'
   gem 'minitest-retry'
   gem 'webmock'
   gem 'selenium-webdriver'

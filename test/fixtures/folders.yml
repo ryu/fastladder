@@ -1,0 +1,19 @@
+# Folders fixtures
+
+folder_one:
+  member: member_one
+  name: Tech
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+folder_two:
+  member: member_one
+  name: News
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+folder_three:
+  member: member_two
+  name: Tech
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>

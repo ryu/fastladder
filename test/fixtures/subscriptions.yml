@@ -1,0 +1,47 @@
+# Subscriptions fixtures
+
+subscription_one:
+  member: member_one
+  feed: feed_one
+  public: true
+  rate: 5
+  has_unread: false
+  created_on: <%= 1.day.ago %>
+  updated_on: <%= Time.current %>
+
+subscription_two:
+  member: member_one
+  feed: feed_two
+  public: false
+  rate: 3
+  has_unread: false
+  created_on: <%= 3.days.ago %>
+  updated_on: <%= Time.current %>
+
+subscription_three:
+  member: member_two
+  feed: feed_one
+  public: true
+  rate: 5
+  has_unread: true
+  viewed_on: <%= 2.hours.ago %>
+  created_on: <%= 2.days.ago %>
+  updated_on: <%= Time.current %>
+
+subscription_private:
+  member: member_one
+  feed: feed_three
+  public: false
+  rate: 0
+  has_unread: false
+  created_on: <%= 4.days.ago %>
+  updated_on: <%= Time.current %>
+
+subscription_member_three:
+  member: member_three
+  feed: feed_two
+  public: true
+  rate: 3
+  has_unread: false
+  created_on: <%= 1.day.ago %>
+  updated_on: <%= Time.current %>

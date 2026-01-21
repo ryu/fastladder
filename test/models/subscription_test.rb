@@ -2,12 +2,12 @@ require "test_helper"
 
 class SubscriptionTest < ActiveSupport::TestCase
   test "creation updates subscribers count" do
-    feed = FactoryBot.create(:feed)
+    feed = create_feed
     original_count = feed.subscribers_count
 
     subscription = Subscription.new
     subscription.feed = feed
-    subscription.member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    subscription.member = create_member
     subscription.save
 
     feed.reload
@@ -15,8 +15,8 @@ class SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "creation sets default public value" do
-    feed = FactoryBot.create(:feed)
-    member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    feed = create_feed
+    member = create_member
 
     subscription = Subscription.new
     subscription.feed = feed
@@ -28,7 +28,7 @@ class SubscriptionTest < ActiveSupport::TestCase
   end
 
   test "destroy updates subscribers count" do
-    subscription = FactoryBot.create(:subscription)
+    subscription = create_subscription
     feed = subscription.feed
     original_count = feed.subscribers_count
 

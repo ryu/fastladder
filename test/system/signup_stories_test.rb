@@ -4,10 +4,12 @@ require "application_system_test_case"
 
 class SignupStoriesTest < ApplicationSystemTestCase
   test "sign up as a first member" do
+    # Delete all members to test first-user signup flow
+    Member.delete_all
     initial_count = Member.count
 
     visit "/"
-    fill_in "member_username", with: "bulkneets"
+    fill_in "member_username", with: "first_user"
     fill_in "member_password", with: "mala"
     fill_in "member_password_confirmation", with: "mala"
     click_on "Sign Up"
@@ -18,11 +20,11 @@ class SignupStoriesTest < ApplicationSystemTestCase
   end
 
   test "sign up as a second member" do
-    Member.create!(username: "bulkneets", password: "mala", password_confirmation: "mala")
+    # Fixtures already provide existing members
     initial_count = Member.count
 
     visit "/signup"
-    fill_in "member_username", with: "_bulkneets"
+    fill_in "member_username", with: "new_signup_user"
     fill_in "member_password", with: "mala"
     fill_in "member_password_confirmation", with: "mala"
     click_on "Sign Up"

@@ -4,19 +4,19 @@ require "fastladder/crawler"
 class Fastladder::CrawlerTest < ActiveSupport::TestCase
   def setup
     @crawler = Fastladder::Crawler.new(Rails.logger)
-    @feed = FactoryBot.create(:feed)
+    @feed = create_feed
   end
 
   test "reject_duplicated takes the first when some items have same guid" do
-    items = FactoryBot.build_list(:item_has_fixed_guid, 2)
+    items = [build_item_with_fixed_guid, build_item_with_fixed_guid]
 
     result = @crawler.send(:reject_duplicated, @feed, items)
     assert_equal items.take(1), result
   end
 
   test "reject_duplicated rejects duplicated items" do
-    items = FactoryBot.build_list(:item_has_fixed_guid, 1)
-    FactoryBot.create(:item_has_fixed_guid, feed: @feed)
+    items = [build_item_with_fixed_guid]
+    create_item_with_fixed_guid(feed: @feed)
     items.each { |item| item.create_digest }
 
     result = @crawler.send(:reject_duplicated, @feed, items)
@@ -40,7 +40,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
   end
 
   test "cut_off limits items when too large feed" do
-    items = FactoryBot.build_list(:item, Fastladder::Crawler::ITEMS_LIMIT + 1)
+    items = build_items(Fastladder::Crawler::ITEMS_LIMIT + 1)
     @feed.items << items
 
     result = @crawler.send(:cut_off, @feed, items)

@@ -7,7 +7,7 @@ class UpdateFeedInformationTest < ActiveSupport::TestCase
 
   test "does not overwrite feed.link when parsed.url is nil" do
     crawler = Fastladder::Crawler.new(Logger.new(nil))
-    feed = FactoryBot.create(:feed, link: "http://example.com/keep")
+    feed = create_feed(link: "http://example.com/keep")
 
     parsed = Parsed.new("New title", nil, "desc")
     crawler.send(:update_feed_information, feed, parsed)

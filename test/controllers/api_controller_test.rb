@@ -2,15 +2,15 @@ require "test_helper"
 
 class ApiControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
-    @feed = FactoryBot.create(:feed)
-    @item = FactoryBot.create(:item, feed: @feed)
-    @subscription = FactoryBot.create(:subscription, feed: @feed, member: @member)
-    @crawl_status = FactoryBot.create(:crawl_status, feed: @feed)
+    @member = create_member
+    @feed = create_feed
+    @item = create_item(feed: @feed)
+    @subscription = create_subscription(feed: @feed, member: @member)
+    @crawl_status = create_crawl_status(feed: @feed)
   end
 
   test "GET all renders json" do
-    @items = Array.new(3) { FactoryBot.create(:item, feed: @feed) }
+    @items = Array.new(3) { create_item(feed: @feed) }
 
     get :all, params: { subscribe_id: @subscription.id }, session: { member_id: @member.id }
 
@@ -18,7 +18,7 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET all limit works" do
-    @items = Array.new(3) { FactoryBot.create(:item, feed: @feed) }
+    @items = Array.new(3) { create_item(feed: @feed) }
 
     get :all, params: { subscribe_id: @subscription.id, limit: 2 }, session: { member_id: @member.id }
 
@@ -26,7 +26,7 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET all offset works" do
-    @items = Array.new(3) { FactoryBot.create(:item, feed: @feed) }
+    @items = Array.new(3) { create_item(feed: @feed) }
 
     get :all, params: { subscribe_id: @subscription.id, offset: 1 }, session: { member_id: @member.id }
 
@@ -37,9 +37,9 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET all renders purified link" do
-    feed = FactoryBot.create :feed
-    item = FactoryBot.create :item, feed: feed, link: "http://www.example.com/get?x=1&y=2"
-    subscription = FactoryBot.create :subscription, feed: feed, member: @member
+    feed = create_feed
+    item = create_item(feed: feed, link: "http://www.example.com/get?x=1&y=2")
+    subscription = create_subscription(feed: feed, member: @member)
 
     get :all, params: { subscribe_id: subscription.id }, session: { member_id: @member.id }
 
@@ -78,7 +78,7 @@ class ApiControllerTest < ActionController::TestCase
       "User-Agent" => "Fastladder FeedFetcher/0.0.3 (http://fastladder.org/)",
     }
 
-    stub_request(:get, %r[http://feeds.feedburner.com/mala/blog/]).with { |request|
+    stub_request(:get, @feed.feedlink).with { |request|
       request.headers = headers
     }.to_return(status: 200, body: "", headers: {})
 
@@ -88,7 +88,9 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET subs has read and unread subscriptions" do
-    @unread_subscription = FactoryBot.create(:unread_subscription, member: @member)
+    unread_feed = create_feed
+    create_item(feed: unread_feed, stored_on: 1.hour.ago)
+    @unread_subscription = create_subscription(feed: unread_feed, member: @member, has_unread: true, viewed_on: 2.hours.ago)
 
     get :subs, session: { member_id: @member.id }
 
@@ -96,7 +98,9 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET subs with unread has only unread subscriptions" do
-    @unread_subscription = FactoryBot.create(:unread_subscription, member: @member)
+    unread_feed = create_feed
+    create_item(feed: unread_feed, stored_on: 1.hour.ago)
+    @unread_subscription = create_subscription(feed: unread_feed, member: @member, has_unread: true, viewed_on: 2.hours.ago)
 
     get :subs, params: { unread: 1 }, session: { member_id: @member.id }
 

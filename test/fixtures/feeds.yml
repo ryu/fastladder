@@ -1,0 +1,47 @@
+# Feeds fixtures
+# Using fixture-example.test domain to avoid conflicts with test stubs
+
+feed_one:
+  feedlink: http://fixture-example.test/feed1.xml
+  link: http://fixture-example.test/
+  title: Example Feed One
+  description: Description for feed one
+  subscribers_count: 0
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+feed_two:
+  feedlink: http://fixture-example.test/feed2.xml
+  link: http://fixture-example.test/blog/
+  title: Example Feed Two
+  description: Description for feed two
+  subscribers_count: 0
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+feed_three:
+  feedlink: http://fixture-example.test/feed3.xml
+  link: http://fixture-example.test/news/
+  title: Example Feed Three
+  description: Description for feed three
+  subscribers_count: 0
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+feed_without_description:
+  feedlink: http://fixture-example.test/feed_no_desc.xml
+  link: http://fixture-example.test/no_desc/
+  title: Feed Without Description
+  description: ""
+  subscribers_count: 0
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+feed_without_title:
+  feedlink: http://fixture-example.test/feed_no_title.xml
+  link: http://fixture-example.test/no_title/
+  title: ""
+  description: Has no title
+  subscribers_count: 0
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>

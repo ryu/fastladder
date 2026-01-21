@@ -1,0 +1,22 @@
+# Pins fixtures
+
+pin_one:
+  member: member_one
+  link: http://example.com/pinned1
+  title: Pinned Article One
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+pin_two:
+  member: member_one
+  link: http://example.com/pinned2
+  title: Pinned Article Two
+  created_on: <%= 1.hour.ago %>
+  updated_on: <%= 1.hour.ago %>
+
+pin_three:
+  member: member_two
+  link: http://example.com/pinned1
+  title: Pinned Article One
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>

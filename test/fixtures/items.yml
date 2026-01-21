@@ -1,0 +1,79 @@
+# Items fixtures
+
+item_one:
+  feed: feed_one
+  link: http://example.com/article1
+  title: Article One Title
+  body: This is the body of article one.
+  author: author1
+  category: tech
+  guid: guid_item_one
+  stored_on: <%= 1.hour.ago %>
+  modified_on: <%= 1.hour.ago %>
+  created_on: <%= 1.hour.ago %>
+  updated_on: <%= 1.hour.ago %>
+
+item_two:
+  feed: feed_one
+  link: http://example.com/article2
+  title: Article Two Title
+  body: This is the body of article two.
+  author: author2
+  category: news
+  guid: guid_item_two
+  stored_on: <%= 2.hours.ago %>
+  modified_on: <%= 2.hours.ago %>
+  created_on: <%= 2.hours.ago %>
+  updated_on: <%= 2.hours.ago %>
+
+item_three:
+  feed: feed_two
+  link: http://example.com/article3
+  title: Article Three Title
+  body: This is the body of article three.
+  author: author1
+  category: tech
+  guid: guid_item_three
+  stored_on: <%= 3.hours.ago %>
+  modified_on: <%= 3.hours.ago %>
+  created_on: <%= 3.hours.ago %>
+  updated_on: <%= 3.hours.ago %>
+
+item_old:
+  feed: feed_one
+  link: http://example.com/old_article
+  title: Old Article
+  body: This is an old article.
+  author: author1
+  category: archive
+  guid: guid_item_old
+  stored_on: <%= 20.hours.ago %>
+  modified_on: <%= 20.hours.ago %>
+  created_on: <%= 20.hours.ago %>
+  updated_on: <%= 20.hours.ago %>
+
+item_recent:
+  feed: feed_two
+  link: http://example.com/recent_article
+  title: Recent Article
+  body: This is a recent article.
+  author: author2
+  category: news
+  guid: guid_item_recent
+  stored_on: <%= 10.hours.ago %>
+  modified_on: <%= 10.hours.ago %>
+  created_on: <%= 10.hours.ago %>
+  updated_on: <%= 10.hours.ago %>
+
+item_without_title:
+  feed: feed_one
+  link: http://example.com/no_title_article
+  title: ""
+  body: Article without title
+  author: author1
+  category: misc
+  guid: guid_no_title
+  stored_on: <%= Time.current %>
+  modified_on: <%= Time.current %>
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>

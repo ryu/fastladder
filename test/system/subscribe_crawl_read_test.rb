@@ -64,7 +64,10 @@ class SubscribeCrawlReadTest < ApplicationSystemTestCase
 
     assert_equal 2, @dankogai.subscriptions.count
 
-    Feed.find_each { Fastladder::Crawler.new(Rails.logger).crawl(_1) }
+    # Only crawl feeds that were subscribed by this test (not fixtures)
+    @dankogai.subscriptions.each do |sub|
+      Fastladder::Crawler.new(Rails.logger).crawl(sub.feed)
+    end
 
     kuma = Feed.find_by(link: "http://example.com/feed.xml")
     ebi = Feed.find_by(link: "http://example.com/ebi.feed.xml")

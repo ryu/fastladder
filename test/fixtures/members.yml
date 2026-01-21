@@ -1,0 +1,27 @@
+# Members fixtures
+# Password for all members: "password"
+# Salt: "salt" / Crypted: Digest::SHA1.hexdigest("--salt--password--")
+
+member_one:
+  username: bulkneets
+  email: bulkneets@example.com
+  salt: salt
+  crypted_password: <%= Digest::SHA1.hexdigest("--salt--password--") %>
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+member_two:
+  username: mala
+  email: mala@example.com
+  salt: salt
+  crypted_password: <%= Digest::SHA1.hexdigest("--salt--password--") %>
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+member_three:
+  username: user3
+  email: user3@example.com
+  salt: salt
+  crypted_password: <%= Digest::SHA1.hexdigest("--salt--password--") %>
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>

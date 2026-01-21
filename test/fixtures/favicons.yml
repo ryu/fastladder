@@ -1,0 +1,5 @@
+# Favicons fixtures
+
+favicon_one:
+  feed: feed_one
+  image: <%= "\x89PNG\r\n\x1a\n".b.inspect %>

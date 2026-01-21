@@ -1,0 +1,42 @@
+# CrawlStatuses fixtures
+# status: 1 = CRAWL_OK, 2 = CRAWL_NOW
+
+crawl_status_ok:
+  feed: feed_one
+  status: 1
+  error_count: 0
+  crawled_on: <%= 10.minutes.ago %>
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+crawl_status_now:
+  feed: feed_two
+  status: 2
+  error_count: 0
+  crawled_on: <%= Time.current %>
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+crawl_status_expired:
+  feed: feed_three
+  status: 1
+  error_count: 0
+  crawled_on: <%= 10.minutes.ago %>
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+crawl_status_never_crawled:
+  feed: feed_without_description
+  status: 2
+  error_count: 0
+  crawled_on: null
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>
+
+crawl_status_recent:
+  feed: feed_without_title
+  status: 1
+  error_count: 0
+  crawled_on: <%= 10.minutes.ago %>
+  created_on: <%= Time.current %>
+  updated_on: <%= Time.current %>

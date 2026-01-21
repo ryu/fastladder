@@ -64,3 +64,10 @@ Rails/HasManyOrHasOneDependent:
 
 Rails/InverseOf:
   Enabled: false
+
+Minitest/MultipleAssertions:
+  Max: 4
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'test/support/**/*'

@@ -4,7 +4,7 @@ require "application_system_test_case"
 
 class AccountTest < ApplicationSystemTestCase
   setup do
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    @member = create_member(password: "mala", password_confirmation: "mala")
     visit "/login"
     fill_in "username", with: @member.username
     fill_in "password", with: "mala"
