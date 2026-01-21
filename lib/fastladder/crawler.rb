@@ -149,7 +149,7 @@ module Fastladder
       delete_old_items_if_new_items_are_many(feed, items)
       update_or_insert_items_to_feed(feed, items, result)
       update_unread_status(feed, result)
-      update_feed_infomation(feed, parsed)
+      update_feed_information(feed, parsed)
       feed.save
 
       feed.fetch_favicon!
@@ -243,9 +243,9 @@ module Fastladder
       Subscription.where(feed_id: feed.id).update_all(has_unread: true)
     end
 
-    def update_feed_infomation(feed, parsed)
-      feed.title = parsed.title
-      feed.link = parsed.url
+    def update_feed_information(feed, parsed)
+      feed.title = parsed.title if parsed.title.present?
+      feed.link = parsed.url if parsed.url.present?
       feed.description = parsed.description || ""
     end
 
