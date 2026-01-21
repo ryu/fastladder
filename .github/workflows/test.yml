@@ -10,6 +10,27 @@ env:
   RAILS_ENV: test
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.8
+          bundler-cache: true
+
+      - name: Security audit
+        run: bundle exec bundle-audit check --update
+
+      - name: Brakeman security scan
+        run: bundle exec brakeman --no-pager -w3 -i config/brakeman.ignore
+        # -w3 = High confidence warnings only
+        # Ignored warnings tracked in config/brakeman.ignore
+
+      - name: RuboCop
+        run: bundle exec rubocop --parallel --format github
+
   test:
     runs-on: ubuntu-latest
 

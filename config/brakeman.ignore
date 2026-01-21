@@ -1,0 +1,10 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "0d0f818e2fdf649ebfb09ced70a503621bff1c1061e3ba50d538603d2f9f3480",
+      "note": "TODO: Fix XSS in mobile view - params[:item_id] needs escaping in JavaScript context"
+    }
+  ],
+  "updated": "2026-01-21",
+  "brakeman_version": "7.0.2"
+}
