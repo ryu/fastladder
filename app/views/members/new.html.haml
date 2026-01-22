@@ -2,16 +2,18 @@
 #content
   %h2 Create new account
   = flash[:error]
-  = form_for :member, url: members_path do |f|
+  = form_for :member, url: members_path, html: { data: { controller: "password-match" } } do |f|
     %dl
       %dt
         %label{for: "member_username"} Username
       %dd= f.text_field :username
       %dt
         %label{for: "member_password"} Password
-      %dd= f.password_field :password
+      %dd= f.password_field :password, data: { password_match_target: "password", action: "input->password-match#validate" }
       %dt
         %label{for: "member_password_confirmation"} Confirm Password
-      %dd= f.password_field :password_confirmation
-    .submit= submit_tag "Sign Up"
+      %dd
+        = f.password_field :password_confirmation, data: { password_match_target: "confirmation", action: "input->password-match#validate" }
+        %span.password-match-message{ data: { password_match_target: "message" } }
+    .submit= submit_tag "Sign Up", data: { password_match_target: "submit" }
   .section= link_to "Back to Sign In", "/login"

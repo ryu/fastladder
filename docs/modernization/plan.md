@@ -137,7 +137,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] turbo-rails, stimulus-rails, importmap-rails gem 追加
 - [x] Turbo Drive をグローバルで無効化（既存JSとの衝突回避）
 - [x] importmap 設定
-- [ ] 隔離されたページで最初の Stimulus controller
+- [x] 隔離されたページで最初の Stimulus controller（サインアップページ）
 
 ### Step A: 画面整理（土台）
 - [ ] layout/partials の整理
@@ -186,6 +186,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-22 (Hotwire Step 1)
+- 最初の Stimulus controller 追加（password_match_controller.js）
+- サインアップページでパスワード一致チェックのリアルタイムバリデーション
+- 既存機能への影響なし（全テストパス）
 
 ### 2026-01-22 (Hotwire 土台)
 - Hotwire gem 追加（turbo-rails, stimulus-rails, importmap-rails）
