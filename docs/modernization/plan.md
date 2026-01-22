@@ -6,7 +6,7 @@
 - Web と crawler の2プロセス構成（foreman で同時起動）
 - 目標は「壊さずに上げる」「更新し続けられる」「観測できる」
 
-**最終更新: 2026-01-21**
+**最終更新: 2026-01-23**
 
 ---
 
@@ -154,7 +154,14 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [ ] 不要になった資産の削除（別PR）
 
 ### 完了したPR
-- `refactor: convert mobile/read_feed from haml to erb`
+- `feat: add Hotwire foundation with Turbo Drive disabled`
+- `feat: add first Stimulus controller for password validation`
+- `feat: add flash message auto-dismiss Stimulus controller`
+- `feat: add form validation Stimulus controller for login page`
+- `feat: apply form validation to signup page`
+- `feat: apply form validation to password change page`
+- `feat: add clipboard controller for API key copy`
+- `refactor: convert all HAML templates to ERB and remove haml gem`
 
 ---
 
@@ -186,6 +193,10 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-23 (ドキュメント整理)
+- Hotwire 完了 PR リストを更新
+- 進行ログを整理
 
 ### 2026-01-22 (HAML→ERB)
 - 全 HAML ファイルを ERB に変換（6ファイル）
