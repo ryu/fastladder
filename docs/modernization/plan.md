@@ -187,6 +187,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-22 (Hotwire Step 5)
+- パスワード変更ページに form_validation + password_match 適用
+- 新パスワードと確認の一致チェック
+- HTML の軽微な修正（typo、タグ閉じ忘れ）
+
 ### 2026-01-22 (Hotwire Step 4)
 - form_validation をサインアップページに適用
 - password_match と form_validation の複数 controller 連携
