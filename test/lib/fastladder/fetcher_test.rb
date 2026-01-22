@@ -7,7 +7,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
     @fetcher = Fastladder::Fetcher.new(
       logger: Rails.logger,
       max_retries: 2,
-      base_delay: 0.01,  # Fast tests
+      base_delay: 0.01, # Fast tests
       rate_limit_delay: 0 # Disable for most tests
     )
     @test_url = "https://example.com/feed.xml"
@@ -21,7 +21,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_equal 200, result.status_code
     assert_equal "<feed>content</feed>", result.body
     assert_equal 1, result.attempts
@@ -33,10 +33,10 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.not_modified?
+    assert_predicate result, :not_modified?
     assert_equal 304, result.status_code
-    refute result.success?
-    refute result.error?
+    assert_not result.success?
+    assert_not result.error?
   end
 
   test "fetch sends If-Modified-Since header when provided" do
@@ -47,7 +47,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url, modified_since: modified_time)
 
-    assert result.not_modified?
+    assert_predicate result, :not_modified?
   end
 
   test "fetch sends custom User-Agent when provided" do
@@ -57,7 +57,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url, user_agent: "CustomAgent/1.0")
 
-    assert result.success?
+    assert_predicate result, :success?
   end
 
   # === Redirect Cases ===
@@ -68,7 +68,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.redirect?
+    assert_predicate result, :redirect?
     assert_equal 301, result.status_code
     assert_equal "https://example.com/new-feed.xml", result.redirect_url
   end
@@ -79,7 +79,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.redirect?
+    assert_predicate result, :redirect?
     assert_equal "https://example.com/another-feed.xml", result.redirect_url
   end
 
@@ -91,10 +91,10 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.error?
-    assert result.client_error?
+    assert_predicate result, :error?
+    assert_predicate result, :client_error?
     assert_equal 404, result.status_code
-    refute result.retryable_error?
+    assert_not result.retryable_error?
   end
 
   test "fetch returns error for HTTP 500" do
@@ -103,24 +103,24 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.error?
-    assert result.server_error?
+    assert_predicate result, :error?
+    assert_predicate result, :server_error?
     assert_equal 500, result.status_code
   end
 
   test "fetch returns invalid_url error for invalid URLs" do
     result = @fetcher.fetch("not-a-valid-url")
 
-    assert result.error?
-    assert result.invalid_url?
+    assert_predicate result, :error?
+    assert_predicate result, :invalid_url?
     assert_includes result.error_message, "Invalid URL"
   end
 
   test "fetch returns invalid_url error for non-HTTP schemes" do
     result = @fetcher.fetch("ftp://example.com/file")
 
-    assert result.error?
-    assert result.invalid_url?
+    assert_predicate result, :error?
+    assert_predicate result, :invalid_url?
   end
 
   # === Retry Behavior ===
@@ -132,7 +132,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_equal 2, result.attempts
     assert_equal "success after retry", result.body
   end
@@ -144,7 +144,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_equal 2, result.attempts
   end
 
@@ -155,7 +155,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_equal 2, result.attempts
   end
 
@@ -165,8 +165,8 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.error?
-    assert result.retries_exhausted?
+    assert_predicate result, :error?
+    assert_predicate result, :retries_exhausted?
     assert_equal 3, result.attempts # 1 initial + 2 retries
   end
 
@@ -176,9 +176,9 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.error?
+    assert_predicate result, :error?
     assert_equal 1, result.attempts
-    refute result.retries_exhausted?
+    assert_not result.retries_exhausted?
   end
 
   test "fetch retries on connection refused" do
@@ -188,7 +188,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_equal 2, result.attempts
   end
 
@@ -198,7 +198,7 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(@test_url)
 
-    assert result.error?
+    assert_predicate result, :error?
     assert_equal 1, result.attempts
     assert_includes result.error_message, "ArgumentError"
   end
@@ -214,12 +214,12 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
     stub_request(:get, @test_url).to_return(status: 200, body: "ok")
     stub_request(:get, "https://example.com/feed2.xml").to_return(status: 200, body: "ok2")
 
-    start_time = Time.now
+    start_time = Time.zone.now
     fetcher.fetch(@test_url)
     fetcher.fetch("https://example.com/feed2.xml")
-    elapsed = Time.now - start_time
+    elapsed = Time.zone.now - start_time
 
-    assert elapsed >= 0.05, "Rate limiting should add delay between requests"
+    assert_operator elapsed, :>=, 0.05, "Rate limiting should add delay between requests"
   end
 
   # === FetchResult ===
@@ -266,28 +266,28 @@ class Fastladder::FetcherTest < ActiveSupport::TestCase
 
     result = @fetcher.fetch(uri)
 
-    assert result.success?
+    assert_predicate result, :success?
   end
 
   test "fetch handles basic auth in options" do
     stub_request(:get, @test_url)
-      .with(basic_auth: ["user", "pass"])
+      .with(basic_auth: %w[user pass])
       .to_return(status: 200)
 
     result = @fetcher.fetch(@test_url, user: "user", password: "pass")
 
-    assert result.success?
+    assert_predicate result, :success?
   end
 
   test "fetch handles basic auth in URL" do
     authed_url = "https://user:pass@example.com/feed.xml"
     # The actual HTTP request goes to the URL without credentials
     stub_request(:get, "https://example.com/feed.xml")
-      .with(basic_auth: ["user", "pass"])
+      .with(basic_auth: %w[user pass])
       .to_return(status: 200)
 
     result = @fetcher.fetch(authed_url)
 
-    assert result.success?
+    assert_predicate result, :success?
   end
 end

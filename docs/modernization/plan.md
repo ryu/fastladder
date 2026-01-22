@@ -89,7 +89,7 @@ Rails 8.1 で動作し、アップグレード後も更新が回る。
 
 ---
 
-## 5. crawler の近代化（境界化 → テスト可能 → 安全運用） 🔄 進行中
+## 5. crawler の近代化（境界化 → テスト可能 → 安全運用） ✅ 完了
 
 ### Goal
 crawler を「壊れにくく」「再実行安全」「観測可能」にする。
@@ -98,11 +98,11 @@ crawler を「壊れにくく」「再実行安全」「観測可能」にする
 - [x] Fetch（HTTP取得、レート制限、リトライ/バックオフ）
 - [x] Parse（フォーマット差異吸収、正規化）
 - [x] Persist（トランザクション、重複排除、index/unique）
-- [ ] Report（ログ、失敗の原因がわかる）
+- [x] Report（ログ、失敗の原因がわかる）
 
 ### Step B: 安全性
-- [ ] idempotency（同じ入力を2回処理しても壊れない）
-- [ ] 多重起動対策（ロック/排他/ジョブ設計）
+- [x] idempotency（同じ入力を2回処理しても壊れない）
+- [x] 多重起動対策（ロック/排他/ジョブ設計）
 - [x] SQLite の特性を踏まえた書き込み設計（まとめて transaction）
 
 ### 完了したPR
@@ -110,6 +110,7 @@ crawler を「壊れにくく」「再実行安全」「観測可能」にする
 - `fix: guard feed information update when parsed url is missing`
 - `refactor: add Fetcher class with retry, backoff, and rate limiting`
 - `refactor: add FeedParser class for feed parsing boundary`
+- `refactor: add CrawlerReporter for structured logging and metrics`
 
 ---
 
@@ -171,13 +172,24 @@ UI刷新はアップグレード完了後に「小さく」やる。
 | M2 | ✅ 完了 | CI整備 + 最低限のスモーク/回帰 |
 | M3 | ✅ 完了 | 依存更新の健全化（上げられる状態） |
 | M4 | ✅ 完了 | Rails 8.1 到達（web/crawler/foremanで動作） |
-| M5 | 🔄 進行中 | crawler 境界化 + テスト + 安全運用 |
+| M5 | ✅ 完了 | crawler 境界化 + テスト + 安全運用 |
 | M6 | 📋 未着手 | Hotwire 置換（重要操作から） |
 | M7 | 🔄 進行中 | 互換レイヤ撤去 + ドキュメント完備 |
 
 ---
 
 ## 進行ログ
+
+### 2026-01-22 (後半)
+- Idempotency 実装完了
+  - CrawlStatus.fetch_crawlable_feed に楽観的ロッキング実装（SQLite 対応）
+  - 古い CRAWL_NOW 状態のリセット機能（30分以上経過したスタンバイクロール）
+  - upsert_item メソッド追加（guid ベースの重複排除）
+  - 一意性違反時のリトライロジック（レースコンディション対応）
+- Idempotency テスト追加（10 tests）
+  - CrawlStatus の原子的ロック取得テスト
+  - Crawler の upsert 操作テスト
+  - 重複処理の冪等性テスト
 
 ### 2026-01-22
 - Fetcher クラス追加（lib/fastladder/fetcher.rb）
@@ -194,6 +206,13 @@ UI刷新はアップグレード完了後に「小さく」やる。
   - ActiveRecord 非依存（テスト容易化）
 - FeedParser テスト追加（15 tests）
 - Crawler を FeedParser 使用に更新（依存性注入対応）
+- CrawlerReporter クラス追加（lib/fastladder/crawler_reporter.rb）
+  - 構造化ログ（JSON / human-readable 切替可能）
+  - メトリクス収集（成功/失敗数、アイテム数、エラー分類）
+  - イベント報告（crawl/fetch/parse/items の各ライフサイクル）
+  - Metrics クラスで統計集約
+- CrawlerReporter テスト追加（22 tests）
+- Crawler を CrawlerReporter 使用に更新（依存性注入対応）
 
 ### 2026-01-21
 - ドキュメント整備: README.md を更新、baseline.md を最新化

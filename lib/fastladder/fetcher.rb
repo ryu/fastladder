@@ -47,11 +47,10 @@ module Fastladder
       Net::OpenTimeout,
       Net::ReadTimeout,
       OpenSSL::SSL::SSLError,
-      SocketError,
+      SocketError
     ].freeze
 
-    attr_accessor :max_retries, :base_delay, :max_delay, :rate_limit_delay
-    attr_accessor :open_timeout, :read_timeout
+    attr_accessor :max_retries, :base_delay, :max_delay, :rate_limit_delay, :open_timeout, :read_timeout
     attr_reader :logger
 
     def initialize(
@@ -106,12 +105,10 @@ module Fastladder
           last_response = response
           last_error = nil
           log_warn("Retryable HTTP error (#{response.code}): #{uri}")
-
         rescue *RETRYABLE_EXCEPTIONS => e
           last_error = e
           last_response = nil
           log_warn("Retryable exception (#{e.class}): #{uri} - #{e.message}")
-
         rescue StandardError => e
           # Non-retryable exception
           log_error("Non-retryable exception (#{e.class}): #{uri} - #{e.message}")
@@ -119,11 +116,11 @@ module Fastladder
         end
 
         # Apply backoff before retry (except for the last attempt)
-        if attempt <= max_retries
-          delay = calculate_backoff(attempt)
-          log_debug("Backing off for #{delay.round(2)}s before retry")
-          sleep(delay)
-        end
+        next unless attempt <= max_retries
+
+        delay = calculate_backoff(attempt)
+        log_debug("Backing off for #{delay.round(2)}s before retry")
+        sleep(delay)
       end
 
       # All retries exhausted
@@ -142,6 +139,7 @@ module Fastladder
     def normalize_uri(url)
       uri = url.is_a?(URI) ? url : URI.parse(url.to_s)
       return nil unless %w[http https].include?(uri.scheme)
+
       uri
     rescue URI::InvalidURIError
       nil
@@ -150,14 +148,14 @@ module Fastladder
     def apply_rate_limit
       return unless rate_limit_delay.positive? && @last_request_time
 
-      elapsed = Time.now - @last_request_time
+      elapsed = Time.zone.now - @last_request_time
       remaining = rate_limit_delay - elapsed
       if remaining.positive?
         log_debug("Rate limiting: sleeping #{remaining.round(2)}s")
         sleep(remaining)
       end
     ensure
-      @last_request_time = Time.now
+      @last_request_time = Time.zone.now
     end
 
     def perform_request(uri, modified_since:, user_agent:, user:, password:)
@@ -211,7 +209,7 @@ module Fastladder
 
     def calculate_backoff(attempt)
       # Exponential backoff with jitter: base * 2^(attempt-1) + random jitter
-      delay = base_delay * (2 ** (attempt - 1))
+      delay = base_delay * (2**(attempt - 1))
       delay = [delay, max_delay].min
       # Add jitter (0-25% of delay)
       delay + (rand * delay * 0.25)
@@ -289,6 +287,7 @@ module Fastladder
 
     def retryable_error?
       return false unless response
+
       Fetcher::RETRYABLE_HTTP_CODES.include?(status_code)
     end
 
@@ -316,8 +315,10 @@ module Fastladder
 
     def redirect_url
       return nil unless redirect?
+
       location = response["location"]
       return nil unless location
+
       URI.join(uri, location).to_s
     rescue URI::InvalidURIError
       nil
@@ -325,6 +326,7 @@ module Fastladder
 
     def headers
       return {} unless response
+
       response.to_hash
     end
 

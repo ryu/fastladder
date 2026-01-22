@@ -10,11 +10,11 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
   # === Basic Parsing ===
 
   test "parses RSS 2.0 feed successfully" do
-    content = File.read(Rails.root.join("test/fixtures/examlpe.com.feed.xml"))
+    content = Rails.root.join("test/fixtures/examlpe.com.feed.xml").read
 
     result = @parser.parse(content, base_url: "http://example.com/feed.xml")
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_equal 3, result.item_count
 
     # Check feed info
@@ -24,17 +24,18 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
 
     # Check first item
     first_item = result.items.first
+
     assert_equal "北海道で熊がハイキングコースを散策", first_item.title
     assert_equal "http://example.com/bearnews/1", first_item.link
     assert_includes first_item.body, "ツキノワグマ"
   end
 
   test "parses Atom feed successfully" do
-    content = File.read(Rails.root.join("test/fixtures/github.private.atom"))
+    content = Rails.root.join("test/fixtures/github.private.atom").read
 
     result = @parser.parse(content, base_url: "https://github.com/eagletmt.private.atom")
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_equal 1, result.item_count
 
     # Check feed info
@@ -43,6 +44,7 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
 
     # Check item
     item = result.items.first
+
     assert_equal "tag:github.com,2008:PushEvent/2666926662", item.guid
     assert_includes item.title, "indirect pushed to 1-9-stable"
     assert_equal "indirect", item.author
@@ -53,39 +55,39 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
   test "returns error for empty content" do
     result = @parser.parse("")
 
-    assert result.error?
+    assert_predicate result, :error?
     assert_equal "Empty content", result.error
   end
 
   test "returns error for nil content" do
     result = @parser.parse(nil)
 
-    assert result.error?
+    assert_predicate result, :error?
     assert_equal "Empty content", result.error
   end
 
   test "returns error for invalid XML" do
     result = @parser.parse("<not valid xml>")
 
-    assert result.error?
+    assert_predicate result, :error?
     # Feedjira returns "Unsupported feed format" for invalid content
-    assert result.error.present?
+    assert_predicate result.error, :present?
   end
 
   test "returns error for non-feed XML" do
     result = @parser.parse('<?xml version="1.0"?><html><body>Not a feed</body></html>')
 
-    assert result.error?
+    assert_predicate result, :error?
   end
 
   # === URL Normalization ===
 
   test "fixes relative links in item body" do
-    content = File.read(Rails.root.join("test/fixtures/github.private.atom"))
+    content = Rails.root.join("test/fixtures/github.private.atom").read
 
     result = @parser.parse(content, base_url: "http://example.com/feed.atom")
 
-    assert result.success?
+    assert_predicate result, :success?
     item = result.items.first
     # Relative links like /bundler/bundler/tree/1-9-stable should be absolute
     assert_includes item.body, "http://example.com/bundler/bundler/tree/1-9-stable"
@@ -109,7 +111,7 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
 
     result = @parser.parse(content, base_url: "http://example.com/feed.xml")
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_includes result.items.first.body, "https://other.com/page"
   end
 
@@ -131,7 +133,7 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
 
     result = @parser.parse(content, base_url: "http://example.com/feed.xml")
 
-    assert result.success?
+    assert_predicate result, :success?
     # Data URIs should be preserved, not converted
     assert_includes result.items.first.body, "data:image/png;base64,ABC123"
   end
@@ -154,7 +156,7 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
 
     result = @parser.parse(content, base_url: "http://example.com/feed.xml")
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_includes result.items.first.body, "http://example.com/images/photo.jpg"
   end
 
@@ -176,8 +178,9 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
 
     result = @parser.parse(content, base_url: "http://example.com/feed.xml")
 
-    assert result.success?
+    assert_predicate result, :success?
     item = result.items.first
+
     assert_equal "Minimal Item", item.title
     assert_equal "", item.link
     assert_nil item.author
@@ -201,7 +204,7 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
 
     result = @parser.parse(content, base_url: "http://example.com/feed.xml")
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_equal "Test Feed", result.feed_info[:title]
     assert_equal "Item with spaces", result.items.first.title
   end
@@ -209,7 +212,7 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
   # === ParsedItem ===
 
   test "ParsedItem to_item_attributes includes all fields" do
-    content = File.read(Rails.root.join("test/fixtures/examlpe.com.feed.xml"))
+    content = Rails.root.join("test/fixtures/examlpe.com.feed.xml").read
     result = @parser.parse(content, base_url: "http://example.com/feed.xml")
 
     attrs = result.items.first.to_item_attributes(feed_id: 42)
@@ -221,7 +224,7 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
   end
 
   test "ParsedItem to_h returns hash representation" do
-    content = File.read(Rails.root.join("test/fixtures/examlpe.com.feed.xml"))
+    content = Rails.root.join("test/fixtures/examlpe.com.feed.xml").read
     result = @parser.parse(content, base_url: "http://example.com/feed.xml")
 
     hash = result.items.first.to_h
@@ -234,15 +237,15 @@ class Fastladder::FeedParserTest < ActiveSupport::TestCase
   # === ParseResult ===
 
   test "ParseResult success? and error? are mutually exclusive" do
-    content = File.read(Rails.root.join("test/fixtures/examlpe.com.feed.xml"))
+    content = Rails.root.join("test/fixtures/examlpe.com.feed.xml").read
     result = @parser.parse(content)
 
-    assert result.success?
-    refute result.error?
+    assert_predicate result, :success?
+    assert_not result.error?
 
     error_result = @parser.parse("")
 
-    refute error_result.success?
-    assert error_result.error?
+    assert_not error_result.success?
+    assert_predicate error_result, :error?
   end
 end

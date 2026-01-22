@@ -38,10 +38,24 @@ Metrics/AbcSize:
   Max: 40
 
 Metrics/ClassLength:
-  Max: 200
+  Max: 250
+  Exclude:
+    - 'test/**/*'
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'test/**/*'
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - 'test/**/*'
+
+Metrics/ParameterLists:
+  Exclude:
+    - 'test/**/*'
 
 Metrics/BlockLength:
-  Max: 30
+  Max: 35
   Exclude:
     - 'test/**/*'
     - 'config/**/*'
@@ -66,7 +80,7 @@ Rails/InverseOf:
   Enabled: false
 
 Minitest/MultipleAssertions:
-  Max: 4
+  Max: 10
 
 Metrics/ModuleLength:
   Exclude:

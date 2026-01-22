@@ -108,3 +108,4 @@ end
 
 require_relative "fastladder/fetcher"
 require_relative "fastladder/feed_parser"
+require_relative "fastladder/crawler_reporter"

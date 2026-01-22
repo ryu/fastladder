@@ -27,7 +27,7 @@ class FixupRelativeLinksTest < ActiveSupport::TestCase
 
     result = @parser.parse(content, base_url: "http://example.com/feed")
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_includes result.items.first.body, 'href="http://example.com/a"'
   end
 
@@ -49,7 +49,7 @@ class FixupRelativeLinksTest < ActiveSupport::TestCase
 
     result = @parser.parse(content, base_url: "http://example.com/feed")
 
-    assert result.success?
+    assert_predicate result, :success?
     assert_includes result.items.first.body, "<p>Hello</p>"
   end
 
@@ -72,7 +72,7 @@ class FixupRelativeLinksTest < ActiveSupport::TestCase
     result = @parser.parse(content, base_url: "http://example.com/feed")
 
     # Should not crash, and should either normalize or preserve the URL
-    assert result.success?
-    assert result.items.first.body.present?
+    assert_predicate result, :success?
+    assert_predicate result.items.first.body, :present?
   end
 end

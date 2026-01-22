@@ -46,11 +46,9 @@ module Fastladder
         items = build_items(parsed.entries, base_url: base_url)
 
         ParseResult.success(feed_info: feed_info, items: items)
-
       rescue Feedjira::NoParserAvailable => e
         log_warn("No parser available: #{e.message}")
         ParseResult.error("Unsupported feed format")
-
       rescue StandardError => e
         log_error("Parse error: #{e.class} - #{e.message}")
         ParseResult.error("Parse error: #{e.message}")
@@ -92,11 +90,13 @@ module Fastladder
 
     def normalize_text(text)
       return nil if text.nil?
+
       text.to_s.strip.presence
     end
 
     def normalize_datetime(value)
       return nil if value.nil?
+
       value.to_datetime
     rescue StandardError
       nil
@@ -105,6 +105,7 @@ module Fastladder
     def extract_category(entry)
       categories = entry.try(:categories)
       return nil unless categories.is_a?(Array) && categories.any?
+
       categories.first
     end
 
@@ -117,7 +118,7 @@ module Fastladder
     end
 
     def fixup_relative_links(body, base_url:)
-      return body if body.nil? || body.empty?
+      return body if body.blank?
 
       doc = Nokogiri::HTML.fragment(body)
 
@@ -135,7 +136,7 @@ module Fastladder
     end
 
     def resolve_url(url, base_url:)
-      return url if url.nil? || url.empty?
+      return url if url.blank?
       return url if url.start_with?("data:") # Data URIs
 
       Addressable::URI.join(base_url, url).normalize.to_s

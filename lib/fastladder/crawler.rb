@@ -18,7 +18,7 @@ module Fastladder
     CRAWL_NOW = 10
     GETA = [12307].pack("U")
 
-    attr_reader :fetcher, :parser
+    attr_reader :fetcher, :parser, :reporter
 
     def self.start(options = {})
       logger = options[:logger]
@@ -30,38 +30,32 @@ module Fastladder
       end
 
       logger.warn '=> Booting FeedFetcher...'
-      self.new(logger, fetcher: options[:fetcher], parser: options[:parser]).run
+      self.new(logger,
+               fetcher: options[:fetcher],
+               parser: options[:parser],
+               reporter: options[:reporter]).run
     end
 
-    def initialize(logger, fetcher: nil, parser: nil)
+    def initialize(logger, fetcher: nil, parser: nil, reporter: nil)
       @logger = logger
       @fetcher = fetcher || build_default_fetcher
       @parser = parser || build_default_parser
-    end
-
-    private def build_default_fetcher
-      Fastladder::Fetcher.new(
-        logger: @logger,
-        max_retries: 2,
-        rate_limit_delay: 0.5,
-        open_timeout: Fastladder.http_open_timeout,
-        read_timeout: Fastladder.http_read_timeout
-      )
-    end
-
-    private def build_default_parser
-      Fastladder::FeedParser.new(logger: @logger)
+      @reporter = reporter || build_default_reporter
     end
 
     def run
+      reporter.crawler_started
       @interval = 0
       finish = false
       until finish
         finish = run_loop
       end
+      reporter.crawler_stopped(reason: "normal")
     end
 
     def crawl(feed)
+      reporter.crawl_started(feed)
+
       result = {
         message: '',
         error: false,
@@ -72,23 +66,25 @@ module Fastladder
       modified_since = feed.modified_on
 
       REDIRECT_LIMIT.times do
-        @logger.info "fetch: #{current_url}"
+        reporter.fetch_started(current_url)
         fetch_result = fetcher.fetch(current_url, modified_since: modified_since)
-        @logger.info "HTTP status: [#{fetch_result.status_code}] #{current_url}"
+        reporter.fetch_completed(current_url, fetch_result)
 
         if fetch_result.not_modified?
           result[:response_code] = fetch_result.status_code
+          result[:message] = "Not modified"
+          reporter.crawl_skipped(feed, "not_modified")
           break
 
         elsif fetch_result.success?
           ret = update(feed, fetch_result.response)
           result[:message] = "#{ret[:new_items]} new items, #{ret[:updated_items]} updated items"
           result[:response_code] = fetch_result.status_code
+          reporter.crawl_completed(feed, result.merge(new_items: ret[:new_items], updated_items: ret[:updated_items]))
           break
 
         elsif fetch_result.redirect?
           redirect_url = fetch_result.redirect_url
-          @logger.info "Redirect: #{current_url} => #{redirect_url}"
           feed.feedlink = redirect_url
           feed.modified_on = nil
           feed.save
@@ -99,6 +95,7 @@ module Fastladder
           result[:message] = "Error: #{fetch_result.error_message}"
           result[:error] = true
           result[:response_code] = fetch_result.status_code
+          reporter.crawl_failed(feed, fetch_result.error_message)
           break
 
         else
@@ -106,6 +103,7 @@ module Fastladder
           result[:message] = "Error: Unknown response #{fetch_result.status_code}"
           result[:error] = true
           result[:response_code] = fetch_result.status_code
+          reporter.crawl_failed(feed, result[:message])
           break
         end
       end
@@ -115,14 +113,32 @@ module Fastladder
 
     private
 
+    def build_default_fetcher
+      Fastladder::Fetcher.new(
+        logger: @logger,
+        max_retries: 2,
+        rate_limit_delay: 0.5,
+        open_timeout: Fastladder.http_open_timeout,
+        read_timeout: Fastladder.http_read_timeout
+      )
+    end
+
+    def build_default_parser
+      Fastladder::FeedParser.new(logger: @logger)
+    end
+
+    def build_default_reporter
+      Fastladder::CrawlerReporter.new(logger: @logger)
+    end
+
     def run_loop
       begin
         run_body
-      rescue SignalException
-        @logger.warn "\n=> #{$!.message} trapped. Terminating..."
+      rescue SignalException => e
+        reporter.crawler_stopped(reason: "signal: #{e.message}")
         return true
-      rescue Exception
-        @logger.error %!Crawler error: #{$!.message}\n#{$!.backtrace.join("\n")}!
+      rescue Exception => e
+        reporter.crawler_error(e)
       ensure
         if @crawl_status
           @crawl_status.status = CRAWL_OK
@@ -133,17 +149,14 @@ module Fastladder
     end
 
     def run_body
-      @logger.info "sleep: #{@interval}s"
+      reporter.crawler_idle(@interval) if @interval > 0
       sleep @interval
       if feed = CrawlStatus.fetch_crawlable_feed
         @interval = 0
         result = crawl(feed)
-        if result[:error]
-          @logger.info "error: #{result[:message]}"
-        else
+        unless result[:error]
           @crawl_status = feed.crawl_status
           @crawl_status.http_status = result[:response_code]
-          @logger.info "success: #{result[:message]}"
         end
       else
         @interval = @interval > 60 ? 60 : @interval + 1
@@ -158,15 +171,17 @@ module Fastladder
       }
 
       parse_result = parser.parse(source.body, base_url: feed.feedlink)
+      reporter.parse_completed(feed.feedlink, parse_result)
+
       unless parse_result.success?
         result[:error] = parse_result.error
         return result
       end
 
-      @logger.info "parsed: [#{parse_result.item_count} items] #{feed.feedlink}"
       items = build_items_from_parsed(feed, parse_result.items)
-
+      original_count = items.size
       items = cut_off(feed, items)
+      reporter.items_truncated(feed, original_count, ITEMS_LIMIT) if items.size < original_count
       items = reject_duplicated(feed, items)
 
       Feed.transaction do
@@ -177,6 +192,7 @@ module Fastladder
         feed.save!
       end
 
+      reporter.items_persisted(feed, result[:new_items], result[:updated_items])
       feed.fetch_favicon!
       GC.start
 
@@ -191,9 +207,8 @@ module Fastladder
       end
     end
 
-    def cut_off(feed, items)
+    def cut_off(_feed, items)
       return items unless items.size > ITEMS_LIMIT
-      @logger.info "too large feed: #{feed.feedlink}(#{feed.items.size})"
       items[0, ITEMS_LIMIT]
     end
 
@@ -208,24 +223,49 @@ module Fastladder
     def delete_old_items_if_new_items_are_many(feed, items)
       new_items_size = new_items_count(feed, items)
       return unless new_items_size > ITEMS_LIMIT / 2
-      @logger.info "delete all items: #{feed.feedlink}"
+      deleted_count = feed.items.count
       Item.where(feed_id: feed.id).delete_all
+      reporter.items_deleted(feed, deleted_count, reason: "too_many_new_items")
     end
 
+    # Insert or update items to feed with idempotent handling.
+    #
+    # Uses find_or_initialize_by pattern and handles uniqueness violations
+    # gracefully for concurrent crawler scenarios.
+    #
     def update_or_insert_items_to_feed(feed, items, result)
       items.reverse_each do |item|
-        if old_item = feed.items.find_by(guid: item.guid)
-          old_item.increment(:version)
-          unless almost_same(old_item.title, item.title) and almost_same((old_item.body || "").html2text, (item.body || "").html2text)
-            old_item.stored_on = item.stored_on
-            result[:updated_items] += 1
-          end
-          update_columns = %w(link title body author category enclosure enclosure_type digest modified_on)
-          old_item.attributes = item.attributes.select{ |column, value| update_columns.include? column }
-          old_item.save
-        else
+        upsert_item(feed, item, result)
+      end
+    end
+
+    def upsert_item(feed, item, result)
+      old_item = feed.items.find_by(guid: item.guid)
+
+      if old_item
+        # Update existing item
+        old_item.increment(:version)
+        unless almost_same(old_item.title, item.title) && almost_same((old_item.body || "").html2text, (item.body || "").html2text)
+          old_item.stored_on = item.stored_on
+          result[:updated_items] += 1
+        end
+        update_columns = %w(link title body author category enclosure enclosure_type digest modified_on)
+        old_item.attributes = item.attributes.select { |column, _value| update_columns.include?(column) }
+        old_item.save!
+      else
+        # Insert new item, handling potential race condition
+        begin
           feed.items << item
           result[:new_items] += 1
+        rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
+          # Another process inserted the same item - retry as update
+          raise unless e.is_a?(ActiveRecord::RecordNotUnique) || e.message.include?("guid")
+          old_item = feed.items.find_by(guid: item.guid)
+          raise unless old_item
+          # Retry as update
+          upsert_item(feed, item, result)
+
+          # Different uniqueness violation (e.g., link), re-raise
         end
       end
     end
