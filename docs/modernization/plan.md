@@ -187,6 +187,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-22 (Hotwire Step 3)
+- form_validation_controller.js 追加（フォームバリデーション）
+- ログインページに適用
+- 空フィールドチェック、インラインエラー表示、ローディング状態
+
 ### 2026-01-22 (Hotwire Step 2)
 - flash_controller.js 追加（フラッシュメッセージ自動消去）
 - notice: 5秒、alert: 8秒で自動消去
