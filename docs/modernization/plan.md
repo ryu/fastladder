@@ -187,6 +187,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-22 (Hotwire Step 4)
+- form_validation をサインアップページに適用
+- password_match と form_validation の複数 controller 連携
+- 全フィールドに必須チェック追加
+
 ### 2026-01-22 (Hotwire Step 3)
 - form_validation_controller.js 追加（フォームバリデーション）
 - ログインページに適用
