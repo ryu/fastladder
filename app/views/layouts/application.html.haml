@@ -26,12 +26,14 @@
             %li= link_to "Account", account_index_path
             %li= link_to "Sign Out", logout_path
       - if flash[:notice]
-        .notice{style: "text-align:center;background-color:#ff9;padding:0.5em"}
-          %p{style: "color: green"}
+        .notice{style: "text-align:center;background-color:#ff9;padding:0.5em;position:relative", data: { controller: "flash", flash_delay_value: 5000 }}
+          %button.flash-close{type: "button", style: "position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:1.2em;cursor:pointer;opacity:0.7", data: { action: "flash#close" }, "aria-label": "Close"} ×
+          %p{style: "color: green;margin:0"}
             = flash[:notice]
       - if flash[:alert]
-        .alert{style: "text-align:center;background-color:#fdf3eb;padding:0.5em"}
-          %p{style: "color: #e81a37"}
+        .alert{style: "text-align:center;background-color:#fdf3eb;padding:0.5em;position:relative", data: { controller: "flash", flash_delay_value: 8000 }}
+          %button.flash-close{type: "button", style: "position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:1.2em;cursor:pointer;opacity:0.7", data: { action: "flash#close" }, "aria-label": "Close"} ×
+          %p{style: "color: #e81a37;margin:0"}
             = flash[:alert]
       = yield
     :javascript

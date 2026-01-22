@@ -187,6 +187,12 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-22 (Hotwire Step 2)
+- flash_controller.js 追加（フラッシュメッセージ自動消去）
+- notice: 5秒、alert: 8秒で自動消去
+- 閉じるボタンで手動消去も可能
+- 全ページに適用（レイアウト更新）
+
 ### 2026-01-22 (Hotwire Step 1)
 - 最初の Stimulus controller 追加（password_match_controller.js）
 - サインアップページでパスワード一致チェックのリアルタイムバリデーション
