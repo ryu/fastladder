@@ -95,8 +95,8 @@ Rails 8.1 で動作し、アップグレード後も更新が回る。
 crawler を「壊れにくく」「再実行安全」「観測可能」にする。
 
 ### Step A: 境界化（まずやる）
-- [ ] Fetch（HTTP取得、レート制限、リトライ/バックオフ）
-- [ ] Parse（フォーマット差異吸収、正規化）
+- [x] Fetch（HTTP取得、レート制限、リトライ/バックオフ）
+- [x] Parse（フォーマット差異吸収、正規化）
 - [x] Persist（トランザクション、重複排除、index/unique）
 - [ ] Report（ログ、失敗の原因がわかる）
 
@@ -108,6 +108,8 @@ crawler を「壊れにくく」「再実行安全」「観測可能」にする
 ### 完了したPR
 - `refactor: add transaction to crawler persist operations`
 - `fix: guard feed information update when parsed url is missing`
+- `refactor: add Fetcher class with retry, backoff, and rate limiting`
+- `refactor: add FeedParser class for feed parsing boundary`
 
 ---
 
@@ -176,6 +178,22 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-22
+- Fetcher クラス追加（lib/fastladder/fetcher.rb）
+  - リトライ + 指数バックオフ（一時的障害の再試行）
+  - レート制限（サーバーへの配慮）
+  - エラー分類（リトライ可能 vs 不可能）
+  - FetchResult による統一的な結果インターフェース
+- Fetcher テスト追加（25 tests）
+- Crawler を Fetcher 使用に更新（依存性注入対応）
+- FeedParser クラス追加（lib/fastladder/feed_parser.rb）
+  - RSS 1.0/2.0/Atom のフォーマット差異吸収
+  - 相対URL → 絶対URL 変換（リンク、画像）
+  - ParseResult/ParsedItem による正規化済みデータ構造
+  - ActiveRecord 非依存（テスト容易化）
+- FeedParser テスト追加（15 tests）
+- Crawler を FeedParser 使用に更新（依存性注入対応）
 
 ### 2026-01-21
 - ドキュメント整備: README.md を更新、baseline.md を最新化

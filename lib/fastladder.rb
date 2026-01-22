@@ -105,3 +105,6 @@ module Fastladder
 
   module_function :fetch, :simple_fetch
 end
+
+require_relative "fastladder/fetcher"
+require_relative "fastladder/feed_parser"

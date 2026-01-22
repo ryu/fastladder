@@ -49,9 +49,15 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
 
   test "new_items_count finds new item" do
     atom_body = File.read(File.expand_path("../../fixtures/github.private.atom", __dir__))
-    source = Struct.new(:body).new(atom_body)
-    parsed = Feedjira.parse(source.body)
-    items = @crawler.send(:build_items, @feed, parsed)
+
+    # Use FeedParser to parse the content
+    parser = Fastladder::FeedParser.new
+    parse_result = parser.parse(atom_body, base_url: "http://example.com/private.atom")
+    items = parse_result.items.map do |parsed_item|
+      item = Item.new(parsed_item.to_item_attributes(feed_id: @feed.id))
+      item.create_digest
+      item
+    end
 
     @feed.feedlink = "http://example.com/private.atom"
     @feed.save!
@@ -64,13 +70,22 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
   test "new_items_count does not find new item when feed not updated since last update" do
     atom_body = File.read(File.expand_path("../../fixtures/github.private.atom", __dir__))
     source = Struct.new(:body).new(atom_body)
-    parsed = Feedjira.parse(source.body)
 
     @feed.feedlink = "http://example.com/private.atom"
     @feed.save!
     @feed.stub(:favicon_list, []) do
+      # First update - inserts the item
       @crawler.send(:update, @feed, source)
-      items = @crawler.send(:build_items, @feed, parsed)
+
+      # Parse again and build items
+      parser = Fastladder::FeedParser.new
+      parse_result = parser.parse(atom_body, base_url: @feed.feedlink)
+      items = parse_result.items.map do |parsed_item|
+        item = Item.new(parsed_item.to_item_attributes(feed_id: @feed.id))
+        item.create_digest
+        item
+      end
+
       count = @crawler.send(:new_items_count, @feed, items)
       assert_equal 0, count
     end

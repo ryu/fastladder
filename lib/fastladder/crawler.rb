@@ -18,6 +18,8 @@ module Fastladder
     CRAWL_NOW = 10
     GETA = [12307].pack("U")
 
+    attr_reader :fetcher, :parser
+
     def self.start(options = {})
       logger = options[:logger]
 
@@ -28,11 +30,27 @@ module Fastladder
       end
 
       logger.warn '=> Booting FeedFetcher...'
-      self.new(logger).run
+      self.new(logger, fetcher: options[:fetcher], parser: options[:parser]).run
     end
 
-    def initialize(logger)
+    def initialize(logger, fetcher: nil, parser: nil)
       @logger = logger
+      @fetcher = fetcher || build_default_fetcher
+      @parser = parser || build_default_parser
+    end
+
+    private def build_default_fetcher
+      Fastladder::Fetcher.new(
+        logger: @logger,
+        max_retries: 2,
+        rate_limit_delay: 0.5,
+        open_timeout: Fastladder.http_open_timeout,
+        read_timeout: Fastladder.http_read_timeout
+      )
+    end
+
+    private def build_default_parser
+      Fastladder::FeedParser.new(logger: @logger)
     end
 
     def run
@@ -44,53 +62,54 @@ module Fastladder
     end
 
     def crawl(feed)
-      response = nil
       result = {
         message: '',
         error: false,
         response_code: nil,
       }
+
+      current_url = feed.feedlink
+      modified_since = feed.modified_on
+
       REDIRECT_LIMIT.times do
-        begin
-          @logger.info "fetch: #{feed.feedlink}"
-          response = Fastladder.fetch(feed.feedlink, modified_on: feed.modified_on)
-        end
-        @logger.info "HTTP status: [#{response.code}] #{feed.feedlink}"
-        case response
-        when Net::HTTPNotModified
+        @logger.info "fetch: #{current_url}"
+        fetch_result = fetcher.fetch(current_url, modified_since: modified_since)
+        @logger.info "HTTP status: [#{fetch_result.status_code}] #{current_url}"
+
+        if fetch_result.not_modified?
+          result[:response_code] = fetch_result.status_code
           break
-        when Net::HTTPSuccess
-          ret = update(feed, response)
+
+        elsif fetch_result.success?
+          ret = update(feed, fetch_result.response)
           result[:message] = "#{ret[:new_items]} new items, #{ret[:updated_items]} updated items"
+          result[:response_code] = fetch_result.status_code
           break
-        when Net::HTTPClientError, Net::HTTPServerError
-          result[:message] = "Error: #{response.code} #{response.message}"
-          result[:error] = true
-          break
-        # when Net::HTTPUnauthorized
-        #   ...
-        #   break
-        # when Net::HTTPMovedPermanently
-        #   if crawl_status.http_status == 301  # Moved Permanently
-        #     if crawl_status.response_changed_on < 1.week.ago
-        #       feed.feedlink = feedlink
-        #       modified_on = nil
-        #     end
-        #   end
-        #   break
-        when Net::HTTPRedirection
-          @logger.info "Redirect: #{feed.feedlink} => #{response["location"]}"
-          feed.feedlink = URI.join(feed.feedlink, response["location"])
+
+        elsif fetch_result.redirect?
+          redirect_url = fetch_result.redirect_url
+          @logger.info "Redirect: #{current_url} => #{redirect_url}"
+          feed.feedlink = redirect_url
           feed.modified_on = nil
           feed.save
-        else
-          # HTTPUnknownResponse, HTTPInformation
-          result[:message] = "Error: #{response.code} #{response.message}"
+          current_url = redirect_url
+          modified_since = nil
+
+        elsif fetch_result.error?
+          result[:message] = "Error: #{fetch_result.error_message}"
           result[:error] = true
+          result[:response_code] = fetch_result.status_code
+          break
+
+        else
+          # Unknown response type
+          result[:message] = "Error: Unknown response #{fetch_result.status_code}"
+          result[:error] = true
+          result[:response_code] = fetch_result.status_code
           break
         end
       end
-      result[:response_code] = response.code.to_i
+
       result
     end
 
@@ -137,12 +156,15 @@ module Fastladder
         updated_items: 0,
         error: nil
       }
-      unless parsed = Feedjira.parse(source.body)
-        result[:error] = 'Cannot parse feed'
+
+      parse_result = parser.parse(source.body, base_url: feed.feedlink)
+      unless parse_result.success?
+        result[:error] = parse_result.error
         return result
       end
 
-      items = build_items(feed, parsed)
+      @logger.info "parsed: [#{parse_result.item_count} items] #{feed.feedlink}"
+      items = build_items_from_parsed(feed, parse_result.items)
 
       items = cut_off(feed, items)
       items = reject_duplicated(feed, items)
@@ -151,7 +173,7 @@ module Fastladder
         delete_old_items_if_new_items_are_many(feed, items)
         update_or_insert_items_to_feed(feed, items, result)
         update_unread_status(feed, result)
-        update_feed_information(feed, parsed)
+        update_feed_information(feed, parse_result.feed_info)
         feed.save!
       end
 
@@ -161,41 +183,12 @@ module Fastladder
       result
     end
 
-    def build_items(feed, parsed)
-      @logger.info "parsed: [#{parsed.entries.size} items] #{feed.feedlink}"
-      parsed.entries.map { |item|
-        new_item = Item.new({
-                             feed_id: feed.id,
-                             link: item.url || "",
-                             guid: item.id,
-                             title: item.title || "",
-                             body: fixup_relative_links(feed.feedlink, item.content || item.summary, logger: @logger),
-                             author: item.author,
-                             category: item.try(:categories).try!(:first),
-                             enclosure: nil,
-                             enclosure_type: nil,
-                             stored_on: Time.now,
-                             modified_on: item.published ? item.published.to_datetime : nil,
-                            })
+    def build_items_from_parsed(feed, parsed_items)
+      parsed_items.map do |parsed_item|
+        new_item = Item.new(parsed_item.to_item_attributes(feed_id: feed.id))
         new_item.create_digest
         new_item
-      }
-    end
-
-    def fixup_relative_links(feedlink, body, logger: nil)
-      doc = Nokogiri::HTML.fragment(body)
-      links = doc.css('a[href]')
-      return body if links.empty?
-
-      links.each do |link|
-        begin
-          link['href'] = Addressable::URI.join(feedlink, link['href']).normalize.to_s
-        rescue Addressable::URI::InvalidURIError
-          logger&.info "Invalid URL in link: [#{link['href']}] #{feedlink}"
-        end
       end
-
-      doc.to_html
     end
 
     def cut_off(feed, items)
@@ -246,10 +239,10 @@ module Fastladder
       Subscription.where(feed_id: feed.id).update_all(has_unread: true)
     end
 
-    def update_feed_information(feed, parsed)
-      feed.title = parsed.title if parsed.title.present?
-      feed.link = parsed.url if parsed.url.present?
-      feed.description = parsed.description || ""
+    def update_feed_information(feed, feed_info)
+      feed.title = feed_info[:title] if feed_info[:title].present?
+      feed.link = feed_info[:link] if feed_info[:link].present?
+      feed.description = feed_info[:description] || ""
     end
 
     def almost_same(str1, str2)

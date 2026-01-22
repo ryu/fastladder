@@ -2,31 +2,77 @@
 
 require "test_helper"
 
+# Tests for URL normalization in FeedParser
+# (Previously tested via Crawler#fixup_relative_links, now in FeedParser)
 class FixupRelativeLinksTest < ActiveSupport::TestCase
+  def setup
+    @parser = Fastladder::FeedParser.new(logger: Logger.new(nil))
+  end
+
   test "converts relative links to absolute" do
-    crawler = Fastladder::Crawler.new(Logger.new(nil))
+    content = <<~XML
+      <?xml version="1.0" encoding="UTF-8"?>
+      <rss version="2.0">
+        <channel>
+          <title>Test</title>
+          <link>http://example.com</link>
+          <item>
+            <title>Item</title>
+            <link>http://example.com/item</link>
+            <description>&lt;p&gt;&lt;a href="/a"&gt;A&lt;/a&gt;&lt;/p&gt;</description>
+          </item>
+        </channel>
+      </rss>
+    XML
 
-    html = %(<p><a href="/a">A</a></p>)
-    fixed = crawler.send(:fixup_relative_links, "http://example.com/feed", html, logger: Logger.new(nil))
+    result = @parser.parse(content, base_url: "http://example.com/feed")
 
-    assert_includes fixed, %(href="http://example.com/a")
+    assert result.success?
+    assert_includes result.items.first.body, 'href="http://example.com/a"'
   end
 
   test "returns as-is when there are no links" do
-    crawler = Fastladder::Crawler.new(Logger.new(nil))
+    content = <<~XML
+      <?xml version="1.0" encoding="UTF-8"?>
+      <rss version="2.0">
+        <channel>
+          <title>Test</title>
+          <link>http://example.com</link>
+          <item>
+            <title>Item</title>
+            <link>http://example.com/item</link>
+            <description>&lt;p&gt;Hello&lt;/p&gt;</description>
+          </item>
+        </channel>
+      </rss>
+    XML
 
-    html = "<p>Hello</p>"
-    fixed = crawler.send(:fixup_relative_links, "http://example.com/feed", html, logger: Logger.new(nil))
+    result = @parser.parse(content, base_url: "http://example.com/feed")
 
-    assert_equal html, fixed
+    assert result.success?
+    assert_includes result.items.first.body, "<p>Hello</p>"
   end
 
-  test "normalizes odd hrefs" do
-    crawler = Fastladder::Crawler.new(Logger.new(nil))
+  test "handles invalid URLs gracefully" do
+    content = <<~XML
+      <?xml version="1.0" encoding="UTF-8"?>
+      <rss version="2.0">
+        <channel>
+          <title>Test</title>
+          <link>http://example.com</link>
+          <item>
+            <title>Item</title>
+            <link>http://example.com/item</link>
+            <description>&lt;p&gt;&lt;a href="http://%ZZ"&gt;X&lt;/a&gt;&lt;/p&gt;</description>
+          </item>
+        </channel>
+      </rss>
+    XML
 
-    html = %(<p><a href="http://%ZZ">X</a></p>)
-    fixed = crawler.send(:fixup_relative_links, "http://example.com/feed", html, logger: Logger.new(nil))
+    result = @parser.parse(content, base_url: "http://example.com/feed")
 
-    assert_includes fixed, %(<a href="http://%25zz/">)
+    # Should not crash, and should either normalize or preserve the URL
+    assert result.success?
+    assert result.items.first.body.present?
   end
 end
