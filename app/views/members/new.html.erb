@@ -1,0 +1,33 @@
+<% @title = "Create new account" %>
+<div id="content">
+  <h2>Create new account</h2>
+  <%= flash[:error] %>
+  <%= form_for :member, url: members_path, html: { data: { controller: "password-match form-validation", action: "submit->form-validation#validate" } } do |f| %>
+    <dl>
+      <dt>
+        <label for="member_username">Username</label>
+      </dt>
+      <dd>
+        <%= f.text_field :username, data: { form_validation_target: "field", required: "true", field_name: "Username" } %>
+        <span class="field-error" data-form-validation-target="error" data-for="member_username"></span>
+      </dd>
+      <dt>
+        <label for="member_password">Password</label>
+      </dt>
+      <dd>
+        <%= f.password_field :password, data: { password_match_target: "password", action: "input->password-match#validate", form_validation_target: "field", required: "true", field_name: "Password" } %>
+        <span class="field-error" data-form-validation-target="error" data-for="member_password"></span>
+      </dd>
+      <dt>
+        <label for="member_password_confirmation">Confirm Password</label>
+      </dt>
+      <dd>
+        <%= f.password_field :password_confirmation, data: { password_match_target: "confirmation", action: "input->password-match#validate", form_validation_target: "field", required: "true", field_name: "Password confirmation" } %>
+        <span class="field-error" data-form-validation-target="error" data-for="member_password_confirmation"></span>
+        <span class="password-match-message" data-password-match-target="message"></span>
+      </dd>
+    </dl>
+    <div class="submit"><%= submit_tag "Sign Up", data: { password_match_target: "submit", form_validation_target: "submit", loading_text: "Creating account..." } %></div>
+  <% end %>
+  <div class="section"><%= link_to "Back to Sign In", "/login" %></div>
+</div>

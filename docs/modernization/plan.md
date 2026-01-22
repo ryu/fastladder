@@ -142,7 +142,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ### Step A: 画面整理（土台）
 - [ ] layout/partials の整理
 - [ ] フォーム・フラッシュ・エラー表示の標準化
-- [x] HAML から ERB への変換（一部実施）
+- [x] HAML から ERB への変換（全て完了、haml gem 削除）
 
 ### Step B: Turbo 化（価値の高い操作から）
 - [ ] 購読追加/削除
@@ -186,6 +186,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-22 (HAML→ERB)
+- 全 HAML ファイルを ERB に変換（6ファイル）
+- haml gem を削除
+- 変換対象: layout, sessions/new, members/new, account/apikey, mobile/index, contents/configure
 
 ### 2026-01-22 (Hotwire Step 6)
 - clipboard_controller.js 追加

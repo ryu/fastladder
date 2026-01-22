@@ -19,7 +19,6 @@ end
 gem 'addressable', require: 'addressable/uri'
 gem 'feed_searcher', git: 'https://github.com/fastladder/feed_searcher'
 gem 'feedjira'
-gem 'haml'
 gem 'jbuilder', '~> 2.13'
 gem 'mini_magick'
 gem 'nokogiri'

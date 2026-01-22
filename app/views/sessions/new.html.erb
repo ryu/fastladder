@@ -1,0 +1,27 @@
+<% @title = "Login" %>
+<div id="content">
+  <h2>Sign in</h2>
+  <%= form_tag session_path, data: { controller: "form-validation", action: "submit->form-validation#validate" } do %>
+    <dl>
+      <dt>
+        <label for="username">Username</label>
+      </dt>
+      <dd>
+        <%= text_field_tag "username", nil, data: { form_validation_target: "field", required: "true", field_name: "Username" } %>
+        <span class="field-error" data-form-validation-target="error" data-for="username"></span>
+      </dd>
+      <dt>
+        <label for="password">Password</label>
+      </dt>
+      <dd>
+        <%= password_field_tag "password", nil, data: { form_validation_target: "field", required: "true", field_name: "Password" } %>
+        <span class="field-error" data-form-validation-target="error" data-for="password"></span>
+      </dd>
+    </dl>
+    <div class="submit"><%= submit_tag "Sign In", data: { form_validation_target: "submit", loading_text: "Signing in..." } %></div>
+  <% end %>
+  <div class="section">
+    <%= link_to "Create new account", "/signup" %>
+  </div>
+  <div style="clear: both"></div>
+</div>
