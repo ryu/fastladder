@@ -54,6 +54,11 @@ gem "http", "~> 5.3"
 
 gem "propshaft", "~> 1.3.1"
 
+# Hotwire (Turbo + Stimulus)
+gem "turbo-rails", "~> 2.0"
+gem "stimulus-rails", "~> 1.3"
+gem "importmap-rails", "~> 2.1"
+
 gem "ostruct", "~> 0.6.3"
 
 gem "stringio", "3.2.0"

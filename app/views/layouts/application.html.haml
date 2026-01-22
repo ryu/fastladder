@@ -8,6 +8,7 @@
     = stylesheet_link_tag "common"
     = stylesheet_link_tag "style"
     = stylesheet_link_tag "main"
+    = javascript_importmap_tags
 
     - if content_for? :extract_header
       = yield :extract_header

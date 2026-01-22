@@ -126,11 +126,18 @@ SQLite 前提で長期運用に耐える。
 
 ---
 
-## 7. フロントを Hotwire へ段階置換 📋 未着手
+## 7. フロントを Hotwire へ段階置換 🔄 進行中
 
 ### 原則
 UI刷新はアップグレード完了後に「小さく」やる。
 最終到達点は Turbo/Stimulus（Hotwire）。
+**重要**: 既存の LDR JavaScript との衝突を避けるため、段階的に進める。
+
+### Step 0: Hotwire 土台（安全に導入）
+- [x] turbo-rails, stimulus-rails, importmap-rails gem 追加
+- [x] Turbo Drive をグローバルで無効化（既存JSとの衝突回避）
+- [x] importmap 設定
+- [ ] 隔離されたページで最初の Stimulus controller
 
 ### Step A: 画面整理（土台）
 - [ ] layout/partials の整理
@@ -173,12 +180,18 @@ UI刷新はアップグレード完了後に「小さく」やる。
 | M3 | ✅ 完了 | 依存更新の健全化（上げられる状態） |
 | M4 | ✅ 完了 | Rails 8.1 到達（web/crawler/foremanで動作） |
 | M5 | ✅ 完了 | crawler 境界化 + テスト + 安全運用 |
-| M6 | 📋 未着手 | Hotwire 置換（重要操作から） |
+| M6 | 🔄 進行中 | Hotwire 置換（重要操作から） |
 | M7 | 🔄 進行中 | 互換レイヤ撤去 + ドキュメント完備 |
 
 ---
 
 ## 進行ログ
+
+### 2026-01-22 (Hotwire 土台)
+- Hotwire gem 追加（turbo-rails, stimulus-rails, importmap-rails）
+- Turbo Drive をグローバルで無効化（既存 LDR JavaScript との衝突回避）
+- importmap 設定、Stimulus controllers ディレクトリ構成
+- 既存機能への影響なし（全テストパス）
 
 ### 2026-01-22 (後半)
 - Idempotency 実装完了
