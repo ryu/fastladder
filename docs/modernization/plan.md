@@ -187,6 +187,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-22 (Hotwire Step 6)
+- clipboard_controller.js 追加
+- API キーページにコピーボタン追加
+- クリップボード API + フォールバック対応
+
 ### 2026-01-22 (Hotwire Step 5)
 - パスワード変更ページに form_validation + password_match 適用
 - 新パスワードと確認の一致チェック
