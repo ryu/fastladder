@@ -2,6 +2,7 @@
 <link href='https://unpkg.com/sakura.css/css/sakura.css' media='screen' rel='stylesheet' type='text/css'>
 <meta content='width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
 
+<div data-controller="hotkey" data-hotkey-key-value="s">
 <h1>
   <img src="/img/logo_small.gif" alt="Fastladder">
 </h1>
@@ -22,13 +23,18 @@
       </li>
     <% end %>
     <li>
+      <% if subscription == @subscriptions.first %>
+      <a class="feed" href="/mobile/<%= subscription.id %>" data-hotkey-target="trigger">
+      <% else %>
       <a class="feed" href="/mobile/<%= subscription.id %>">
+      <% end %>
         <%= subscription.feed.title %>
         (<%= subscription.unread_count > 200 ? 200 : subscription.unread_count %>)
       </a>
     </li>
   <% end %>
 </ul>
+</div>
 
 <style>
   body {
@@ -36,12 +42,3 @@
     margin: 0 auto;
   }
 </style>
-
-<script>
-  // if press s, read first feed
-  window.addEventListener('keyup', (e)=> {
-    if(e.key === 's') {
-      document.querySelector('.feed').click();
-    }
-  });
-</script>
