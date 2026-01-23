@@ -29,7 +29,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
 
     @feed.feedlink = "http://example.com/private.atom"
     @feed.save!
-    @feed.stub(:favicon_list, []) do
+    @feed.stub(:favicon_candidates, []) do
       @crawler.send(:update, @feed, source)
     end
 
@@ -61,7 +61,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
 
     @feed.feedlink = "http://example.com/private.atom"
     @feed.save!
-    @feed.stub(:favicon_list, []) do
+    @feed.stub(:favicon_candidates, []) do
       count = @crawler.send(:new_items_count, @feed, items)
       assert_equal 1, count
     end
@@ -73,7 +73,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
 
     @feed.feedlink = "http://example.com/private.atom"
     @feed.save!
-    @feed.stub(:favicon_list, []) do
+    @feed.stub(:favicon_candidates, []) do
       # First update - inserts the item
       @crawler.send(:update, @feed, source)
 

@@ -194,6 +194,18 @@ class Member < ActiveRecord::Base
     end
   end
 
+  # フォルダを名前またはIDで検索
+  def find_folder_by_name_or_id(identifier)
+    return nil if identifier.blank?
+    folders.find_by(name: identifier) || folders.find_by(id: identifier.to_i)
+  end
+
+  # フォルダIDが有効かチェック
+  def valid_folder_id?(folder_id)
+    id = folder_id.to_i
+    id > 0 && folders.exists?(id)
+  end
+
   protected
 
   # before filter

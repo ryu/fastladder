@@ -15,29 +15,26 @@
 #  updated_on        :datetime         not null
 #
 
-# require "fastladder/crawler"
-require "open-uri"
-require "tempfile"
-
 class Feed < ActiveRecord::Base
+  include Feed::Crawlable
+  include Feed::FaviconFetchable
+
   has_one :crawl_status
   has_one :favicon
   has_many :items
   has_many :subscriptions
-  # has_many :members, through: :subscriptions
-  # has_many :folders, through: :subscriptions
 
   before_save :except_fragment_identifier, :default_values
 
   attr_accessor :subscribe_id
 
-  scope :has_subscriptions, ->{ where("subscribers_count > 0") }
-  scope :crawlable, ->{
-    includes(:crawl_status).
-      joins(:crawl_status).
-      has_subscriptions.
-      merge(CrawlStatus.status_ok).
-      merge(CrawlStatus.expired(Settings.crawl_interval.minutes))
+  scope :has_subscriptions, -> { where("subscribers_count > 0") }
+  scope :crawlable, -> {
+    includes(:crawl_status)
+      .joins(:crawl_status)
+      .has_subscriptions
+      .merge(CrawlStatus.status_ok)
+      .merge(CrawlStatus.expired(Settings.crawl_interval.minutes))
   }
 
   def description
@@ -90,71 +87,6 @@ class Feed < ActiveRecord::Base
   def update_subscribers_count
     logger.warn "subscribers: #{self.subscribers_count}"
     self.update_attribute(:subscribers_count, self.subscriptions.size)
-  end
-
-  def crawl
-    return if crawl_status.status != Fastladder::Crawler::CRAWL_OK
-    crawl_status.update_attribute(:status, Fastladder::Crawler::CRAWL_NOW)
-    begin
-      crawler = Fastladder::Crawler.new(logger)
-      crawler.crawl(self)
-    rescue
-      logger.error "Crawler error: #{$!}"
-    ensure
-      crawl_status.update_attribute(:status, Fastladder::Crawler::CRAWL_OK)
-    end
-  end
-
-  def fetch_favicon!
-    self.favicon ||= Favicon.new(feed: self)
-    favicon_list.each do |uri|
-      next unless response = URI.open(uri.to_s) rescue nil # ensure timeout
-      next if response.status.last.to_i >= 400
-      # MiniMagick will determine the image type from extension of file name
-      ext = response.meta["content-type"] == 'image/vnd.microsoft.icon' ? ".ico" : File.basename(uri.to_s)
-      tmp = Tempfile.new(["favicon", ext])
-      tmp.binmode
-      tmp.write response.read
-      tmp.close
-      buf = StringIO.new
-      begin
-        image = MiniMagick::Image.open(tmp.path)
-        image.resize "16x16"
-        image.format "png"
-        image.write(buf)
-        buf.rewind
-        blob = buf.read.force_encoding('ascii-8bit')
-        self.favicon.image = blob
-        self.favicon.save
-        break
-      rescue MiniMagick::Invalid, MiniMagick::Error => e
-        Rails.logger.error("#{e.class} (#{e.message}")
-        next
-      ensure
-        tmp.close!
-      end
-    end
-  end
-
-  def favicon_list
-    xml = Fastladder.simple_fetch(feedlink)
-    doc = Nokogiri::XML.parse(xml)
-    uri_list = []
-
-    doc.xpath("//link[@href and (@rel='shortcut icon' or @rel='icon')]/@href").each do |href|
-      uri_list << Addressable::URI.join(feedlink, href.text).normalize
-    end
-
-    if uri_list.empty?
-      doc = Nokogiri::HTML.parse(Fastladder.simple_fetch(link))
-      doc.xpath('//link[@href and (@rel="shortcut icon" or @rel="icon")]/@href').each do |href|
-        uri_list << Addressable::URI.join(link, href.text).normalize
-      end
-    end
-
-    uri_list << Addressable::URI.join(feedlink, "/favicon.ico").normalize
-    uri_list << Addressable::URI.join(link, "/favicon.ico").normalize
-    uri_list.uniq
   end
 
   def avg_rate

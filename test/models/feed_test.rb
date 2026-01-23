@@ -70,7 +70,7 @@ class FeedTest < ActiveSupport::TestCase
     feed = create_feed
     favicon = File.read(Rails.root.join("test/fixtures/favicon.ico"))
     stub_request(:any, /.*/).to_return(body: favicon, headers: { "Content-Type" => "image/vnd.microsoft.icon" })
-    feed.stub :favicon_list, [Addressable::URI.parse("http://example.com/favicon?file=favicon.gif")] do
+    feed.stub :favicon_candidates, [Addressable::URI.parse("http://example.com/favicon?file=favicon.gif")] do
       feed.fetch_favicon!
       assert feed.favicon.image.start_with?("\x89PNG\r\n".b)
     end
@@ -103,7 +103,7 @@ class FeedTest < ActiveSupport::TestCase
       HTML
     )
     stub_request(:get, feed.feedlink).to_return(body: "")
-    assert_includes feed.favicon_list, favicon_url
+    assert_includes feed.send(:favicon_candidates), favicon_url
   end
 
   test "crawlable includes ok feed with crawl_status" do

@@ -23,10 +23,10 @@ class Subscription < ActiveRecord::Base
   after_create  :update_subscribers_count
   after_destroy :update_subscribers_count
 
-  scope :open, ->{ where(public: true) }
-  scope :has_unread, ->{ where(has_unread: true) }
-  scope :recent, ->(num){ order("created_on DESC").limit(num) }
-  scope :with_unread_count, ->{
+  scope :open, -> { where(public: true) }
+  scope :has_unread, -> { where(has_unread: true) }
+  scope :recent, ->(num) { order("created_on DESC").limit(num) }
+  scope :with_unread_count, -> {
     sql = <<~SQL.squish
       subscriptions.*,
       (SELECT count(0) FROM items
@@ -35,6 +35,15 @@ class Subscription < ActiveRecord::Base
     SQL
     select(sql)
   }
+
+  # 個別更新: パラメータに基づいて設定を適用
+  def apply_settings(rate: nil, is_public: nil, folder_id: nil, ignore_notify: nil)
+    self.rate = rate if rate && (0..5).cover?(rate)
+    self.public = is_public unless is_public.nil?
+    self.folder_id = folder_id if folder_id
+    self.ignore_notify = ignore_notify unless ignore_notify.nil?
+    save if changed?
+  end
 
   def update_public_fields
     self.public ||= false
