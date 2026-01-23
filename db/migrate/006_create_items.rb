@@ -16,7 +16,7 @@ class CreateItems < ActiveRecord::Migration[4.2]
       t.datetime :created_on, null: false
       t.datetime :updated_on, null: false
     end
-    add_index :items, [:feed_id, :link], unique: true
+    add_index :items, %i[feed_id link], unique: true
   end
 
   def self.down

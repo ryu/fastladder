@@ -8,6 +8,7 @@ class ImportControllerTest < ActionController::TestCase
   test "POST fetch calls simple_fetch" do
     Fastladder.stub :simple_fetch, "<opml/>" do
       post :fetch, params: { url: "http://example.com" }, session: { member_id: @member.id }
+
       assert_response :success
     end
   end
@@ -16,6 +17,7 @@ class ImportControllerTest < ActionController::TestCase
     opml_content = File.read(Rails.root.join("test/stubs/opml"))
     Fastladder.stub :simple_fetch, opml_content do
       post :fetch, params: { url: "http://example.com" }, session: { member_id: @member.id }
+
       assert_includes assigns[:folders].keys, "Subscriptions"
     end
   end
@@ -25,6 +27,7 @@ class ImportControllerTest < ActionController::TestCase
     Fastladder.stub :simple_fetch, opml_content do
       post :fetch, params: { url: "http://example.com" }, session: { member_id: @member.id }
       item = assigns[:folders]["Subscriptions"][0]
+
       assert_equal "Recent Commits to fastladder:master", item[:title]
       assert_equal "https://github.com/fastladder/fastladder/commits/master", item[:link]
       assert_equal "https://github.com/fastladder/fastladder/commits/master.atom", item[:feedlink]

@@ -14,10 +14,13 @@ class Api::Subscriptions::FoldersControllerTest < ActionDispatch::IntegrationTes
     post "/api/feed/move",
          params: { subscribe_id: @subscription.id, to: @folder.name },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert json["isSuccess"]
     @subscription.reload
+
     assert_equal @folder.id, @subscription.folder_id
   end
 
@@ -25,10 +28,13 @@ class Api::Subscriptions::FoldersControllerTest < ActionDispatch::IntegrationTes
     post "/api/feed/move",
          params: { subscribe_id: @subscription.id, to: @folder.id.to_s },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert json["isSuccess"]
     @subscription.reload
+
     assert_equal @folder.id, @subscription.folder_id
   end
 
@@ -39,9 +45,11 @@ class Api::Subscriptions::FoldersControllerTest < ActionDispatch::IntegrationTes
     post "/api/feed/move",
          params: { subscribe_id: "#{@subscription.id},#{sub2.id}", to: @folder.name },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     @subscription.reload
     sub2.reload
+
     assert_equal @folder.id, @subscription.folder_id
     assert_equal @folder.id, sub2.folder_id
   end
@@ -51,8 +59,10 @@ class Api::Subscriptions::FoldersControllerTest < ActionDispatch::IntegrationTes
     post "/api/feed/move",
          params: { subscribe_id: @subscription.id, to: "nonexistent" },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     @subscription.reload
+
     assert_nil @subscription.folder_id
   end
 

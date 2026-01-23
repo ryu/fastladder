@@ -3,9 +3,9 @@ class SubscribeController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:subscribe]
 
   def index
-    if params[:url].present?
-      return self.confirm
-    end
+    return unless params[:url].present?
+
+    confirm
   end
 
   def confirm
@@ -22,11 +22,12 @@ class SubscribeController < ApplicationController
       end
       feed = Feed.initialize_from_uri(feedlink)
       next unless feed
+
       feeds << feed
     end
     if feeds.empty?
       flash[:notice] = "please check URL"
-      return (redirect_to action: "index")
+      return redirect_to action: "index"
     end
     @feeds = feeds
     render action: "confirm", formats: [:html]
@@ -35,7 +36,7 @@ class SubscribeController < ApplicationController
   def subscribe
     unless params[:check_for_subscribe]
       flash[:notice] = "please check for subscribe"
-      return (redirect_to action: "confirm", url: params[:url])
+      return redirect_to action: "confirm", url: params[:url]
     end
     options = {
       public: params[:public],

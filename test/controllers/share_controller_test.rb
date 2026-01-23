@@ -9,18 +9,21 @@ class ShareControllerTest < ActionDispatch::IntegrationTest
 
   test "GET index requires login" do
     get "/share"
+
     assert_redirected_to "/login"
   end
 
   test "GET index renders when logged in" do
     login_as(@member, password: "password")
     get "/share"
+
     assert_response :success
   end
 
   test "GET index assigns current member" do
     login_as(@member, password: "password")
     get "/share"
+
     assert_response :success
     # Verify the view can access current_member (implicit through controller)
   end

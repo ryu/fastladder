@@ -1,7 +1,7 @@
 require "test_helper"
 
 class Api::FolderRoutingTest < ActionDispatch::IntegrationTest
-  %w(create update delete).each do |name|
+  %w[create update delete].each do |name|
     test "routes #{name}" do
       assert_routing(
         { method: "post", path: "/api/folder/#{name}" },

@@ -12,7 +12,7 @@ class CreateCrawlStatuses < ActiveRecord::Migration[4.2]
       t.datetime :created_on, null: false
       t.datetime :updated_on, null: false
     end
-    add_index :crawl_statuses, [:status, :crawled_on]
+    add_index :crawl_statuses, %i[status crawled_on]
   end
 
   def self.down

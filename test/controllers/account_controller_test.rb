@@ -10,12 +10,14 @@ class AccountControllerTest < ActionDispatch::IntegrationTest
   # Password page tests
   test "GET password requires login" do
     get "/account/password"
+
     assert_redirected_to "/login"
   end
 
   test "GET password renders form when logged in" do
     login_as(@member, password: "password")
     get "/account/password"
+
     assert_response :success
   end
 
@@ -28,6 +30,7 @@ class AccountControllerTest < ActionDispatch::IntegrationTest
         new_password_confirmation: "newpass123"
       }
     }
+
     assert_response :success
   end
 
@@ -40,8 +43,10 @@ class AccountControllerTest < ActionDispatch::IntegrationTest
         new_password_confirmation: "newpass123"
       }
     }
+
     assert_response :success
     @member.reload
+
     assert @member.authenticated?("newpass123")
   end
 
@@ -54,18 +59,21 @@ class AccountControllerTest < ActionDispatch::IntegrationTest
         new_password_confirmation: "different"
       }
     }
+
     assert_response :success
   end
 
   # API key page tests
   test "GET apikey requires login" do
     get "/account/apikey"
+
     assert_redirected_to "/login"
   end
 
   test "GET apikey renders form when logged in" do
     login_as(@member, password: "password")
     get "/account/apikey"
+
     assert_response :success
   end
 
@@ -73,8 +81,10 @@ class AccountControllerTest < ActionDispatch::IntegrationTest
     assert_nil @member.auth_key
     login_as(@member, password: "password")
     post "/account/apikey"
+
     assert_response :success
     @member.reload
+
     assert_not_nil @member.auth_key
     assert_predicate @member.auth_key.length, :positive?
   end
@@ -85,6 +95,7 @@ class AccountControllerTest < ActionDispatch::IntegrationTest
     login_as(@member, password: "password")
     post "/account/apikey"
     @member.reload
+
     assert_not_equal old_key, @member.auth_key
   end
 

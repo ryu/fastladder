@@ -9,9 +9,9 @@ class LoginTest < ApplicationSystemTestCase
   end
 
   test "can create new member" do
-
     assert_equal 0, Member.count
     visit "/"
+
     assert_current_path "/signup"
 
     fill_in "member[username]", with: "newuser"
@@ -25,6 +25,7 @@ class LoginTest < ApplicationSystemTestCase
     assert_equal 1, Member.count
 
     member = Member.first
+
     assert_equal "newuser", member.username
 
     assert_equal member.id, Member.authenticate("newuser", "newpassword").id
@@ -32,6 +33,7 @@ class LoginTest < ApplicationSystemTestCase
 
   test "if member is existing, can login" do
     Member.create!(username: "dankogai", password: "kogaidan", password_confirmation: "kogaidan")
+
     assert Member.authenticate("dankogai", "kogaidan")
 
     visit "/"

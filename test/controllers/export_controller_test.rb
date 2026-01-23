@@ -15,12 +15,14 @@ class ExportControllerTest < ActionDispatch::IntegrationTest
 
   test "GET opml requires login" do
     get "/export/opml"
+
     assert_redirected_to "/login"
   end
 
   test "GET opml returns XML content type" do
     login_as(@member, password: "password")
     get "/export/opml"
+
     assert_response :success
     assert_equal "application/xml; charset=utf-8", response.content_type
   end
@@ -28,9 +30,11 @@ class ExportControllerTest < ActionDispatch::IntegrationTest
   test "GET opml returns valid OPML structure" do
     login_as(@member, password: "password")
     get "/export/opml"
+
     assert_response :success
 
     xml = response.body
+
     assert_includes xml, '<?xml version="1.0"'
     assert_includes xml, "<opml"
     assert_includes xml, "<head>"
@@ -40,9 +44,11 @@ class ExportControllerTest < ActionDispatch::IntegrationTest
   test "GET opml includes subscribed feeds" do
     login_as(@member, password: "password")
     get "/export/opml"
+
     assert_response :success
 
     xml = response.body
+
     assert_includes xml, "Test Feed"
     assert_includes xml, "http://example.com/feed.xml"
   end
@@ -53,15 +59,18 @@ class ExportControllerTest < ActionDispatch::IntegrationTest
 
     login_as(@member, password: "password")
     get "/export/opml"
+
     assert_response :success
 
     xml = response.body
+
     assert_includes xml, 'text="Tech"'
   end
 
   test "GET opml handles feeds without folder" do
     login_as(@member, password: "password")
     get "/export/opml"
+
     assert_response :success
     # Feed without folder should still be included
     assert_includes response.body, "Test Feed"
@@ -72,9 +81,11 @@ class ExportControllerTest < ActionDispatch::IntegrationTest
 
     login_as(@member, password: "password")
     get "/export/opml"
+
     assert_response :success
 
     xml = response.body
+
     assert_includes xml, "<opml"
     assert_includes xml, "<body>"
   end

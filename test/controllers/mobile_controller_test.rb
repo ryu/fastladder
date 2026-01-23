@@ -18,30 +18,35 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
   # Index tests
   test "GET index requires login" do
     get "/mobile"
+
     assert_redirected_to "/login"
   end
 
   test "GET index renders when logged in" do
     login_as(@member, password: "password")
     get "/mobile"
+
     assert_response :success
   end
 
   # Read feed tests
   test "GET read_feed requires login" do
     get "/mobile/#{@subscription.id}"
+
     assert_redirected_to "/login"
   end
 
   test "GET read_feed renders items" do
     login_as(@member, password: "password")
     get "/mobile/#{@subscription.id}"
+
     assert_response :success
   end
 
   # Mark as read tests
   test "GET mark_as_read requires login" do
     get "/mobile/#{@subscription.id}/read", params: { timestamp: Time.current.to_i }
+
     assert_redirected_to "/login"
   end
 
@@ -49,8 +54,10 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     timestamp = Time.current.to_i
     login_as(@member, password: "password")
     get "/mobile/#{@subscription.id}/read", params: { timestamp: timestamp }
+
     assert_redirected_to "/mobile"
     @subscription.reload
+
     assert_not @subscription.has_unread
     assert_equal Time.at(timestamp + 1).to_i, @subscription.viewed_on.to_i
   end
@@ -58,6 +65,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
   # Pin tests
   test "GET pin requires login" do
     get "/mobile/#{@item.id}/pin"
+
     assert_redirected_to "/login"
   end
 
@@ -69,6 +77,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to "/mobile/#{@item.feed_id}#item-#{@item.id}"
 
     pin = @member.pins.last
+
     assert_equal @item.link, pin.link
     assert_equal @item.title, pin.title
   end

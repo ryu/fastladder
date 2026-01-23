@@ -9,6 +9,7 @@ class FaviconControllerTest < ActionController::TestCase
 
   test "GET get should send favicon with existing favicon" do
     get :get, params: { feed: @feed.feedlink }
+
     assert_response :success
     assert_equal "image/png", response.content_type
     assert_includes response.headers["Content-Disposition"], "inline"
@@ -19,12 +20,14 @@ class FaviconControllerTest < ActionController::TestCase
     @feed.favicon.destroy if @feed.favicon
     @feed.reload
     get :get, params: { feed: @feed.feedlink }
+
     assert_response :success
     assert_equal "image/png", response.content_type
   end
 
   test "GET get should send default favicon when feed not found" do
     get :get, params: { feed: "nonexistent" }
+
     assert_response :success
     assert_equal "image/png", response.content_type
   end

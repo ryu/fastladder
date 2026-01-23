@@ -16,6 +16,7 @@ class RpcControllerTest < ActionController::TestCase
   # (Rails has public/404.html instead). Testing authentication logic separately.
   test "auth method sets @member when valid api_key provided" do
     post :update_feed, params: { api_key: @api_key, feedlink: @feed.feedlink, link: "http://test.com", title: "Test" }
+
     assert_response :success
     assert_equal @member.id, assigns(:member).id
   end
@@ -46,9 +47,11 @@ class RpcControllerTest < ActionController::TestCase
 
     assert_response :success
     json = response.parsed_body
+
     assert json["result"]
 
     item = Item.last
+
     assert_equal "Test Article", item.title
     assert_equal "Article body", item.body
   end
@@ -68,6 +71,7 @@ class RpcControllerTest < ActionController::TestCase
 
     assert_response :success
     feed = Feed.find_by(feedlink: new_feedlink)
+
     assert_equal "New Feed", feed.title
   end
 
@@ -129,6 +133,7 @@ class RpcControllerTest < ActionController::TestCase
   # Export tests
   test "GET export opml returns XML" do
     get :export, params: { api_key: @api_key, format: "opml" }
+
     assert_response :success
     assert_equal "application/xml; charset=utf-8", response.content_type
     assert_includes response.body, "<opml"
@@ -136,6 +141,7 @@ class RpcControllerTest < ActionController::TestCase
 
   test "GET export json returns JSON" do
     get :export, params: { api_key: @api_key, format: "json" }
+
     assert_response :success
     assert_equal "application/json; charset=utf-8", response.content_type
   end
@@ -144,6 +150,7 @@ class RpcControllerTest < ActionController::TestCase
     # Controller tries to render 'public/404' which doesn't exist as template
 
     get :export, params: { api_key: @api_key, format: "invalid" }
+
     assert_not_equal 200, response.status
   rescue ActionView::MissingTemplate => e
     assert_includes e.message, "public/404"
@@ -162,6 +169,7 @@ class RpcControllerTest < ActionController::TestCase
 
     assert_response :success
     result = response.parsed_body
+
     assert_kind_of Array, result
   end
 end

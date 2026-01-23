@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     end
 
     # RESTful subscriptions (7 actions pattern)
-    resources :subscriptions, only: [:show, :create, :update, :destroy] do
+    resources :subscriptions, only: %i[show create update destroy] do
       resource :rate, only: :update, controller: "subscriptions/rates"
     end
     # Bulk operations as singular resources
@@ -28,10 +28,10 @@ Rails.application.routes.draw do
       resources :favicons, only: :create
 
       # Legacy routes (backward compatibility)
-      match :discover, to: "discoveries#create", via: [:get, :post]
+      match :discover, to: "discoveries#create", via: %i[get post]
       post :subscribe, to: "/api/subscriptions#create"
       post :unsubscribe, to: "/api/subscriptions#destroy"
-      match :subscribed, to: "/api/subscriptions#show", via: [:get, :post]
+      match :subscribed, to: "/api/subscriptions#show", via: %i[get post]
       post :update, to: "/api/subscriptions#update"
       post :move, to: "/api/subscriptions/folders#update"
       post :set_rate, to: "/api/subscriptions/rates#update"
@@ -49,12 +49,12 @@ Rails.application.routes.draw do
     end
 
     namespace :config do
-      match :load, action: :getter, via: [:post, :get]
+      match :load, action: :getter, via: %i[post get]
       post  :save, action: :setter
     end
 
-    %w(all unread touch_all touch item_count unread_count crawl).each do |name|
-      match name, via: [:get, :post]
+    %w[all unread touch_all touch item_count unread_count crawl].each do |name|
+      match name, via: %i[get post]
     end
 
     %w[subs lite_subs error_subs folders].each do |name|
@@ -63,7 +63,7 @@ Rails.application.routes.draw do
   end
 
   # other API call routes to blank page
-  match 'api/*_' => 'application#nothing', via: [:post, :get]
+  match 'api/*_' => 'application#nothing', via: %i[post get]
 
   # --------------------------------------------------------------------------------
   # other pages
@@ -90,7 +90,7 @@ Rails.application.routes.draw do
   get 'signup', to: 'members#new', as: :sign_up
 
   resource :session, only: :create
-  get 'login', to: 'sessions#new',     as: :login
+  get 'login', to: 'sessions#new', as: :login
   get 'logout', to: 'sessions#destroy', as: :logout
 
   root to: 'reader#welcome'
@@ -127,7 +127,7 @@ Rails.application.routes.draw do
 
   namespace :rpc do
     %w[update_feed check_digest update_feeds export].each do |name|
-      match name, via: [:post, :get]
+      match name, via: %i[post get]
     end
   end
 

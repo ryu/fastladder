@@ -11,6 +11,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
     items = [build_item_with_fixed_guid, build_item_with_fixed_guid]
 
     result = @crawler.send(:reject_duplicated, @feed, items)
+
     assert_equal items.take(1), result
   end
 
@@ -20,6 +21,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
     items.each { |item| item.create_digest }
 
     result = @crawler.send(:reject_duplicated, @feed, items)
+
     assert_empty result
   end
 
@@ -36,6 +38,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
     assert_equal 1, @feed.items.count
     item = @feed.items.first
     doc = Nokogiri::HTML.fragment(item.body)
+
     assert_equal 1, doc.css('a[href="http://example.com/bundler/bundler/tree/1-9-stable"]').size
   end
 
@@ -44,6 +47,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
     @feed.items << items
 
     result = @crawler.send(:cut_off, @feed, items)
+
     assert_equal Fastladder::Crawler::ITEMS_LIMIT, result.size
   end
 
@@ -63,6 +67,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
     @feed.save!
     @feed.stub(:favicon_candidates, []) do
       count = @crawler.send(:new_items_count, @feed, items)
+
       assert_equal 1, count
     end
   end
@@ -87,6 +92,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
       end
 
       count = @crawler.send(:new_items_count, @feed, items)
+
       assert_equal 0, count
     end
   end

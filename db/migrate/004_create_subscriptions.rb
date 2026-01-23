@@ -12,7 +12,7 @@ class CreateSubscriptions < ActiveRecord::Migration[4.2]
       t.datetime :created_on, null: false
       t.datetime :updated_on, null: false
     end
-    add_index :subscriptions, [:member_id, :feed_id], unique: true
+    add_index :subscriptions, %i[member_id feed_id], unique: true
     add_index :subscriptions, :folder_id
     add_index :subscriptions, :feed_id
   end

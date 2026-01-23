@@ -4,6 +4,7 @@ class PinTest < ActiveSupport::TestCase
   test "after_create runs successfully" do
     member = create_member
     pin = Pin.new(member: member, link: "http://example.com/pin_test", title: "Test")
+
     assert pin.save
   end
 

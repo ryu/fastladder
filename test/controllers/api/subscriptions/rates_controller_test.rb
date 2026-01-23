@@ -13,10 +13,13 @@ class Api::Subscriptions::RatesControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/set_rate",
          params: { subscribe_id: @subscription.id, rate: 4 },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert json["isSuccess"]
     @subscription.reload
+
     assert_equal 4, @subscription.rate
   end
 
@@ -24,8 +27,10 @@ class Api::Subscriptions::RatesControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/set_rate",
          params: { subscribe_id: @subscription.id, rate: 10 },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     @subscription.reload
+
     assert_equal 0, @subscription.rate
   end
 
@@ -33,8 +38,10 @@ class Api::Subscriptions::RatesControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/set_rate",
          params: { rate: 3 },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_not json["isSuccess"]
   end
 

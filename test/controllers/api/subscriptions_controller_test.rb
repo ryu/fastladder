@@ -17,8 +17,10 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/subscribe",
          params: { feedlink: new_feed.feedlink },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert json["isSuccess"]
     assert json["subscribe_id"]
   end
@@ -26,8 +28,10 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
   test "POST /api/feed/subscribe fails without feedlink" do
     post "/api/feed/subscribe",
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_not json["isSuccess"]
   end
 
@@ -35,8 +39,10 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     get "/api/feed/subscribed",
         params: { subscribe_id: @subscription.id },
         headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_equal @subscription.id, json["subscribe_id"]
   end
 
@@ -44,17 +50,21 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/subscribed",
          params: { feedlink: @feed.feedlink },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_equal @subscription.id, json["subscribe_id"]
   end
 
   test "POST /api/feed/subscribed fails with invalid subscription" do
     post "/api/feed/subscribed",
-         params: { subscribe_id: 999999 },
+         params: { subscribe_id: 999_999 },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_not json["isSuccess"]
   end
 
@@ -62,10 +72,13 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/update",
          params: { subscribe_id: @subscription.id, rate: 3, folder_id: @folder.id },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert json["isSuccess"]
     @subscription.reload
+
     assert_equal 3, @subscription.rate
     assert_equal @folder.id, @subscription.folder_id
   end
@@ -74,8 +87,10 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/update",
          params: { rate: 3 },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_not json["isSuccess"]
   end
 
@@ -87,14 +102,17 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :success
     json = response.parsed_body
+
     assert json["isSuccess"]
   end
 
   test "POST /api/feed/unsubscribe fails without subscribe_id" do
     post "/api/feed/unsubscribe",
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_not json["isSuccess"]
   end
 

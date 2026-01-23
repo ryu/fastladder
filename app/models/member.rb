@@ -21,20 +21,21 @@ require "digest/sha1"
 class Member < ActiveRecord::Base
   # Virtual attribute for the unencrypted password
   attr_accessor :password
+
   serialize :config_dump, coder: YAML
 
   has_many :folders
   has_many :subscriptions
   has_many :pins
 
-  validates_presence_of :username
-  validates_presence_of :password, if: :password_required?
-  validates_presence_of :password_confirmation, if: :password_required?
-  validates_length_of :password, within: 4..40, if: :password_required?
-  validates_confirmation_of :password, if: :password_required?
-  validates_length_of :username, within: 3..40
-  validates_uniqueness_of :username, case_sensitive: false
-  validates_uniqueness_of :auth_key, allow_nil: true
+  validates :username, presence: true
+  validates :password, presence: { if: :password_required? }
+  validates :password_confirmation, presence: { if: :password_required? }
+  validates :password, length: { within: 4..40, if: :password_required? }
+  validates :password, confirmation: { if: :password_required? }
+  validates :username, length: { within: 3..40 }
+  validates :username, uniqueness: { case_sensitive: false }
+  validates :auth_key, uniqueness: { allow_nil: true }
   before_save :encrypt_password
 
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
@@ -83,26 +84,25 @@ class Member < ActiveRecord::Base
   end
 
   def default_public
-    unless self.public
-      return false
-    end
-    config = self.config_dump and status = config["default_public_status"] and (status == true or status.to_i != 0)
+    return false unless public
+
+    config = config_dump and status = config["default_public_status"] and (status == true or status.to_i != 0)
   end
 
   def subscribe_feed(feedlink, options = {})
-    if self.subscriptions.size >= Settings.subscribe_limit
-      logger.warn "SUBSCRIBE LIMIT: #{self.username}(#{self.id}) #{feedlink}"
+    if subscriptions.size >= Settings.subscribe_limit
+      logger.warn "SUBSCRIBE LIMIT: #{username}(#{id}) #{feedlink}"
       return nil
     end
 
     unless feed = Feed.find_by(feedlink: feedlink)
       if options[:quick]
         feed = Feed.create({
-          feedlink: feedlink,
-          link: feedlink,
-          title: options[:title],
-          description: ""
-        })
+                             feedlink: feedlink,
+                             link: feedlink,
+                             title: options[:title],
+                             description: ""
+                           })
         feed.create_crawl_status
       else
         feed = Feed.create_from_uri(feedlink)
@@ -112,46 +112,45 @@ class Member < ActiveRecord::Base
     options.delete(:quick)
     options.delete(:title)
 
-    if sub = self.subscriptions.find_by(feed_id: feed.id)
+    if sub = subscriptions.find_by(feed_id: feed.id)
       return sub
     end
 
-    sub = self.subscriptions.create({
+    subscriptions.create({
       feed_id: feed.id,
-      has_unread: true,
+      has_unread: true
     }.merge(options))
-    sub
   end
 
   def subscribed(feed)
-    self.subscriptions.find_by(feed_id: feed.id)
+    subscriptions.find_by(feed_id: feed.id)
   end
 
   def check_subscribed(feedlink)
-    if feed = Feed.find_by(feedlink: feedlink)
-      return self.subscribed(feed)
-    end
+    return unless feed = Feed.find_by(feedlink: feedlink)
+
+    subscribed(feed)
   end
 
   def total_subscribe_count
-    self.subscriptions.size
+    subscriptions.size
   end
 
   def public_subscribe_count
-    self.subscriptions.open.count
+    subscriptions.open.count
   end
 
   def public_subs
-    self.subscriptions.includes(:feed).open
+    subscriptions.includes(:feed).open
   end
 
   def recent_subs(num)
-    self.subscriptions.recent(num)
+    subscriptions.recent(num)
   end
 
   def set_auth_key
     self.auth_key = rand(256**16).to_s(16)
-    self.save
+    save
   end
 
   # export OPML or JSON
@@ -167,7 +166,7 @@ class Member < ActiveRecord::Base
           folder: (sub.folder ? sub.folder.name : "").utf8_roundtrip.html_escape,
           link: feed.link.html_escape,
           feedlink: feed.feedlink.html_escape,
-          title: feed.title.utf8_roundtrip.html_escape,
+          title: feed.title.utf8_roundtrip.html_escape
         }
         folder_name = item[:folder]
         folders[folder_name] ||= []
@@ -188,15 +187,16 @@ class Member < ActiveRecord::Base
           outline << SimpleOpml::Outline.new(attributes)
         end
       end
-      return opml.to_xml
+      opml.to_xml
     when 'json'
-      self.subscriptions.includes(feed: :favicon).map{|x| x.feed}.to_json
+      subscriptions.includes(feed: :favicon).map { |x| x.feed }.to_json
     end
   end
 
   # フォルダを名前またはIDで検索
   def find_folder_by_name_or_id(identifier)
     return nil if identifier.blank?
+
     folders.find_by(name: identifier) || folders.find_by(id: identifier.to_i)
   end
 
@@ -211,11 +211,12 @@ class Member < ActiveRecord::Base
   # before filter
   def encrypt_password
     return if password.blank?
-    self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{username}--") if new_record?
+
+    self.salt = Digest::SHA1.hexdigest("--#{Time.now}--#{username}--") if new_record?
     self.crypted_password = encrypt(password)
   end
 
   def password_required?
-    crypted_password.blank? || !password.blank?
+    crypted_password.blank? || password.present?
   end
 end

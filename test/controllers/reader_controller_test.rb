@@ -9,23 +9,27 @@ class ReaderControllerTest < ActionDispatch::IntegrationTest
 
   test "GET welcome requires login" do
     get "/"
+
     assert_redirected_to "/login"
   end
 
   test "GET welcome redirects to reader when logged in" do
     login_as(@member, password: "password")
     get "/"
+
     assert_redirected_to "/reader/"
   end
 
   test "GET index requires login" do
     get "/reader"
+
     assert_redirected_to "/login"
   end
 
   test "GET index renders when logged in" do
     login_as(@member, password: "password")
     get "/reader"
+
     assert_response :success
   end
 

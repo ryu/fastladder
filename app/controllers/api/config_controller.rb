@@ -15,13 +15,9 @@ class Api::ConfigController < ApplicationController
     end
     config = @member.config_dump || {}
     params.each do |key, value|
-      unless %w(action controller member_public).include? key
-        config[key] = value
-      end
+      config[key] = value unless %w[action controller member_public].include? key
     end
-    if config.to_yaml.length < 100000
-      @member.config_dump = config
-    end
+    @member.config_dump = config if config.to_yaml.length < 100_000
     @member.save
     render json: config.to_json
   end

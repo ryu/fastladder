@@ -13,10 +13,13 @@ class Api::Subscriptions::VisibilitiesControllerTest < ActionDispatch::Integrati
     post "/api/feed/set_public",
          params: { subscribe_id: @subscription.id, public: "1" },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert json["isSuccess"]
     @subscription.reload
+
     assert @subscription.public
   end
 
@@ -27,9 +30,11 @@ class Api::Subscriptions::VisibilitiesControllerTest < ActionDispatch::Integrati
     post "/api/feed/set_public",
          params: { subscribe_id: "#{@subscription.id},#{sub2.id}", public: "1" },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     @subscription.reload
     sub2.reload
+
     assert @subscription.public
     assert sub2.public
   end
@@ -38,8 +43,10 @@ class Api::Subscriptions::VisibilitiesControllerTest < ActionDispatch::Integrati
     post "/api/feed/set_public",
          params: { subscribe_id: @subscription.id, public: "invalid" },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_not json["isSuccess"]
   end
 

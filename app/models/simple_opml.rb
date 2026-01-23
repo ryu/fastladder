@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
 class SimpleOpml
   class Outline < ::SimpleOpml
-    OUTLINE_ATTRIBUTE_KEYS = [:title, :html_url, :text, :type, :xml_url]
+    OUTLINE_ATTRIBUTE_KEYS = %i[title html_url text type xml_url]
 
     def initialize(attributes = {})
       super()
@@ -33,7 +31,7 @@ class SimpleOpml
     end
 
     def to_xml
-      out = "<outline#{attributes}#{"/" unless has_children?}>"
+      out = "<outline#{attributes}#{'/' unless has_children?}>"
       if has_children?
         @outlines.each do |outline|
           out += outline.to_xml
@@ -60,18 +58,18 @@ class SimpleOpml
   end
 
   def to_xml
-    <<EOD
-<?xml version="1.0" encoding="utf-8"?>
-<opml version="1.0">
-<head>
-<title>Subscriptions</title>
-<dateCreated>#{Time.now.rfc822}</dateCreated>
-<ownerName />
-</head>
-<body>
-#{@outlines.map(&:to_xml).join("\n")}
-</body>
-</opml>
-EOD
+    <<~EOD
+      <?xml version="1.0" encoding="utf-8"?>
+      <opml version="1.0">
+      <head>
+      <title>Subscriptions</title>
+      <dateCreated>#{Time.now.rfc822}</dateCreated>
+      <ownerName />
+      </head>
+      <body>
+      #{@outlines.map(&:to_xml).join("\n")}
+      </body>
+      </opml>
+    EOD
   end
 end

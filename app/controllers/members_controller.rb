@@ -1,7 +1,6 @@
 class MembersController < ApplicationController
   # render new.rhtml
-  def new
-  end
+  def new; end
 
   def create
     cookies.delete :auth_token

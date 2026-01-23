@@ -1,9 +1,9 @@
 class ApiController < ApplicationController
   before_action :login_required_api
   params_required :subscribe_id, only: :touch_all
-  params_required [:timestamp, :subscribe_id], only: :touch
-  params_required :since, only: [:item_count, :unread_count]
-  before_action :find_sub, only: [:all, :unread]
+  params_required %i[timestamp subscribe_id], only: :touch
+  params_required :since, only: %i[item_count unread_count]
+  before_action :find_sub, only: %i[all unread]
   skip_before_action :verify_authenticity_token
 
   def all
@@ -11,16 +11,14 @@ class ApiController < ApplicationController
       limit = Settings.max_unread_count
     else
       limit = params[:limit].to_i
-      if limit <= 0 or Settings.max_unread_count < limit
-        limit = Settings.max_unread_count
-      end
+      limit = Settings.max_unread_count if limit <= 0 or Settings.max_unread_count < limit
     end
     offset = params[:offset].blank? ? 0 : params[:offset].to_i
     items = @sub.feed.items.recent(limit, offset)
     result = {
       subscribe_id: @id,
       channel: @sub.feed,
-      items: items,
+      items: items
     }
     result[:ignore_notify] = 1 if @sub.ignore_notify
     render json: result.to_json
@@ -31,11 +29,9 @@ class ApiController < ApplicationController
     result = {
       subscribe_id: @id,
       channel: @sub.feed,
-      items: items,
+      items: items
     }
-    if items.length > 0
-      result[:last_stored_on] = items.max { |a, b| a.stored_on <=> b.stored_on }.stored_on
-    end
+    result[:last_stored_on] = items.max_by(&:stored_on).stored_on if items.length > 0
     result[:ignore_notify] = 1 if @sub.ignore_notify
     render json: result.to_json
   end
@@ -73,10 +69,11 @@ class ApiController < ApplicationController
     items = []
     subscriptions = @member.subscriptions
     subscriptions = subscriptions.has_unread if params[:unread].to_i != 0
-    subscriptions.order("subscriptions.id").includes(:folder, { feed: [:crawl_status, :favicon] }).with_unread_count.each do |sub|
+    subscriptions.order("subscriptions.id").includes(:folder, { feed: %i[crawl_status favicon] }).with_unread_count.each do |sub|
       unread_count = sub.unread_count.to_i
       next if params[:unread].to_i > 0 and unread_count == 0
       next if sub.id < from_id
+
       feed = sub.feed
       modified_on = feed.modified_on
       item = {
@@ -90,17 +87,13 @@ class ApiController < ApplicationController
         link: feed.link&.html_escape,
         feedlink: feed.feedlink.html_escape,
         title: feed.title.utf8_roundtrip.html_escape,
-        icon: feed.favicon.try(:image).try!(:blank?) ? "/img/icon/default.png" : favicon_path(feed.id),
+        icon: feed.favicon.try(:image)&.blank? ? "/img/icon/default.png" : favicon_path(feed.id),
         modified_on: modified_on ? modified_on.to_time.to_i : 0,
-        subscribers_count: feed.subscribers_count,
+        subscribers_count: feed.subscribers_count
       }
-      if sub.ignore_notify
-        item[:ignore_notify] = 1
-      end
+      item[:ignore_notify] = 1 if sub.ignore_notify
       items << item
-      if limit > 0 and limit <= items.size
-        break
-      end
+      break if limit > 0 and limit <= items.size
     end
     render json: items.to_json
   end
@@ -118,20 +111,17 @@ class ApiController < ApplicationController
         link: feed.link.html_escape,
         feedlink: feed.feedlink.html_escape,
         title: feed.title.utf8_roundtrip.html_escape,
-        icon: feed.favicon.try(:image).try!(:blank?) ? "/img/icon/default.png" : favicon_path(feed.id),
+        icon: feed.favicon.try(:image)&.blank? ? "/img/icon/default.png" : favicon_path(feed.id),
         modified_on: modified_on ? modified_on.to_time.to_i : 0,
-        subscribers_count: feed.subscribers_count,
+        subscribers_count: feed.subscribers_count
       }
-      if sub.ignore_notify
-        item[:ignore_notify] = 1
-      end
+      item[:ignore_notify] = 1 if sub.ignore_notify
       items << item
     end
     render json: items.to_json
   end
 
-  def error_subs
-  end
+  def error_subs; end
 
   def folders
     names = []
@@ -143,18 +133,18 @@ class ApiController < ApplicationController
     end
     render json: {
       names: names,
-      name2id: name2id,
+      name2id: name2id
     }.to_json
   end
 
   def crawl
     success = false
-    params[:subscribe_id].to_s.split(/\s*,\s*/).each_with_index do |id, i|
+    params[:subscribe_id].to_s.split(/\s*,\s*/).each_with_index do |id, _i|
       if sub = Subscription.find(id) and sub.member_id == @member.id
         success = sub.feed.crawl
       end
     end
-    render json: {a: (success ? true : false) }.to_json
+    render json: { a: (success ? true : false) }.to_json
     # render_json_status(success ? true : false)
     # return render_json_status(success ? true : false)
   end
@@ -167,7 +157,7 @@ class ApiController < ApplicationController
       head :not_found
       return false
     end
-    return true
+    true
   end
 
   def count_items(options = {})
@@ -197,20 +187,19 @@ class ApiController < ApplicationController
     stored_on_list = subs_array.map do |sub|
       {
         subscription: sub,
-        stored_on: items_by_feed[sub.feed_id] || [],
+        stored_on: items_by_feed[sub.feed_id] || []
       }
     end
     counts = []
-    params[:since].split(/,/).each do |s|
-      param_since = s =~ /^\d+$/ ? Time.new(s.to_i) : Time.parse(s)
+    params[:since].split(',').each do |s|
+      param_since = /^\d+$/.match?(s) ? Time.new(s.to_i) : Time.parse(s)
       counts << stored_on_list.inject(0) do |sum, pair|
         since = options[:unread] ? [param_since, pair[:subscription].viewed_on.to_time].max : param_since
         sum + pair[:stored_on].find_all { |stored_on| stored_on > since }.size
       end
     end
-    if counts.size == 1
-      return counts[0]
-    end
+    return counts[0] if counts.size == 1
+
     counts
   end
 end

@@ -9,6 +9,7 @@ class AccountTest < ApplicationSystemTestCase
     fill_in "username", with: @member.username
     fill_in "password", with: "mala"
     click_on "Sign In"
+
     assert_current_path "/reader/"
   end
 
@@ -21,8 +22,10 @@ class AccountTest < ApplicationSystemTestCase
     50.times do
       auth_key = @member.reload.auth_key
       break if auth_key.present?
+
       sleep 0.1
     end
+
     assert_not_nil auth_key
   end
 
@@ -31,6 +34,7 @@ class AccountTest < ApplicationSystemTestCase
     @member.save!
 
     old_auth_key = @member.auth_key
+
     assert_not_nil old_auth_key
 
     click_link "Account"
@@ -47,6 +51,7 @@ class AccountTest < ApplicationSystemTestCase
       end
       sleep 0.1
     end
-    refute equal
+
+    assert_not equal
   end
 end

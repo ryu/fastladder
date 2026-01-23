@@ -79,6 +79,13 @@ Rails/HasManyOrHasOneDependent:
 Rails/InverseOf:
   Enabled: false
 
+# These cops require ApplicationRecord/ActionDispatch::IntegrationTest which are not used in this codebase
+Rails/ApplicationRecord:
+  Enabled: false
+
+Rails/ActionControllerTestCase:
+  Enabled: false
+
 Minitest/MultipleAssertions:
   Max: 10
 

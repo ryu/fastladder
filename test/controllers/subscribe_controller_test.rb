@@ -10,11 +10,13 @@ class SubscribeControllerTest < ActionController::TestCase
   # Index tests
   test "GET index requires login" do
     get :index
+
     assert_redirected_to "/login"
   end
 
   test "GET index renders when logged in" do
     get :index, session: { member_id: @member.id }
+
     assert_response :success
     assert_template :index
   end
@@ -22,6 +24,7 @@ class SubscribeControllerTest < ActionController::TestCase
   test "GET index with url param redirects to confirm" do
     FeedSearcher.stub :search, [] do
       get :index, params: { url: "http://example.com" }, session: { member_id: @member.id }
+
       assert_redirected_to action: "index"
     end
   end
@@ -30,6 +33,7 @@ class SubscribeControllerTest < ActionController::TestCase
   test "GET confirm searches url by FeedSearcher" do
     FeedSearcher.stub :search, [] do
       get :confirm, params: { url: "http://example.com" }, session: { member_id: @member.id }
+
       assert_response :redirect
     end
   end
@@ -37,6 +41,7 @@ class SubscribeControllerTest < ActionController::TestCase
   test "GET confirm with no feeds found shows flash and redirects" do
     FeedSearcher.stub :search, [] do
       get :confirm, params: { url: "http://example.com" }, session: { member_id: @member.id }
+
       assert_redirected_to action: "index"
       assert_equal "please check URL", flash[:notice]
     end
@@ -47,6 +52,7 @@ class SubscribeControllerTest < ActionController::TestCase
     Feed.stub :initialize_from_uri, Feed.new(feedlink: feed_url, title: "Test", link: "http://example.com") do
       FeedSearcher.stub :search, [feed_url] do
         get :confirm, params: { url: "http://example.com" }, session: { member_id: @member.id }
+
         assert_response :success
         assert_template :confirm
         assert_not_empty assigns(:feeds)
@@ -60,6 +66,7 @@ class SubscribeControllerTest < ActionController::TestCase
 
     FeedSearcher.stub :search, [feed.feedlink] do
       get :confirm, params: { url: "http://example.com" }, session: { member_id: @member.id }
+
       assert_response :success
       assert_equal subscription.id, assigns(:feeds).first.subscribe_id
     end
@@ -72,6 +79,7 @@ class SubscribeControllerTest < ActionController::TestCase
     # Match splat route pattern
     @request.path = "/subscribe/http://example.com"
     post :subscribe, params: { url: "http://example.com" }, session: { member_id: @member.id }
+
     assert_redirected_to action: "confirm", url: "http://example.com"
     assert_equal "please check for subscribe", flash[:notice]
   end

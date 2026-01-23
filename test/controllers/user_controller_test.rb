@@ -13,18 +13,21 @@ class UserControllerTest < ActionController::TestCase
   # HTML format tests
   test "GET index renders the index template" do
     get :index, params: { login_name: @member.username }
+
     assert_response :success
     assert_template "index"
   end
 
   test "GET index assigns target_member" do
     get :index, params: { login_name: @member.username }
+
     assert_response :success
     assert_equal @member, assigns(:target_member)
   end
 
   test "GET index assigns public subscriptions when member is public" do
     get :index, params: { login_name: @member.username }
+
     assert_response :success
     assert_not_nil assigns(:subscriptions)
     assert_includes assigns(:subscriptions), @subscription
@@ -34,6 +37,7 @@ class UserControllerTest < ActionController::TestCase
     private_sub = create_subscription(member: @member, public: false)
 
     get :index, params: { login_name: @member.username }
+
     assert_response :success
     assert_not_includes assigns(:subscriptions), private_sub
   end
@@ -42,6 +46,7 @@ class UserControllerTest < ActionController::TestCase
     @member.update!(public: false)
 
     get :index, params: { login_name: @member.username }
+
     assert_response :success
     assert_nil assigns(:subscriptions)
   end
@@ -49,12 +54,14 @@ class UserControllerTest < ActionController::TestCase
   # RSS format tests
   test "GET index as RSS returns RSS content" do
     get :index, params: { login_name: @member.username, format: :rss }
+
     assert_response :success
     assert_includes response.content_type, "application/rss+xml"
   end
 
   test "GET index as RSS includes feed information" do
     get :index, params: { login_name: @member.username, format: :rss }
+
     assert_response :success
     assert_includes response.body, "Public Feed"
   end
@@ -62,12 +69,14 @@ class UserControllerTest < ActionController::TestCase
   # OPML format tests
   test "GET index as OPML returns OPML content" do
     get :index, params: { login_name: @member.username, format: :opml }
+
     assert_response :success
     assert_equal "text/x-opml; charset=utf-8", response.content_type
   end
 
   test "GET index as OPML includes feed information" do
     get :index, params: { login_name: @member.username, format: :opml }
+
     assert_response :success
     assert_includes response.body, "<opml"
   end
@@ -81,6 +90,7 @@ class UserControllerTest < ActionController::TestCase
     end
 
     get :index, params: { login_name: @member.username }
+
     assert_response :success
     assert_equal 30, assigns(:subscriptions).size
   end

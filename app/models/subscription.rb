@@ -26,7 +26,7 @@ class Subscription < ActiveRecord::Base
   scope :open, -> { where(public: true) }
   scope :has_unread, -> { where(has_unread: true) }
   scope :recent, ->(num) { order("created_on DESC").limit(num) }
-  scope :with_unread_count, -> {
+  scope :with_unread_count, lambda {
     sql = <<~SQL.squish
       subscriptions.*,
       (SELECT count(0) FROM items
@@ -50,7 +50,5 @@ class Subscription < ActiveRecord::Base
     true
   end
 
-  def update_subscribers_count
-    self.feed.update_subscribers_count
-  end
+  delegate :update_subscribers_count, to: :feed
 end

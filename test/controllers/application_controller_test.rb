@@ -5,11 +5,11 @@ class TestApplicationController < ApplicationController
   before_action :current_member, only: [:test_current_member]
 
   def test_login_required
-    head 200
+    head :ok
   end
 
   def test_current_member
-    head 200
+    head :ok
   end
 end
 
@@ -31,27 +31,32 @@ class ApplicationControllerTest < ActionController::TestCase
 
   test "login_required with session member_id renders 200" do
     get :test_login_required, session: { member_id: @member.id }
+
     assert_response :success
   end
 
   test "login_required with auth_key renders 200" do
     @member.set_auth_key
     get :test_login_required, params: { auth_key: @member.auth_key }
+
     assert_response :success
   end
 
   test "login_required without member redirects to login_path" do
     get :test_login_required
+
     assert_redirected_to login_path
   end
 
   test "current_member with existing member assigns @member" do
     get :test_current_member, session: { member_id: @member.id }
+
     assert_not_nil assigns(:member)
   end
 
   test "current_member without member does not assign @member" do
     get :test_current_member
+
     assert_nil assigns(:member)
   end
 
@@ -65,6 +70,7 @@ class ApplicationControllerTest < ActionController::TestCase
 
     controller.stub :url_for, "/url/." do
       result = controller.url_from_path(:url)
+
       assert_equal "http://example.com", result
     end
   end
@@ -72,6 +78,7 @@ class ApplicationControllerTest < ActionController::TestCase
   test "json_status with success returns correct format" do
     result = ApplicationController.json_status(true)
     parsed = JSON.parse(result)
+
     assert_equal true, parsed["isSuccess"]
     assert_equal 0, parsed["ErrorCode"]
   end
@@ -79,6 +86,7 @@ class ApplicationControllerTest < ActionController::TestCase
   test "json_status with failure returns correct format" do
     result = ApplicationController.json_status(false)
     parsed = JSON.parse(result)
+
     assert_equal false, parsed["isSuccess"]
     assert_equal 1, parsed["ErrorCode"]
   end
@@ -86,6 +94,7 @@ class ApplicationControllerTest < ActionController::TestCase
   test "json_status with custom error code" do
     result = ApplicationController.json_status(false, 99)
     parsed = JSON.parse(result)
+
     assert_equal false, parsed["isSuccess"]
     assert_equal 99, parsed["ErrorCode"]
   end
@@ -93,6 +102,7 @@ class ApplicationControllerTest < ActionController::TestCase
   test "json_status with hash option merges correctly" do
     result = ApplicationController.json_status(true, { data: "test" })
     parsed = JSON.parse(result)
+
     assert_equal true, parsed["isSuccess"]
     assert_equal 0, parsed["ErrorCode"]
     assert_equal "test", parsed["data"]

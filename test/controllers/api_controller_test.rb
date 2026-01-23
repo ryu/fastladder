@@ -31,14 +31,16 @@ class ApiControllerTest < ActionController::TestCase
     get :all, params: { subscribe_id: @subscription.id, offset: 1 }, session: { member_id: @member.id }
 
     parsed = JSON.parse(response.body)
+
     assert_equal 3, parsed["items"].size
     item_ids = parsed["items"].map { |item| item["id"] }
+
     assert_equal [@item.id].concat(@items.map(&:id)).sort.slice(0, 3), item_ids.sort
   end
 
   test "GET all renders purified link" do
     feed = create_feed
-    item = create_item(feed: feed, link: "http://www.example.com/get?x=1&y=2")
+    create_item(feed: feed, link: "http://www.example.com/get?x=1&y=2")
     subscription = create_subscription(feed: feed, member: @member)
 
     get :all, params: { subscribe_id: subscription.id }, session: { member_id: @member.id }
@@ -56,6 +58,7 @@ class ApiControllerTest < ActionController::TestCase
     post :touch_all, session: { member_id: @member.id }
 
     parsed = JSON.parse(response.body)
+
     assert_equal false, parsed["isSuccess"]
   end
 
@@ -75,12 +78,12 @@ class ApiControllerTest < ActionController::TestCase
     headers = {
       "Accept" => "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5",
       "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-      "User-Agent" => "Fastladder FeedFetcher/0.0.3 (http://fastladder.org/)",
+      "User-Agent" => "Fastladder FeedFetcher/0.0.3 (http://fastladder.org/)"
     }
 
-    stub_request(:get, @feed.feedlink).with { |request|
+    stub_request(:get, @feed.feedlink).with do |request|
       request.headers = headers
-    }.to_return(status: 200, body: "", headers: {})
+    end.to_return(status: 200, body: "", headers: {})
 
     post :crawl, params: { subscribe_id: @subscription.id }, session: { member_id: @member.id }
 
@@ -123,6 +126,7 @@ class ApiControllerTest < ActionController::TestCase
     get :item_count, session: { member_id: @member.id }
 
     parsed = JSON.parse(response.body)
+
     assert_equal false, parsed["isSuccess"]
   end
 
@@ -136,12 +140,13 @@ class ApiControllerTest < ActionController::TestCase
     get :unread_count, session: { member_id: @member.id }
 
     parsed = JSON.parse(response.body)
+
     assert_equal false, parsed["isSuccess"]
   end
 
   test "not logged in renders blank" do
     get :subs
 
-    assert response.body.blank?
+    assert_predicate response.body, :blank?
   end
 end

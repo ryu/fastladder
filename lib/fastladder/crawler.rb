@@ -16,7 +16,7 @@ module Fastladder
     REDIRECT_LIMIT = 5
     CRAWL_OK = 1
     CRAWL_NOW = 10
-    GETA = [12307].pack("U")
+    GETA = [12_307].pack("U")
 
     attr_reader :fetcher, :parser, :reporter
 
@@ -30,10 +30,10 @@ module Fastladder
       end
 
       logger.warn '=> Booting FeedFetcher...'
-      self.new(logger,
-               fetcher: options[:fetcher],
-               parser: options[:parser],
-               reporter: options[:reporter]).run
+      new(logger,
+          fetcher: options[:fetcher],
+          parser: options[:parser],
+          reporter: options[:reporter]).run
     end
 
     def initialize(logger, fetcher: nil, parser: nil, reporter: nil)
@@ -47,9 +47,7 @@ module Fastladder
       reporter.crawler_started
       @interval = 0
       finish = false
-      until finish
-        finish = run_loop
-      end
+      finish = run_loop until finish
       reporter.crawler_stopped(reason: "normal")
     end
 
@@ -59,7 +57,7 @@ module Fastladder
       result = {
         message: '',
         error: false,
-        response_code: nil,
+        response_code: nil
       }
 
       current_url = feed.feedlink
@@ -209,6 +207,7 @@ module Fastladder
 
     def cut_off(_feed, items)
       return items unless items.size > ITEMS_LIMIT
+
       items[0, ITEMS_LIMIT]
     end
 
@@ -223,6 +222,7 @@ module Fastladder
     def delete_old_items_if_new_items_are_many(feed, items)
       new_items_size = new_items_count(feed, items)
       return unless new_items_size > ITEMS_LIMIT / 2
+
       deleted_count = feed.items.count
       Item.where(feed_id: feed.id).delete_all
       reporter.items_deleted(feed, deleted_count, reason: "too_many_new_items")
@@ -249,7 +249,7 @@ module Fastladder
           old_item.stored_on = item.stored_on
           result[:updated_items] += 1
         end
-        update_columns = %w(link title body author category enclosure enclosure_type digest modified_on)
+        update_columns = %w[link title body author category enclosure enclosure_type digest modified_on]
         old_item.attributes = item.attributes.select { |column, _value| update_columns.include?(column) }
         old_item.save!
       else
@@ -260,8 +260,10 @@ module Fastladder
         rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid => e
           # Another process inserted the same item - retry as update
           raise unless e.is_a?(ActiveRecord::RecordNotUnique) || e.message.include?("guid")
+
           old_item = feed.items.find_by(guid: item.guid)
           raise unless old_item
+
           # Retry as update
           upsert_item(feed, item, result)
 
@@ -286,19 +288,16 @@ module Fastladder
     end
 
     def almost_same(str1, str2)
-      if str1 == str2
-        return true
-      end
-      chars1 = str1.split(//)
-      chars2 = str2.split(//)
-      if chars1.length != chars2.length
-        return false
-      end
-      # count differences
-      [chars1, chars2].transpose.find_all { |pair|
-        !pair.include?(GETA) and pair[0] != pair[1]
-      }.size <= 5
-    end
+      return true if str1 == str2
 
+      chars1 = str1.split('')
+      chars2 = str2.split('')
+      return false if chars1.length != chars2.length
+
+      # count differences
+      [chars1, chars2].transpose.find_all do |pair|
+        !pair.include?(GETA) and pair[0] != pair[1]
+      end.size <= 5
+    end
   end
 end

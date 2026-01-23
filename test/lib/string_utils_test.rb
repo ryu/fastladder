@@ -1,20 +1,21 @@
-# -*- coding: utf-8 -*-
-
 require "test_helper"
 
 class StringUtilsTest < ActiveSupport::TestCase
   test "utf8_roundtrip utf-8 turns utf-8" do
     str = "Ruby1.8をつかっている人はもういない"
+
     assert_equal "Ruby1.8をつかっている人はもういない", str.utf8_roundtrip
   end
 
   test "utf8_roundtrip euc-jp turns utf-8" do
     str = "Ruby1.8をつかっている人はもういない".encode("EUC-JP")
+
     assert_equal "Ruby1.8をつかっている人はもういない", str.utf8_roundtrip
   end
 
   test "utf8_roundtrip Shift-JIS turns utf-8" do
     str = "Ruby1.8をつかっている人はもういない".encode("Shift_JIS")
+
     assert_equal "Ruby1.8をつかっている人はもういない", str.utf8_roundtrip
   end
 

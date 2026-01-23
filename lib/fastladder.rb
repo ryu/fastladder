@@ -11,17 +11,18 @@ module Fastladder
   module ClassMethods
     attr_reader :http_proxy, :http_proxy_except_hosts, :http_open_timeout, :http_read_timeout, :crawler_user_agent
 
-    def configure(&block)
+    def configure
       @http_proxy ||= nil
       @http_proxy_except_hosts ||= []
       @http_open_timeout ||= 60
       @http_read_timeout ||= 60
       @crawler_user_agent ||= "Fastladder FeedFetcher/#{Fastladder::Version} (http://fastladder.org/)"
-      block.call(self)
+      yield(self)
     end
 
     def proxy=(uri = nil)
       return if uri.blank?
+
       case uri
       when URI
         @http_proxy = uri
@@ -39,7 +40,7 @@ module Fastladder
       else
         begin
           uri = URI.parse(uri)
-          uri = nil unless uri.kind_of?(URI::HTTP)
+          uri = nil unless uri.is_a?(URI::HTTP)
         rescue URI::InvalidURIError
           uri = nil
         end
@@ -48,18 +49,26 @@ module Fastladder
     end
 
     def proxy_except_hosts=(patterns)
-      patterns.reject! { |p| !p.kind_of?(Regexp) }
+      patterns.reject! { |p| !p.is_a?(Regexp) }
       @http_proxy_except_hosts = patterns
     end
 
-    def open_timeout=(seconds); @http_open_timeout = seconds; end
-    def read_timeout=(seconds); @http_read_timeout = seconds; end
-    def crawler_user_agent=(name); @crawler_user_agent = name; end
+    def open_timeout=(seconds)
+      @http_open_timeout = seconds
+    end
+
+    def read_timeout=(seconds)
+      @http_read_timeout = seconds
+    end
+
+    def crawler_user_agent=(name)
+      @crawler_user_agent = name
+    end
   end
   extend ClassMethods
 
   def fetch(link, options = {})
-    uri = link.kind_of?(URI) ? link : URI.parse(link)
+    uri = link.is_a?(URI) ? link : URI.parse(link)
 
     http_class = Net::HTTP
     # if proxy = uri.find_proxy || Fastladder.http_proxy
@@ -77,7 +86,7 @@ module Fastladder
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
     else
-      raise "unknown scheme: #{link.to_s}"
+      raise "unknown scheme: #{link}"
     end
 
     req = Net::HTTP::Get.new(uri.request_uri)
@@ -95,7 +104,7 @@ module Fastladder
 
   def simple_fetch(link, options = {})
     user_agent = options.fetch("User-Agent", "Fastladder (https://github.com/fastladder/fastladder)")
-    response = HTTP.follow.timeout(read: Fastladder.http_read_timeout).get(link.to_s, headers: {"User-Agent" => user_agent})
+    response = HTTP.follow.timeout(read: Fastladder.http_read_timeout).get(link.to_s, headers: { "User-Agent" => user_agent })
     response.to_s
   rescue Exception => e
     Rails.logger.error(e)

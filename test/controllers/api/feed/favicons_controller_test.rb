@@ -14,8 +14,10 @@ class Api::Feed::FaviconsControllerTest < ActionDispatch::IntegrationTest
         post "/api/feed/fetch_favicon",
              params: { feedlink: @feed.feedlink },
              headers: { "HTTP_COOKIE" => login_cookie }
+
         assert_response :success
         json = response.parsed_body
+
         assert json["isSuccess"]
       end
     end
@@ -24,8 +26,10 @@ class Api::Feed::FaviconsControllerTest < ActionDispatch::IntegrationTest
   test "POST /api/feed/fetch_favicon fails without feedlink" do
     post "/api/feed/fetch_favicon",
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_not json["isSuccess"]
   end
 
@@ -33,13 +37,16 @@ class Api::Feed::FaviconsControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/fetch_favicon",
          params: { feedlink: "http://unknown.example.com/feed.xml" },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_not json["isSuccess"]
   end
 
   test "POST /api/feed/fetch_favicon requires authentication" do
     post "/api/feed/fetch_favicon", params: { feedlink: @feed.feedlink }
+
     assert_predicate response.body, :blank?
   end
 

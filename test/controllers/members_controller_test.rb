@@ -6,14 +6,15 @@ class MembersControllerTest < ActionController::TestCase
       member: {
         username: "new_user_#{rand(10_000)}",
         password: "mala",
-        password_confirmation: "mala",
-      },
+        password_confirmation: "mala"
+      }
     }
     @valid_sessions = {}
   end
 
   test "GET new renders the new template" do
     get :new
+
     assert_response :success
     assert_template "new"
   end
@@ -26,6 +27,7 @@ class MembersControllerTest < ActionController::TestCase
 
   test "POST create redirects to /" do
     post :create, params: @valid_params, session: @valid_sessions
+
     assert_redirected_to "/"
   end
 end

@@ -11,6 +11,7 @@ class SubscriptionTest < ActiveSupport::TestCase
     subscription.save
 
     feed.reload
+
     assert_equal original_count + 1, feed.subscribers_count
   end
 
@@ -35,6 +36,7 @@ class SubscriptionTest < ActiveSupport::TestCase
     subscription.destroy
 
     feed.reload
+
     assert_equal original_count - 1, feed.subscribers_count
   end
 end

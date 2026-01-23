@@ -6,160 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: TreatCommentsAsGroupSeparators, ConsiderPunctuation.
-Bundler/OrderedGems:
-  Exclude:
-    - 'Gemfile'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: leading, trailing
-Layout/DotPosition:
-  Exclude:
-    - 'app/models/feed.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Layout/EmptyLineAfterGuardClause:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/api/folder_controller.rb'
-    - 'app/controllers/api/pin_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/subscribe_controller.rb'
-    - 'app/models/feed.rb'
-    - 'app/models/member.rb'
-    - 'lib/fastladder.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-    - 'test/system/account_test.rb'
-    - 'test/system/config_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowAliasSyntax, AllowedMethods.
-# AllowedMethods: alias_method, public, protected, private
-Layout/EmptyLinesAroundAttributeAccessor:
-  Exclude:
-    - 'app/models/member.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: empty_lines, no_empty_lines
-Layout/EmptyLinesAroundBlockBody:
-  Exclude:
-    - 'test/system/login_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: empty_lines, empty_lines_except_namespace, empty_lines_special, no_empty_lines, beginning_only, ending_only
-Layout/EmptyLinesAroundClassBody:
-  Exclude:
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Layout/EmptyLinesAroundMethodBody:
-  Exclude:
-    - 'app/controllers/share_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowForAlignment, AllowBeforeTrailingComments, ForceEqualSignAlignment.
-Layout/ExtraSpacing:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'config.ru'
-    - 'config/routes.rb'
-    - 'test/system/config_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: special_inside_parentheses, consistent, align_braces
-Layout/FirstHashElementIndentation:
-  Exclude:
-    - 'app/models/member.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Layout/HeredocIndentation:
-  Exclude:
-    - 'app/models/simple_opml.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Layout/SpaceAroundKeyword:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowForAlignment, EnforcedStyleForExponentOperator, EnforcedStyleForRationalLiterals.
-# SupportedStylesForExponentOperator: space, no_space
-# SupportedStylesForRationalLiterals: space, no_space
-Layout/SpaceAroundOperators:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces.
-# SupportedStyles: space, no_space
-# SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceBeforeBlockBraces:
-  Exclude:
-    - 'app/controllers/members_controller.rb'
-    - 'app/controllers/rpc_controller.rb'
-    - 'app/models/crawl_status.rb'
-    - 'app/models/feed.rb'
-    - 'app/models/item.rb'
-    - 'app/models/member.rb'
-    - 'app/models/pin.rb'
-    - 'app/models/subscription.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Layout/SpaceBeforeComma:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBrackets.
-# SupportedStyles: space, no_space, compact
-# SupportedStylesForEmptyBrackets: space, no_space
-Layout/SpaceInsideArrayLiteralBrackets:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/api/folder_controller.rb'
-    - 'app/controllers/application_controller.rb'
-    - 'config/environments/production.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
-# SupportedStyles: space, no_space
-# SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceInsideBlockBraces:
-  Exclude:
-    - 'app/controllers/import_controller.rb'
-    - 'app/controllers/members_controller.rb'
-    - 'app/controllers/rpc_controller.rb'
-    - 'app/models/member.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces.
-# SupportedStyles: space, no_space, compact
-# SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceInsideHashLiteralBraces:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/import_controller.rb'
-    - 'app/controllers/rpc_controller.rb'
-    - 'lib/fastladder.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: final_newline, final_blank_line
-Layout/TrailingEmptyLines:
-  Exclude:
-    - 'app/controllers/about_controller.rb'
-    - 'app/controllers/share_controller.rb'
-    - 'config/initializers/konacha.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: RequireParenthesesForMethodChains.
 Lint/AmbiguousRange:
@@ -170,12 +16,10 @@ Lint/AmbiguousRange:
 # Configuration parameters: AllowSafeAssignment.
 Lint/AssignmentInCondition:
   Exclude:
-    - 'app/controllers/api/feed_controller.rb'
     - 'app/controllers/api/folder_controller.rb'
     - 'app/controllers/api/pin_controller.rb'
     - 'app/controllers/api_controller.rb'
     - 'app/controllers/subscribe_controller.rb'
-    - 'app/models/feed.rb'
     - 'app/models/member.rb'
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
@@ -184,11 +28,6 @@ Lint/AssignmentInCondition:
 Lint/Debugger:
   Exclude:
     - 'test/system/subscribe_crawl_read_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Lint/DeprecatedClassMethods:
-  Exclude:
-    - 'script/crawler'
 
 # Configuration parameters: IgnoreLiteralBranches, IgnoreConstantBranches, IgnoreDuplicateElseBranch.
 Lint/DuplicateBranch:
@@ -209,19 +48,6 @@ Lint/NonAtomicFileOperation:
   Exclude:
     - 'script/crawler'
 
-# This cop supports safe autocorrection (--autocorrect).
-Lint/RedundantCopDisableDirective:
-  Exclude:
-    - 'app/controllers/mobile_controller.rb'
-    - 'test/system/subscribe_crawl_read_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Lint/RedundantStringCoercion:
-  Exclude:
-    - 'app/models/member.rb'
-    - 'lib/fastladder.rb'
-    - 'test/models/feed_test.rb'
-
 Lint/RescueException:
   Exclude:
     - 'lib/fastladder.rb'
@@ -236,33 +62,6 @@ Lint/SuppressedException:
     - 'lib/fastladder/fastladder_crawler.rb'
     - 'script/crawler'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: IgnoreEmptyBlocks, AllowUnusedKeywordArguments.
-Lint/UnusedBlockArgument:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/import_controller.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-    - 'test/models/feed_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods, IgnoreNotImplementedMethods, NotImplementedExceptions.
-# NotImplementedExceptions: NotImplementedError
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'app/models/crawl_status.rb'
-    - 'app/models/feed.rb'
-    - 'app/models/item.rb'
-    - 'app/models/pin.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Lint/UselessAssignment:
-  Exclude:
-    - 'lib/string.rb'
-    - 'test/controllers/api_controller_test.rb'
-    - 'test/models/item_test.rb'
-    - 'test/models/member_test.rb'
-
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
 Metrics/AbcSize:
   Exclude:
@@ -271,19 +70,6 @@ Metrics/AbcSize:
     - 'app/controllers/rpc_controller.rb'
     - 'app/models/member.rb'
     - 'lib/fastladder/crawler.rb'
-
-# Configuration parameters: CountComments, Max, CountAsOne, AllowedMethods, AllowedPatterns.
-# AllowedMethods: refine
-Metrics/BlockLength:
-  Exclude:
-    - 'lib/fastladder/crawler.rb'
-
-# Configuration parameters: CountComments, Max, CountAsOne.
-Metrics/ClassLength:
-  Exclude:
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/crawler_reporter.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
 
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/CyclomaticComplexity:
@@ -306,25 +92,12 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 18
 
-# This cop supports safe autocorrection (--autocorrect).
-Minitest/AssertPredicate:
-  Exclude:
-    - 'test/controllers/api/config_controller_test.rb'
-    - 'test/controllers/api/feed_controller_test.rb'
-    - 'test/controllers/api/folder_controller_test.rb'
-    - 'test/controllers/api/pin_controller_test.rb'
-    - 'test/controllers/api_controller_test.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Minitest/AssertTruthy:
   Exclude:
     - 'test/controllers/about_controller_test.rb'
     - 'test/controllers/api/pin_controller_test.rb'
     - 'test/controllers/application_controller_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Minitest/EmptyLineBeforeAssertionMethods:
-  Enabled: false
 
 # Configuration parameters: Max.
 Minitest/MultipleAssertions:
@@ -334,7 +107,6 @@ Minitest/MultipleAssertions:
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Minitest/RefuteFalse:
   Exclude:
-    - 'test/controllers/api/feed_controller_test.rb'
     - 'test/controllers/api/folder_controller_test.rb'
     - 'test/controllers/api/pin_controller_test.rb'
     - 'test/controllers/api_controller_test.rb'
@@ -344,13 +116,11 @@ Minitest/RefuteFalse:
 
 Minitest/UselessAssertion:
   Exclude:
-    - 'test/controllers/api/feed_controller_test.rb'
     - 'test/controllers/api/folder_controller_test.rb'
     - 'test/controllers/api/pin_controller_test.rb'
 
 Naming/AccessorMethodName:
   Exclude:
-    - 'app/controllers/api/feed_controller.rb'
     - 'app/controllers/api/folder_controller.rb'
 
 Naming/ConstantName:
@@ -399,11 +169,6 @@ Naming/VariableNumber:
     - 'test/models/item_test.rb'
     - 'test/models/member_test.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-Performance/CompareWithBlock:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Performance/Count:
   Exclude:
@@ -417,74 +182,11 @@ Performance/MapCompact:
     - 'app/models/simple_opml.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/RangeInclude:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Performance/RedundantBlockCall:
-  Exclude:
-    - 'lib/fastladder.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Performance/RedundantMatch:
-  Exclude:
-    - 'app/controllers/favicon_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Performance/RedundantSplitRegexpArgument:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Performance/RegexpMatch:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/favicon_controller.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/ActionControllerFlashBeforeRender:
-  Exclude:
-    - 'app/controllers/subscribe_controller.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/ActionControllerTestCase:
-  Exclude:
-    - 'test/controllers/about_controller_test.rb'
-    - 'test/controllers/api/config_controller_test.rb'
-    - 'test/controllers/api/feed_controller_test.rb'
-    - 'test/controllers/api/folder_controller_test.rb'
-    - 'test/controllers/api/pin_controller_test.rb'
-    - 'test/controllers/api_controller_test.rb'
-    - 'test/controllers/application_controller_test.rb'
-    - 'test/controllers/favicon_controller_test.rb'
-    - 'test/controllers/import_controller_test.rb'
-    - 'test/controllers/members_controller_test.rb'
-    - 'test/controllers/rpc_controller_test.rb'
-    - 'test/controllers/sessions_controller_test.rb'
-    - 'test/controllers/subscribe_controller_test.rb'
-    - 'test/controllers/user_controller_test.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/ApplicationRecord:
-  Exclude:
-    - 'app/models/crawl_status.rb'
-    - 'app/models/favicon.rb'
-    - 'app/models/feed.rb'
-    - 'app/models/folder.rb'
-    - 'app/models/item.rb'
-    - 'app/models/member.rb'
-    - 'app/models/pin.rb'
-    - 'app/models/subscription.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: NilOrEmpty, NotPresent, UnlessPresent.
 Rails/Blank:
   Exclude:
     - 'app/controllers/application_controller.rb'
+    - 'app/controllers/subscribe_controller.rb'
 
 Rails/CreateTableWithTimestamps:
   Exclude:
@@ -497,30 +199,12 @@ Rails/CreateTableWithTimestamps:
     - 'db/migrate/007_create_pins.rb'
     - 'db/migrate/008_create_favicons.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: slashes, arguments
-Rails/FilePath:
-  Exclude:
-    - 'app/controllers/about_controller.rb'
-    - 'app/models/settings.rb'
-    - 'script/crawler'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 # AllowedMethods: order, limit, select, lock
 Rails/FindEach:
   Exclude:
     - 'app/controllers/api_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: numeric, symbolic
-Rails/HttpStatus:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/rpc_controller.rb'
-    - 'test/controllers/application_controller_test.rb'
 
 Rails/I18nLocaleTexts:
   Exclude:
@@ -553,27 +237,10 @@ Rails/Pluck:
   Exclude:
     - 'test/controllers/api_controller_test.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: NotNilAndNotEmpty, NotBlank, UnlessBlank.
-Rails/Present:
-  Exclude:
-    - 'app/controllers/about_controller.rb'
-    - 'app/models/member.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/RakeEnvironment:
   Exclude:
     - 'Rakefile'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: assert_not, refute
-Rails/RefuteMethods:
-  Exclude:
-    - 'test/models/feed_test.rb'
-    - 'test/models/item_test.rb'
-    - 'test/models/member_test.rb'
-    - 'test/system/account_test.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/ResponseParsedBody:
@@ -594,19 +261,10 @@ Rails/RootPathnameMethods:
     - 'test/system/subscribe_system_test.rb'
     - 'test/test_helper.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: ConvertTry.
-Rails/SafeNavigation:
+# This cop supports unsafe autocorrection (--autocorrect-all).
+Rails/SafeNavigationWithBlank:
   Exclude:
     - 'app/controllers/api_controller.rb'
-    - 'app/controllers/sessions_controller.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Rails/StripHeredoc:
-  Exclude:
-    - 'Rakefile'
-    - 'app/helpers/user_helper.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/StrongParametersExpect:
@@ -627,16 +285,6 @@ Rails/TimeZone:
     - 'lib/fastladder/fastladder_crawler.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/ToSWithArgument:
-  Exclude:
-    - 'app/views/user/index.rss.builder'
-
-# This cop supports safe autocorrection (--autocorrect).
-Rails/Validation:
-  Exclude:
-    - 'app/models/member.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/WhereRange:
   Exclude:
     - 'app/models/crawl_status.rb'
@@ -644,7 +292,6 @@ Rails/WhereRange:
 
 Security/Open:
   Exclude:
-    - 'app/models/feed.rb'
     - 'script/crawler'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
@@ -653,7 +300,6 @@ Security/Open:
 Style/AndOr:
   Exclude:
     - 'app/controllers/api/config_controller.rb'
-    - 'app/controllers/api/feed_controller.rb'
     - 'app/controllers/api_controller.rb'
     - 'app/controllers/application_controller.rb'
     - 'app/controllers/favicon_controller.rb'
@@ -661,67 +307,15 @@ Style/AndOr:
     - 'lib/fastladder/fastladder_crawler.rb'
 
 # This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, AllowedMethods, AllowedPatterns, AllowBracesOnProceduralOneLiners, BracesRequiredMethods.
-# SupportedStyles: line_count_based, semantic, braces_for_chaining, always_braces
-# ProceduralMethods: benchmark, bm, bmbm, create, each_with_object, measure, new, realtime, tap, with_object
-# FunctionalMethods: let, let!, subject, watch
-# AllowedMethods: lambda, proc, it
-Style/BlockDelimiters:
-  Exclude:
-    - 'app/controllers/rpc_controller.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-    - 'test/controllers/api_controller_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowOnConstant, AllowOnSelfClass.
 Style/CaseEquality:
   Exclude:
     - 'app/models/member.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: is_a?, kind_of?
-Style/ClassCheck:
-  Exclude:
-    - 'lib/fastladder.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/CollectionQuerying:
   Exclude:
     - 'app/controllers/sessions_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: Keywords, RequireColon.
-# Keywords: TODO, FIXME, OPTIMIZE, HACK, REVIEW, NOTE
-Style/CommentAnnotation:
-  Exclude:
-    - 'app/controllers/rpc_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: compact, expanded
-Style/EmptyMethod:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/contents_controller.rb'
-    - 'app/controllers/import_controller.rb'
-    - 'app/controllers/members_controller.rb'
-    - 'app/controllers/share_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/Encoding:
-  Exclude:
-    - 'app/models/simple_opml.rb'
-    - 'test/lib/string_utils_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/ExpandPathArguments:
-  Exclude:
-    - 'Rakefile'
-    - 'config.ru'
-    - 'script/crawler'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: EnforcedStyle.
@@ -737,41 +331,9 @@ Style/GlobalStdStream:
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: MinBodyLength, AllowConsecutiveConditionals.
-Style/GuardClause:
-  Exclude:
-    - 'app/controllers/account_controller.rb'
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/subscribe_controller.rb'
-    - 'app/helpers/user_helper.rb'
-    - 'app/models/member.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/HashSlice:
   Exclude:
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, EnforcedShorthandSyntax, UseHashRocketsWithSymbolValues, PreferHashRocketsForNonAlnumEndingSymbols.
-# SupportedStyles: ruby19, hash_rockets, no_mixed_keys, ruby19_no_mixed_keys
-# SupportedShorthandSyntax: always, never, either, consistent, either_consistent
-Style/HashSyntax:
-  Exclude:
-    - 'app/views/user/index.opml.builder'
-    - 'app/views/user/index.rss.builder'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/IfUnlessModifier:
-  Exclude:
-    - 'app/controllers/api/config_controller.rb'
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/api/folder_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/rpc_controller.rb'
-    - 'app/controllers/subscribe_controller.rb'
-    - 'app/models/member.rb'
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
 
@@ -788,25 +350,6 @@ Style/ItBlockParameter:
   Exclude:
     - 'app/controllers/mobile_controller.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: line_count_dependent, lambda, literal
-Style/Lambda:
-  Exclude:
-    - 'app/models/feed.rb'
-    - 'app/models/subscription.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/MapIntoArray:
-  Exclude:
-    - 'app/models/feed.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/MultilineIfModifier:
-  Exclude:
-    - 'app/controllers/import_controller.rb'
-    - 'config/initializers/konacha.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: literals, strict
@@ -815,28 +358,11 @@ Style/MutableConstant:
     - 'app/models/simple_opml.rb'
     - 'lib/fastladder.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-Style/Not:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: allow_single_line, disallow
-Style/NumberedParameters:
-  Exclude:
-    - 'app/controllers/mobile_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: Strict, AllowedNumbers, AllowedPatterns.
-Style/NumericLiterals:
-  MinDigits: 7
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: EnforcedStyle, AllowedMethods, AllowedPatterns.
 # SupportedStyles: predicate, comparison
 Style/NumericPredicate:
   Exclude:
-    - 'app/controllers/api/feed_controller.rb'
     - 'app/controllers/api/folder_controller.rb'
     - 'app/controllers/api_controller.rb'
     - 'app/controllers/sessions_controller.rb'
@@ -847,106 +373,11 @@ Style/NumericPredicate:
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-Style/OrAssignment:
+# This cop supports unsafe autocorrection (--autocorrect-all).
+Style/RedundantInterpolation:
   Exclude:
-    - 'app/controllers/rpc_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/ParallelAssignment:
-  Exclude:
-    - 'app/controllers/import_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'app/controllers/api/config_controller.rb'
-    - 'app/models/feed.rb'
-    - 'app/models/item.rb'
-    - 'config/application.rb'
-    - 'config/routes.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-    - 'test/routing/api/feed_routing_test.rb'
-    - 'test/routing/api/folder_routing_test.rb'
-    - 'test/routing/api/item_routing_test.rb'
-    - 'test/routing/api/pin_routing_test.rb'
-    - 'test/routing/api_routing_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantAssignment:
-  Exclude:
-    - 'app/models/member.rb'
-    - 'lib/string.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantBegin:
-  Exclude:
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowedMethods.
-# AllowedMethods: nonzero?
-Style/RedundantCondition:
-  Exclude:
-    - 'app/controllers/rpc_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantConstantBase:
-  Exclude:
-    - 'config.ru'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantParentheses:
-  Exclude:
-    - 'app/controllers/subscribe_controller.rb'
-    - 'app/helpers/application_helper.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantRegexpArgument:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowMultipleReturnValues.
-Style/RedundantReturn:
-  Exclude:
-    - 'app/controllers/api/folder_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/subscribe_controller.rb'
-    - 'app/models/member.rb'
-    - 'lib/string.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantSelf:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/subscribe_controller.rb'
-    - 'app/models/feed.rb'
-    - 'app/models/item.rb'
-    - 'app/models/member.rb'
-    - 'app/models/pin.rb'
-    - 'app/models/subscription.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-    - 'lib/string.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/RescueModifier:
-  Exclude:
-    - 'app/models/feed.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: implicit, explicit
-Style/RescueStandardError:
-  Exclude:
-    - 'app/controllers/import_controller.rb'
-    - 'app/models/feed.rb'
-    - 'script/crawler'
+    - 'app/controllers/about_controller.rb'
+    - 'app/models/settings.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: ConvertCodeThatCanStartToReturnNil, AllowedMethods, MaxChainLength.
@@ -958,19 +389,6 @@ Style/SafeNavigation:
     - 'app/models/member.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
     - 'test/controllers/favicon_controller_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowIfMethodIsEmpty.
-Style/SingleLineMethods:
-  Exclude:
-    - 'lib/fastladder.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowModifier.
-Style/SoleNestedConditional:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/application_controller.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: RequireEnglish.
@@ -990,35 +408,6 @@ Style/StringConcatenation:
   Exclude:
     - 'app/helpers/subscribe_helper.rb'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: single_quotes, double_quotes
-Style/StringLiteralsInInterpolation:
-  Exclude:
-    - 'app/helpers/application_helper.rb'
-    - 'app/models/simple_opml.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle, MinSize.
-# SupportedStyles: percent, brackets
-Style/SymbolArray:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/api/folder_controller.rb'
-    - 'app/controllers/api/pin_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/models/simple_opml.rb'
-    - 'config/initializers/filter_parameter_logging.rb'
-    - 'config/routes.rb'
-    - 'db/migrate/003_create_folders.rb'
-    - 'db/migrate/004_create_subscriptions.rb'
-    - 'db/migrate/005_create_crawl_statuses.rb'
-    - 'db/migrate/006_create_items.rb'
-    - 'db/migrate/007_create_pins.rb'
-    - 'db/migrate/009_add_items_index.rb'
-    - 'db/migrate/20140601154904_add_guid_to_items.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: AllowMethodsWithArguments, AllowedMethods, AllowedPatterns, AllowComments.
 # AllowedMethods: define_method, mail, respond_to
@@ -1030,37 +419,6 @@ Style/SymbolProc:
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
     - 'test/lib/fastladder/crawler_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyleForMultiline.
-# SupportedStylesForMultiline: comma, consistent_comma, diff_comma, no_comma
-Style/TrailingCommaInArguments:
-  Exclude:
-    - 'app/models/feed.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyleForMultiline.
-# SupportedStylesForMultiline: comma, consistent_comma, diff_comma, no_comma
-Style/TrailingCommaInHashLiteral:
-  Exclude:
-    - 'app/controllers/api/feed_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/models/member.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-    - 'test/controllers/api_controller_test.rb'
-    - 'test/controllers/members_controller_test.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/UnlessElse:
-  Exclude:
-    - 'app/controllers/about_controller.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-Style/WhileUntilModifier:
-  Exclude:
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/ZeroLengthPredicate:

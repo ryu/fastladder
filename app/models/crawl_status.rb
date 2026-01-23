@@ -18,8 +18,8 @@
 class CrawlStatus < ActiveRecord::Base
   belongs_to :feed, optional: true
 
-  scope :status_ok, ->{ where(status: Fastladder::Crawler::CRAWL_OK) }
-  scope :expired, ->(ttl){ where("crawled_on IS NULL OR crawled_on < ?", ttl.ago) }
+  scope :status_ok, -> { where(status: Fastladder::Crawler::CRAWL_OK) }
+  scope :expired, ->(ttl) { where("crawled_on IS NULL OR crawled_on < ?", ttl.ago) }
 
   # Fetches a crawlable feed with atomic locking to prevent concurrent crawls.
   #
@@ -32,7 +32,7 @@ class CrawlStatus < ActiveRecord::Base
   # @param options [Hash] Options (currently unused, reserved for future)
   # @param max_retries [Integer] Maximum retries to find available feed (default: 5)
   # @return [Feed, nil] The feed to crawl, or nil if none available
-  def self.fetch_crawlable_feed(options = {}, max_retries: 5)
+  def self.fetch_crawlable_feed(_options = {}, max_retries: 5)
     # Reset stale crawls (crawls that started but never finished)
     CrawlStatus.where("crawled_on < ?", 30.minutes.ago)
                .where(status: Fastladder::Crawler::CRAWL_NOW)

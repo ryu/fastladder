@@ -12,12 +12,12 @@ ARGV.options do |opt|
   opt.parse!
 end
 
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 require "fastladder/crawler"
 
 if options[:daemon]
-  options[:log_file] ||= Rails.root.join('log', 'crawler.log')
-  pidfile = options[:pid_file] || Rails.root.join('tmp', 'pids', 'crawler.pid')
+  options[:log_file] ||= Rails.root.join("log/crawler.log")
+  pidfile = options[:pid_file] || Rails.root.join("tmp/pids/crawler.pid")
   Process.daemon
   FileUtils.mkdir_p pidfile.dirname
   open(pidfile, 'w') { |f| f << Process.pid }
@@ -26,6 +26,6 @@ end
 
 Fastladder::Crawler.start(options)
 begin
-  File.delete(options[:pid_file]) if File.exists?(options[:pid_file])
-rescue
+  File.delete(options[:pid_file]) if File.exist?(options[:pid_file])
+rescue StandardError
 end

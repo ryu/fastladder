@@ -9,6 +9,7 @@ class AboutControllerTest < ActionController::TestCase
 
     Feed.stub :find_by, feed do
       get :index, params: { url: feed.link }
+
       assert_response :success
       assert_equal feed, assigns[:feed]
       assert_equal true, assigns[:is_feedlink]
@@ -17,6 +18,7 @@ class AboutControllerTest < ActionController::TestCase
 
   test "GET index with non-existing url returns 404" do
     get :index, params: { url: "http://example.com/unknown" }
+
     assert_equal 404, response.status
   end
 end

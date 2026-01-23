@@ -15,8 +15,10 @@ class Api::Feed::DiscoveriesControllerTest < ActionDispatch::IntegrationTest
     post "/api/feed/discover",
          params: { url: @feed.feedlink },
          headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_kind_of Array, json
   end
 
@@ -27,8 +29,10 @@ class Api::Feed::DiscoveriesControllerTest < ActionDispatch::IntegrationTest
     get "/api/feed/discover",
         params: { url: @feed.feedlink },
         headers: { "HTTP_COOKIE" => login_cookie }
+
     assert_response :success
     json = response.parsed_body
+
     assert_kind_of Array, json
   end
 

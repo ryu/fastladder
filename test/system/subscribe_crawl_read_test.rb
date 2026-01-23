@@ -10,37 +10,30 @@ class SubscribeCrawlReadTest < ApplicationSystemTestCase
     fill_in "username", with: "dankogai"
     fill_in "password", with: "kogaidan"
     click_on "Sign In"
+
     assert_current_path "/reader/"
     assert_text "Loading completed.", wait: 10
     WebMock.disable_net_connect!(allow_localhost: true)
 
     stub_request(:get,
-                 # rubocop:todo Layout/LineLength
                  "http://example.com/").and_return(body: File.read(Rails.root.join("test/fixtures/examlpe.com.index.html")))
-    # rubocop:enable Layout/LineLength
     stub_request(:get,
-                 # rubocop:todo Layout/LineLength
                  "http://example.com/feed.xml").and_return(body: File.read(Rails.root.join("test/fixtures/examlpe.com.feed.xml")))
-    # rubocop:enable Layout/LineLength
-
     stub_request(:get,
-                 # rubocop:todo Layout/LineLength
                  "http://example.com/ebi").and_return(body: File.read(Rails.root.join("test/fixtures/examlpe.com.ebi.html")))
-    # rubocop:enable Layout/LineLength
     stub_request(:get,
-                 # rubocop:todo Layout/LineLength
                  "http://example.com/ebi.feed.xml").and_return(body: File.read(Rails.root.join("test/fixtures/examlpe.com.ebi.feed.xml")))
-    # rubocop:enable Layout/LineLength
-
     stub_request(:get, "http://example.com/favicon.ico").and_return(body: "")
   end
 
   test "you can subscribe, crawl and read feeds" do
     # Subscribe to first feed
     page.execute_script('Control.show_subscribe_form()')
+
     assert_selector "#subscribe_window", visible: true, wait: 10
     page.execute_script('_$("discover_url").value = "http://example.com/"')
     page.execute_script('_$("discover_form").submit()')
+
     assert_selector ".discover_item a.sub_button", wait: 15
     # Click subscribe button via JavaScript to ensure event handler fires
     page.execute_script('document.querySelector(".discover_item a.sub_button").click()')
@@ -50,9 +43,11 @@ class SubscribeCrawlReadTest < ApplicationSystemTestCase
 
     # Subscribe to second feed
     page.execute_script('Control.show_subscribe_form()')
+
     assert_selector "#subscribe_window", visible: true, wait: 10
     page.execute_script('_$("discover_url").value = "http://example.com/ebi"')
     page.execute_script('_$("discover_form").submit()')
+
     assert_selector ".discover_item a.sub_button", wait: 15
     # Click subscribe button via JavaScript to ensure event handler fires
     page.execute_script('document.querySelector(".discover_item a.sub_button").click()')

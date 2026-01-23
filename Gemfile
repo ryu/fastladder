@@ -17,8 +17,8 @@ group :postgres do
 end
 
 gem 'addressable', require: 'addressable/uri'
-gem 'feed_searcher', git: 'https://github.com/fastladder/feed_searcher'
 gem 'feedjira'
+gem 'feed_searcher', git: 'https://github.com/fastladder/feed_searcher'
 gem 'jbuilder', '~> 2.13'
 gem 'mini_magick'
 gem 'nokogiri'
@@ -26,19 +26,19 @@ gem 'opml', git: 'https://github.com/ssig33/opml'
 
 group :test do
   gem 'capybara'
-  gem 'minitest-retry'
-  gem 'webmock'
-  gem 'selenium-webdriver'
   gem "minitest-rails", "~> 8.0"
+  gem 'minitest-retry'
+  gem 'selenium-webdriver'
+  gem 'webmock'
 end
 
 group :development, :test do
-  gem 'bundler-audit', require: false
   gem 'brakeman', require: false
+  gem 'bundler-audit', require: false
   gem 'rubocop', require: false
-  gem 'rubocop-rails', require: false
   gem 'rubocop-minitest', require: false
   gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
 end
 
 gem "rails-controller-testing", "~> 1.0"
@@ -54,9 +54,9 @@ gem "http", "~> 5.3"
 gem "propshaft", "~> 1.3.1"
 
 # Hotwire (Turbo + Stimulus)
-gem "turbo-rails", "~> 2.0"
-gem "stimulus-rails", "~> 1.3"
 gem "importmap-rails", "~> 2.1"
+gem "stimulus-rails", "~> 1.3"
+gem "turbo-rails", "~> 2.0"
 
 gem "ostruct", "~> 0.6.3"
 

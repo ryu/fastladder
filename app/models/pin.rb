@@ -13,15 +13,15 @@
 class Pin < ActiveRecord::Base
   belongs_to :member, optional: true
 
-  scope :past, ->(num){ order("created_on").limit(num) }
+  scope :past, ->(num) { order("created_on").limit(num) }
 
   after_create :destroy_over_limit_pins
 
-  def as_json(options = {})
+  def as_json(_options = {})
     result = {}
-    result[:link] = self.link.purify_uri
-    result[:title] = self.title.purify_html
-    result[:created_on] = self.created_on.to_time.to_i
+    result[:link] = link.purify_uri
+    result[:title] = title.purify_html
+    result[:created_on] = created_on.to_time.to_i
     result
   end
 

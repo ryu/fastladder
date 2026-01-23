@@ -5,6 +5,7 @@ class FeedTest < ActiveSupport::TestCase
     stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
     Fastladder.stub :simple_fetch, stub_content do
       feed = Feed.initialize_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
+
       assert_equal "Recent Commits to fastladder:master", feed.title
     end
   end
@@ -13,6 +14,7 @@ class FeedTest < ActiveSupport::TestCase
     stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
     Fastladder.stub :simple_fetch, stub_content do
       feed = Feed.initialize_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
+
       assert_equal "https://github.com/fastladder/fastladder/commits/master.atom", feed.feedlink
     end
   end
@@ -21,6 +23,7 @@ class FeedTest < ActiveSupport::TestCase
     stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
     Fastladder.stub :simple_fetch, stub_content do
       feed = Feed.initialize_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
+
       assert_equal "https://github.com/fastladder/fastladder/commits/master", feed.link
     end
   end
@@ -29,12 +32,14 @@ class FeedTest < ActiveSupport::TestCase
     stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
     Fastladder.stub :simple_fetch, stub_content do
       feed = Feed.initialize_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
+
       assert_equal "", feed.description
     end
   end
 
   test "create_from_uri creates feed" do
     stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
+
     Fastladder.stub :simple_fetch, stub_content do
       assert_difference "Feed.count", 1 do
         Feed.create_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
@@ -44,6 +49,7 @@ class FeedTest < ActiveSupport::TestCase
 
   test "create_from_uri creates crawl_status" do
     stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
+
     Fastladder.stub :simple_fetch, stub_content do
       assert_difference "CrawlStatus.count", 1 do
         Feed.create_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
@@ -53,6 +59,7 @@ class FeedTest < ActiveSupport::TestCase
 
   test "removes fragment from feedlink" do
     feed = create_feed(feedlink: "http://example.com/rss#_=_")
+
     assert_equal "http://example.com/rss", feed.feedlink
   end
 
@@ -63,6 +70,7 @@ class FeedTest < ActiveSupport::TestCase
     stub_request(:get, feed.feedlink).to_return(body: "")
     stub_request(:any, /favicon/).to_return(headers: { "Content-Type" => "image/vnd.microsoft.icon" }, body: favicon)
     feed.fetch_favicon!
+
     assert feed.favicon.image.start_with?("\x89PNG\r\n".b)
   end
 
@@ -72,6 +80,7 @@ class FeedTest < ActiveSupport::TestCase
     stub_request(:any, /.*/).to_return(body: favicon, headers: { "Content-Type" => "image/vnd.microsoft.icon" })
     feed.stub :favicon_candidates, [Addressable::URI.parse("http://example.com/favicon?file=favicon.gif")] do
       feed.fetch_favicon!
+
       assert feed.favicon.image.start_with?("\x89PNG\r\n".b)
     end
   end
@@ -81,9 +90,10 @@ class FeedTest < ActiveSupport::TestCase
     stub_request(:any, /.*/).to_return(body: "invalid image data")
 
     error_logged = false
-    MiniMagick::Image.stub :open, ->(*args) { raise MiniMagick::Error } do
-      Rails.logger.stub :error, ->(msg) { error_logged = true } do
+    MiniMagick::Image.stub :open, ->(*_args) { raise MiniMagick::Error } do
+      Rails.logger.stub :error, ->(_msg) { error_logged = true } do
         feed.fetch_favicon!
+
         assert error_logged
       end
     end
@@ -96,37 +106,41 @@ class FeedTest < ActiveSupport::TestCase
       body: <<-HTML
         <html>
           <head>
-            <link rel="shortcut icon" href="#{favicon_url.to_s}">
+            <link rel="shortcut icon" href="#{favicon_url}">
           </head>
           <body></body>
         </html>
       HTML
     )
     stub_request(:get, feed.feedlink).to_return(body: "")
+
     assert_includes feed.send(:favicon_candidates), favicon_url
   end
 
   test "crawlable includes ok feed with crawl_status" do
     ok_feed = create_feed_with_crawl_status({ subscribers_count: 1 }, { status: Fastladder::Crawler::CRAWL_OK })
     ng_feed = create_feed_with_crawl_status({ subscribers_count: 1 }, { status: Fastladder::Crawler::CRAWL_NOW })
+
     assert_includes Feed.crawlable, ok_feed
-    refute_includes Feed.crawlable, ng_feed
+    assert_not_includes Feed.crawlable, ng_feed
   end
 
   test "crawlable includes ok feed with subscribers_count" do
     ok_feed = create_feed_with_crawl_status({ subscribers_count: 1 }, { status: Fastladder::Crawler::CRAWL_OK })
     ng_feed = create_feed_with_crawl_status({ subscribers_count: 0 }, { status: Fastladder::Crawler::CRAWL_OK })
+
     assert_includes Feed.crawlable, ok_feed
-    refute_includes Feed.crawlable, ng_feed
+    assert_not_includes Feed.crawlable, ng_feed
   end
 
   test "crawlable includes ok feeds based on crawled_on" do
     ok_feed_1 = create_feed_with_crawl_status({ subscribers_count: 1 }, { crawled_on: nil })
     ok_feed_2 = create_feed_with_crawl_status({ subscribers_count: 1 }, { crawled_on: 31.minutes.ago })
     ng_feed = create_feed_with_crawl_status({ subscribers_count: 1 }, { crawled_on: 29.minutes.ago })
+
     assert_includes Feed.crawlable, ok_feed_1
     assert_includes Feed.crawlable, ok_feed_2
-    refute_includes Feed.crawlable, ng_feed
+    assert_not_includes Feed.crawlable, ng_feed
   end
 
   test "calculates average rate" do
@@ -134,16 +148,19 @@ class FeedTest < ActiveSupport::TestCase
     create_subscription(feed: feed, member: members(:member_one), rate: 5)
     create_subscription(feed: feed, member: members(:member_two), rate: 5)
     create_subscription(feed: feed, member: members(:member_three), rate: 3)
+
     assert_equal 4, feed.avg_rate
   end
 
   test "feed has default description" do
     feed = create_feed(description: nil)
-    refute_nil feed.description
+
+    assert_not_nil feed.description
   end
 
   test "feed has default title" do
     feed = create_feed(title: nil)
-    refute_nil feed.title
+
+    assert_not_nil feed.title
   end
 end

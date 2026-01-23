@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   end
 
   def nothing
-    head 200
+    head :ok
   end
 
   def logged_in?
@@ -42,15 +42,13 @@ class ApplicationController < ActionController::Base
 
   # extract URL from request_path(e.g. /about/http://example.com)
   def url_from_path(name)
-    if (url = params[name]).present?
-      if not (parsed_url = Addressable::URI.parse(url)).is_a? Addressable::URI or parsed_url.host.nil?
-        url = nil
-      end
+    if (url = params[name]).present? && (!(parsed_url = Addressable::URI.parse(url)).is_a? Addressable::URI or parsed_url.host.nil?)
+      url = nil
     end
     unless url.present?
       # params[name] is http:/example.com because of squeeze("/")
       path = url_for(name => ".", only_path: true)
-      url = request.original_fullpath.slice(path.size-1..-1)
+      url = request.original_fullpath.slice(path.size - 1..-1)
     end
     url
   end
@@ -70,9 +68,9 @@ class ApplicationController < ActionController::Base
   end
 
   def self.params_required(params, options = {})
-    params = [ params ].flatten
-    before_action(options) do|controller|
-      params.each do|param|
+    params = [params].flatten
+    before_action(options) do |controller|
+      params.each do |param|
         if controller.params[param].blank?
           render json: json_status(false)
           break false

@@ -26,38 +26,38 @@ class Item < ActiveRecord::Base
   before_validation :default_values
   before_save :create_digest, :fill_datetime
 
-  scope :stored_since, ->(viewed_on){ viewed_on ? where("stored_on >= ?", viewed_on) : all }
-  scope :recent, ->(limit = nil, offset = nil){ order("created_on DESC, id DESC").limit(limit).offset(offset) }
+  scope :stored_since, ->(viewed_on) { viewed_on ? where("stored_on >= ?", viewed_on) : all }
+  scope :recent, ->(limit = nil, offset = nil) { order("created_on DESC, id DESC").limit(limit).offset(offset) }
 
   def default_values
     self.title ||= ""
-    self.guid ||= self.link
+    self.guid ||= link
   end
 
   def fill_datetime
-    self.stored_on = Time.now unless self.stored_on
+    self.stored_on = Time.now unless stored_on
   end
 
   def create_digest
-    str = "#{self.title}#{self.body}"
+    str = "#{self.title}#{body}"
     str.gsub!(%r{<br clear="all"\s*/>\s*<a href="http://rss\.rssad\.jp/(.*?)</a>\s*<br\s*/>}im, "")
     str = str.gsub(/\s+/, "")
     digest = Digest::SHA1.hexdigest(str)
     self.digest = digest
   end
 
-  def as_json(options = {})
+  def as_json(_options = {})
     result = {}
-    result[:created_on] = self.created_on ? self.created_on.to_time.to_i : 0
-    result[:modified_on] = self.modified_on ? self.modified_on.to_time.to_i : 0
-    result[:id] = self.id
-    result[:enclosure_type] = self.enclosure_type if self.enclosure_type
-    result[:enclosure] = (self.enclosure || "").purify_uri if self.enclosure
-    %i(title author category).each do |s|
-      result[s] = (self.send(s) || "").purify_html
+    result[:created_on] = created_on ? created_on.to_time.to_i : 0
+    result[:modified_on] = modified_on ? modified_on.to_time.to_i : 0
+    result[:id] = id
+    result[:enclosure_type] = enclosure_type if enclosure_type
+    result[:enclosure] = (enclosure || "").purify_uri if enclosure
+    %i[title author category].each do |s|
+      result[s] = (send(s) || "").purify_html
     end
-    result[:link] = (self.link || "").purify_uri
-    result[:body] = (self.body || "").scrub_html
+    result[:link] = (link || "").purify_uri
+    result[:body] = (body || "").scrub_html
     result
   end
 end

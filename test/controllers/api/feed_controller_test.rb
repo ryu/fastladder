@@ -19,21 +19,25 @@ class Api::FeedControllerTest < ActionController::TestCase
 
   test "POST add_tags renders response" do
     post :add_tags, session: { member_id: @member.id }
+
     assert_response :success
   end
 
   test "POST remove_tags renders response" do
     post :remove_tags, session: { member_id: @member.id }
+
     assert_response :success
   end
 
   test "add_tags requires login" do
     post :add_tags
-    assert response.body.blank?
+
+    assert_predicate response.body, :blank?
   end
 
   test "remove_tags requires login" do
     post :remove_tags
-    assert response.body.blank?
+
+    assert_predicate response.body, :blank?
   end
 end
