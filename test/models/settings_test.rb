@@ -1,0 +1,42 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class SettingsTest < ActiveSupport::TestCase
+  test "provides max_unread_count" do
+    assert_kind_of Integer, Settings.max_unread_count
+    assert Settings.max_unread_count > 0
+  end
+
+  test "provides subscribe_limit" do
+    assert_kind_of Integer, Settings.subscribe_limit
+    assert Settings.subscribe_limit > 0
+  end
+
+  test "provides save_pin_limit" do
+    assert_kind_of Integer, Settings.save_pin_limit
+    assert Settings.save_pin_limit > 0
+  end
+
+  test "provides crawl_interval" do
+    assert_kind_of Integer, Settings.crawl_interval
+    assert Settings.crawl_interval > 0
+  end
+
+  test "provides allow_tags as array" do
+    assert_kind_of Array, Settings.allow_tags
+    assert_includes Settings.allow_tags, "a"
+    assert_includes Settings.allow_tags, "img"
+  end
+
+  test "provides allow_attributes as array" do
+    assert_kind_of Array, Settings.allow_attributes
+    assert_includes Settings.allow_attributes, "href"
+    assert_includes Settings.allow_attributes, "src"
+  end
+
+  test "provides default_favicon path" do
+    assert_kind_of String, Settings.default_favicon
+    assert Settings.default_favicon.include?("default.png")
+  end
+end
