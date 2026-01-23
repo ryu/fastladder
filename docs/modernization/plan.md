@@ -207,6 +207,19 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-23 (テスト追加: 77テスト/207アサーション)
+- settings_test.rb 新規作成（Settings モデル設定テスト: 7テスト）
+- account_controller_test.rb 新規作成（パスワード/APIキー: 10テスト）
+- export_controller_test.rb 新規作成（OPML エクスポート: 8テスト）
+- contents_controller_test.rb 新規作成（ガイド/設定ページ: 6テスト）
+- reader_controller_test.rb 新規作成（リーダーエントリ: 4テスト）
+- share_controller_test.rb 新規作成（共有ページ: 3テスト）
+- mobile_controller_test.rb 拡張（モバイル UI 全機能: 13テスト）
+- rpc_controller_test.rb 拡張（API 認証/エンドポイント: 14テスト）
+- subscribe_controller_test.rb 拡張（購読フロー: 8テスト）
+- user_controller_test.rb 拡張（公開プロフィール/RSS/OPML: 11テスト）
+- user/index.rss.builder: to_s(:rfc822) → to_fs(:rfc822) 修正（Rails 8+ 対応）
+
 ### 2026-01-23 (不要コード削除)
 - config/initializers/konacha.rb 削除（未使用テストフレームワーク設定）
 - `render NOTHING` → `head :not_found` に修正（Rails 5+ 非推奨 API）
