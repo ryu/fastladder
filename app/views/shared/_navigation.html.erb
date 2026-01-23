@@ -1,0 +1,14 @@
+<div class="navi">
+  <h1 class="logo"><%= link_to "Fastladder", root_path %></h1>
+  <% if current_member.present? && !current_member.errors.any? %>
+    <ul>
+      <li>
+        Welcome
+        <%= link_to current_member.username, user_path(current_member.username) %>
+      </li>
+      <li><%= link_to "My Feeds", reader_path %></li>
+      <li><%= link_to "Account", account_index_path %></li>
+      <li><%= link_to "Sign Out", logout_path %></li>
+    </ul>
+  <% end %>
+</div>

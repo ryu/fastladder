@@ -1425,3 +1425,68 @@ body.help ol{
 	float:right;
 	margin:0px 0px 0px -220px;
 }
+
+/* Flash messages */
+.flash-message {
+	text-align: center;
+	padding: 0.5em;
+	position: relative;
+}
+
+.flash-message p {
+	margin: 0;
+}
+
+.flash-message.notice {
+	background-color: #ff9;
+}
+
+.flash-message.notice p {
+	color: green;
+}
+
+.flash-message.alert {
+	background-color: #fdf3eb;
+}
+
+.flash-message.alert p {
+	color: #e81a37;
+}
+
+.flash-close {
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: none;
+	border: none;
+	font-size: 1.2em;
+	cursor: pointer;
+	opacity: 0.7;
+}
+
+.flash-close:hover {
+	opacity: 1;
+}
+
+/* Form validation errors */
+.field-error {
+	color: #e81a37;
+	font-size: 0.85em;
+	display: block;
+	margin-top: 0.25em;
+}
+
+.password-match-message {
+	font-size: 0.85em;
+	display: block;
+	margin-top: 0.25em;
+}
+
+.password-match-message.match {
+	color: green;
+}
+
+.password-match-message.no-match {
+	color: #e81a37;
+}

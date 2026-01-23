@@ -15,7 +15,7 @@ class MembersController < ApplicationController
     redirect_to '/'
     flash[:notice] = "Thanks for signing up!"
   rescue ActiveRecord::RecordInvalid
-    flash[:error] = @member.errors.map{|x, y| "#{x}: #{y}"}.join(', ')
+    flash.now[:alert] = @member.errors.full_messages.join(', ')
     render action: 'new'
   end
 

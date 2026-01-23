@@ -1,0 +1,12 @@
+<% if flash[:notice] %>
+  <div class="flash-message notice" data-controller="flash" data-flash-delay-value="5000">
+    <button class="flash-close" type="button" data-action="flash#close" aria-label="Close">&times;</button>
+    <p><%= flash[:notice] %></p>
+  </div>
+<% end %>
+<% if flash[:alert] %>
+  <div class="flash-message alert" data-controller="flash" data-flash-delay-value="8000">
+    <button class="flash-close" type="button" data-action="flash#close" aria-label="Close">&times;</button>
+    <p><%= flash[:alert] %></p>
+  </div>
+<% end %>

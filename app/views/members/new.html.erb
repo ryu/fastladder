@@ -1,7 +1,6 @@
 <% @title = "Create new account" %>
 <div id="content">
   <h2>Create new account</h2>
-  <%= flash[:error] %>
   <%= form_for :member, url: members_path, html: { data: { controller: "password-match form-validation", action: "submit->form-validation#validate" } } do |f| %>
     <dl>
       <dt>

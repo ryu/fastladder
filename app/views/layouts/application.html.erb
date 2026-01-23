@@ -16,32 +16,8 @@
   <body class="<%= params[:controller] %>">
     <span id="ApiKey" style="display:none" data-api-key="<%= session[:session_id] %>"></span>
     <div id="container">
-      <div class="navi">
-        <h1 class="logo"><%= link_to "Fastladder", root_path %></h1>
-        <% if current_member.present? && !current_member.errors.any? %>
-          <ul>
-            <li>
-              Welcome
-              <%= link_to current_member.username, user_path(current_member.username) %>
-            </li>
-            <li><%= link_to "My Feeds", reader_path %></li>
-            <li><%= link_to "Account", account_index_path %></li>
-            <li><%= link_to "Sign Out", logout_path %></li>
-          </ul>
-        <% end %>
-      </div>
-      <% if flash[:notice] %>
-        <div class="notice" style="text-align:center;background-color:#ff9;padding:0.5em;position:relative" data-controller="flash" data-flash-delay-value="5000">
-          <button class="flash-close" type="button" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:1.2em;cursor:pointer;opacity:0.7" data-action="flash#close" aria-label="Close">&times;</button>
-          <p style="color: green;margin:0"><%= flash[:notice] %></p>
-        </div>
-      <% end %>
-      <% if flash[:alert] %>
-        <div class="alert" style="text-align:center;background-color:#fdf3eb;padding:0.5em;position:relative" data-controller="flash" data-flash-delay-value="8000">
-          <button class="flash-close" type="button" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:1.2em;cursor:pointer;opacity:0.7" data-action="flash#close" aria-label="Close">&times;</button>
-          <p style="color: #e81a37;margin:0"><%= flash[:alert] %></p>
-        </div>
-      <% end %>
+      <%= render "shared/navigation" %>
+      <%= render "shared/flash_messages" %>
       <%= yield %>
     </div>
     <script>
