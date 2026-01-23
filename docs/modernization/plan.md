@@ -218,7 +218,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - rpc_controller_test.rb 拡張（API 認証/エンドポイント: 14テスト）
 - subscribe_controller_test.rb 拡張（購読フロー: 8テスト）
 - user_controller_test.rb 拡張（公開プロフィール/RSS/OPML: 11テスト）
-- user/index.rss.builder: to_s(:rfc822) → to_fs(:rfc822) 修正（Rails 8+ 対応）
+- user/index.rss.builder: to_s(:rfc822) → to_fs(:rfc2822) 修正（Rails 8+ 対応、RFC 2822 は RFC 822 の後継規格）
 
 ### 2026-01-23 (不要コード削除)
 - config/initializers/konacha.rb 削除（未使用テストフレームワーク設定）
