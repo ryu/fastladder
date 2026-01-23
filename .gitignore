@@ -3,7 +3,6 @@ log
 tmp
 config/secret.txt
 config/secrets.yml
-db/schema.rb
 lib/*.dylib
 db/*.sqlite3
 public/assets
