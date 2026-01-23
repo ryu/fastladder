@@ -73,8 +73,8 @@ class ApiController < ApplicationController
     items = []
     subscriptions = @member.subscriptions
     subscriptions = subscriptions.has_unread if params[:unread].to_i != 0
-    subscriptions.order("subscriptions.id").includes(:folder, { feed: [:crawl_status, :favicon] }).each do |sub|
-      unread_count = sub.feed.items.stored_since(sub.viewed_on).count
+    subscriptions.order("subscriptions.id").includes(:folder, { feed: [:crawl_status, :favicon] }).with_unread_count.each do |sub|
+      unread_count = sub.unread_count.to_i
       next if params[:unread].to_i > 0 and unread_count == 0
       next if sub.id < from_id
       feed = sub.feed
@@ -171,12 +171,33 @@ class ApiController < ApplicationController
   end
 
   def count_items(options = {})
-    subscriptions = @member.subscriptions
+    subscriptions = @member.subscriptions.includes(:feed)
     subscriptions = subscriptions.has_unread if options[:unread]
-    stored_on_list = subscriptions.order("id").map do |sub|
+    subs_array = subscriptions.order("id").to_a
+    feed_ids = subs_array.map(&:feed_id)
+
+    items_by_feed = {}
+    if feed_ids.any?
+      # Use window function to limit items per feed in a single query
+      max_items = Settings.max_unread_count
+      sql = <<~SQL.squish
+        SELECT feed_id, stored_on FROM (
+          SELECT feed_id, stored_on,
+                 ROW_NUMBER() OVER (PARTITION BY feed_id ORDER BY stored_on DESC) as rn
+          FROM items
+          WHERE feed_id IN (#{feed_ids.map { '?' }.join(',')})
+        ) ranked
+        WHERE rn <= ?
+      SQL
+
+      rows = Item.connection.select_rows(Item.sanitize_sql_array([sql, *feed_ids, max_items]))
+      items_by_feed = rows.group_by(&:first).transform_values { |r| r.map { |row| Time.zone.parse(row[1]) } }
+    end
+
+    stored_on_list = subs_array.map do |sub|
       {
         subscription: sub,
-        stored_on: sub.feed.items.select("stored_on").order("stored_on DESC").limit(Settings.max_unread_count).map { |item| item.stored_on.to_time },
+        stored_on: items_by_feed[sub.feed_id] || [],
       }
     end
     counts = []

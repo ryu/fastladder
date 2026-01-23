@@ -142,7 +142,7 @@ class Member < ActiveRecord::Base
   end
 
   def public_subs
-    self.subscriptions.open
+    self.subscriptions.includes(:feed).open
   end
 
   def recent_subs(num)
@@ -159,7 +159,7 @@ class Member < ActiveRecord::Base
     case format
     when 'opml'
       folders = {}
-      subs = subscriptions.includes(:folder).order("subscriptions.id")
+      subs = subscriptions.includes(:folder, :feed).order("subscriptions.id")
 
       subs.each do |sub|
         feed = sub.feed
