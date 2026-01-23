@@ -18,9 +18,8 @@ module Feed::FaviconFetchable
     end
   end
 
-  protected
+  private
 
-  # テスト可能にするため protected
   def favicon_candidates
     uris = []
 
@@ -36,8 +35,6 @@ module Feed::FaviconFetchable
 
     uris.uniq
   end
-
-  private
 
   def extract_favicon_links_from_feed
     xml = Fastladder.simple_fetch(feedlink)
