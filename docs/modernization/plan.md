@@ -183,11 +183,12 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ### Deliverables
 - [x] README/runbook を最新化（起動、ENV、トラブルシュート）
 - [x] 不要コード/設定の削除（konacha.rb, IE 7 CSS, render NOTHING）
-- [ ] リリースノート（移行に伴う変更点・注意点）
+- [x] リリースノート（移行に伴う変更点・注意点）
 
 ### 完了したPR
 - `docs: update README with requirements and development guide`
 - `docs: update baseline and plan documentation`
+- `docs: add release notes for v2.0.0`
 
 ---
 
@@ -206,6 +207,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-23 (リリースノート作成)
+- docs/RELEASE_NOTES.md を作成
+- v2.0.0 としてリリース内容を文書化
+- 破壊的変更、アップグレード手順、既知の問題を記載
 
 ### 2026-01-23 (テスト追加: 77テスト/207アサーション)
 - settings_test.rb 新規作成（Settings モデル設定テスト: 7テスト）
