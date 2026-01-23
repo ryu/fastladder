@@ -4,7 +4,7 @@
 「現状スナップショット」です。
 推測は書かず、事実のみを記録します。
 
-**最終更新: 2026-01-21**
+**最終更新: 2026-01-23**
 
 ---
 
@@ -84,14 +84,14 @@
 
 - 実行: `bin/rails test`
 - 結果:
-  - 263 runs, 555 assertions
+  - 336 runs, 782 assertions
   - 0 failures, 0 errors, 0 skips
 
 ### システムテスト
 
 - 実行: `bin/rails test:system`
 - 結果:
-  - 11 runs, 53 assertions
+  - 12 runs, 56 assertions
   - 0 failures, 0 errors, 0 skips
 
 ### テストデータ
@@ -126,14 +126,20 @@
 
 ## 7. 既知のレガシー課題（事実ベース）
 
-- フロントエンドは jQuery + 独自 JS（Hotwire 未導入）
-- 一部の HAML テンプレートが残存（ERB への移行中）
-- crawler の境界化は一部実施済み（トランザクション追加）
+- フロントエンドは jQuery + 独自 LDR JS（段階的に Stimulus へ移行中）
+- HAML は全て ERB に変換済み（haml gem 削除）
+- crawler の境界化完了（Fetcher, FeedParser, CrawlerReporter）
+- Turbo Drive はグローバル無効化中（既存 JS との衝突回避）
 
 ---
 
-## 8. 次のマイルストーンへの前提
+## 8. 現在のマイルストーン状態
 
 - SQLite 前提で web / crawler / test が動作することを確認済み
-- Rails 8.1.2 で起動・テスト可能
+- Rails 8.1.2 / Ruby 3.4.8 で起動・テスト可能
 - CI が全ステップ通過
+- Hotwire 土台導入済み（Turbo Drive 無効、Stimulus 有効）
+- 複数の Stimulus コントローラ実装済み:
+  - password_match, form_validation, flash, clipboard
+  - tab, checkbox_group, hotkey, keyboard_nav
+- 共通パーシャル整備済み（navigation, flash_messages）
