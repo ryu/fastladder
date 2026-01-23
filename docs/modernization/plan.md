@@ -208,6 +208,15 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-23 (37signals スタイル適用)
+- Feed::Crawlable Concern 作成（クロールロジック分離）
+- Feed::FaviconFetchable Concern 作成（favicon取得ロジック分離）
+- BulkSubscriptionUpdates Controller Concern 作成（バルク操作共通化）
+- Subscription#apply_settings メソッド追加（設定一括適用）
+- Member#find_folder_by_name_or_id メソッド追加
+- Api::FeedController 簡素化（Concern とモデルメソッド使用）
+- **方針**: Service Object 不使用、ドメインロジックはモデルに、Concern で整理
+
 ### 2026-01-23 (リリースノート作成)
 - docs/RELEASE_NOTES.md を作成
 - v2.0.0 としてリリース内容を文書化
