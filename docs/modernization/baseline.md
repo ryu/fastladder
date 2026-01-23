@@ -84,14 +84,14 @@
 
 - 実行: `bin/rails test`
 - 結果:
-  - 336 runs, 782 assertions
+  - 409 runs, 984 assertions
   - 0 failures, 0 errors, 0 skips
 
 ### システムテスト
 
 - 実行: `bin/rails test:system`
 - 結果:
-  - 12 runs, 56 assertions
+  - 11 runs, 55 assertions
   - 0 failures, 0 errors, 0 skips
 
 ### テストデータ
@@ -143,3 +143,31 @@
   - password_match, form_validation, flash, clipboard
   - tab, checkbox_group, hotkey, keyboard_nav
 - 共通パーシャル整備済み（navigation, flash_messages）
+
+---
+
+## 9. テストカバレッジ
+
+### モデル (10/10 = 100%)
+- CrawlStatus, Favicon, Feed, Folder, Item
+- Member, Pin, Settings, SimpleOpml, Subscription
+
+### コントローラー (20/20 = 100%)
+- Account, Api, Contents, Export, Import
+- Members, Mobile, Reader, Rpc, Sessions
+- Share, Subscribe, User, Utility::Bookmarklet
+- Api::Config, Api::Feed, Api::Folder, Api::Pin
+
+### Lib (7/7 = 100%)
+- Fastladder::Crawler, Fastladder::Fetcher
+- Fastladder::FeedParser, Fastladder::CrawlerReporter
+- String extensions, FeedSearcher, SimpleOpml
+
+---
+
+## 10. 関連ドキュメント
+
+- [README.md](../../README.md) - クイックスタート・開発ガイド
+- [RELEASE_NOTES.md](RELEASE_NOTES.md) - v2.0.0 リリースノート
+- [plan.md](plan.md) - 近代化計画・進行ログ
+- [CLAUDE.md](../../CLAUDE.md) - Claude Code 向け指示書

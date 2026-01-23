@@ -133,6 +133,11 @@ Open http://localhost:5000 in your browser.
                     └───────────┘
 ```
 
+## Documentation
+
+- [Release Notes](docs/RELEASE_NOTES.md) - Version history and upgrade instructions
+- [Modernization Plan](docs/modernization/plan.md) - Development roadmap
+
 ## License
 
 Fastladder is released under the MIT License.
