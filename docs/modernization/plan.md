@@ -123,13 +123,14 @@ SQLite 前提で長期運用に耐える。
 - [x] 必要な index の追加（crawl_statuses.feed_id に unique index）
 - [x] N+1 クエリの修正（api#subs, api#count_items, user#index, member#export）
 - [x] with_unread_count スコープのバグ修正（NULL viewed_on 対応）
-- [ ] unique制約の追加（重複排除の最後の砦）
+- [x] unique制約の追加（auth_key に partial unique index）
 - [ ] migration を後方互換に（段階的に）
 
 ### 完了したPR
 - `perf: add database optimizations for feed queries`
 - `perf: fix N+1 queries in API and user controllers`
 - `chore: track db/schema.rb in version control`
+- `perf: add unique index on members.auth_key for API authentication`
 
 ---
 
@@ -205,6 +206,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-23 (DB最適化: unique制約)
+- members.auth_key に partial unique index 追加
+- API キー重複をDB レベルで防止
+- NULL 許容（auth_key 未設定のユーザー）
 
 ### 2026-01-23 (レイアウト/パーシャル整理)
 - shared/_navigation.html.erb 作成（ナビゲーションを抽出）
