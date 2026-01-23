@@ -147,8 +147,8 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] 隔離されたページで最初の Stimulus controller（サインアップページ）
 
 ### Step A: 画面整理（土台）
-- [ ] layout/partials の整理
-- [ ] フォーム・フラッシュ・エラー表示の標準化
+- [x] layout/partials の整理（navigation, flash_messages を shared に抽出）
+- [x] フォーム・フラッシュ・エラー表示の標準化（CSS クラス化、flash キー統一）
 - [x] HAML から ERB への変換（全て完了、haml gem 削除）
 
 ### Step B: Turbo 化（価値の高い操作から）
@@ -173,6 +173,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - `refactor: convert all HAML templates to ERB and remove haml gem`
 - `feat: add tab and checkbox-group Stimulus controllers`
 - `feat: add keyboard navigation Stimulus controllers for mobile pages`
+- `refactor: extract layout partials and standardize flash messages`
 
 ---
 
@@ -204,6 +205,14 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-23 (レイアウト/パーシャル整理)
+- shared/_navigation.html.erb 作成（ナビゲーションを抽出）
+- shared/_flash_messages.html.erb 作成（フラッシュメッセージを抽出）
+- Flash メッセージのインラインスタイルを CSS に移動
+- flash[:error] → flash[:alert] に統一
+- MembersController の deprecated errors.map 構文を修正
+- フォームバリデーションエラー用の CSS クラス追加
 
 ### 2026-01-23 (Stimulus移行: モバイルページ)
 - hotkey_controller.js 追加（シンプルなキー操作トリガー）
