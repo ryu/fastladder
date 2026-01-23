@@ -20,7 +20,7 @@ module Feed::Crawlable
   def with_crawl_lock
     crawl_status.update!(status: Fastladder::Crawler::CRAWL_NOW)
     yield
-  rescue => e
+  rescue StandardError => e
     logger.error "Crawler error: #{e.message}"
   ensure
     crawl_status.update!(status: Fastladder::Crawler::CRAWL_OK)

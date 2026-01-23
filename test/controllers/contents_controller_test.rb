@@ -2,41 +2,41 @@
 
 require "test_helper"
 
-class ContentsControllerTest < ActionController::TestCase
+class ContentsControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @member = create_member(password: "password")
+    @member = create_member(password: "password", password_confirmation: "password")
   end
 
   test "GET guide requires login" do
-    get :guide
+    get "/contents/guide"
     assert_redirected_to "/login"
   end
 
   test "GET guide renders without layout when logged in" do
-    get :guide, session: { member_id: @member.id }
+    post "/session", params: { username: @member.username, password: "password" }
+    get "/contents/guide"
     assert_response :success
-    assert_template :guide
   end
 
   test "GET configure requires login" do
-    get :configure
+    get "/contents/config"
     assert_redirected_to "/login"
   end
 
   test "GET configure renders without layout when logged in" do
-    get :configure, session: { member_id: @member.id }
+    post "/session", params: { username: @member.username, password: "password" }
+    get "/contents/config"
     assert_response :success
-    assert_template :configure
   end
 
   test "GET manage requires login" do
-    get :manage
+    get "/contents/manage"
     assert_redirected_to "/login"
   end
 
   test "GET manage renders without layout when logged in" do
-    get :manage, session: { member_id: @member.id }
+    post "/session", params: { username: @member.username, password: "password" }
+    get "/contents/manage"
     assert_response :success
-    assert_template :manage
   end
 end

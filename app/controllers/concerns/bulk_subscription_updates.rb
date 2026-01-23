@@ -18,14 +18,16 @@ module BulkSubscriptionUpdates
 
   # "0" or "1" -> boolean or nil
   def parse_boolean(value)
-    return nil unless value =~ /^[01]$/
+    return nil unless /^[01]$/.match?(value)
+
     value.to_i == 1
   end
 
   # フォルダIDが有効かチェックして返す
   def validated_folder_id(folder_id)
     id = folder_id.to_i
-    return nil unless id > 0
+    return nil unless id.positive?
+
     @member.folders.exists?(id) ? id : nil
   end
 end

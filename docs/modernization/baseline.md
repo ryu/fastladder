@@ -84,14 +84,14 @@
 
 - 実行: `bin/rails test`
 - 結果:
-  - 409 runs, 984 assertions
+  - 412 runs, 969 assertions
   - 0 failures, 0 errors, 0 skips
 
 ### システムテスト
 
 - 実行: `bin/rails test:system`
 - 結果:
-  - 11 runs, 55 assertions
+  - 11 runs, 53 assertions
   - 0 failures, 0 errors, 0 skips
 
 ### テストデータ
@@ -143,6 +143,12 @@
   - password_match, form_validation, flash, clipboard
   - tab, checkbox_group, hotkey, keyboard_nav
 - 共通パーシャル整備済み（navigation, flash_messages）
+- 37signals スタイル「7アクション」リファクタリング完了:
+  - Api::SubscriptionsController（show, create, update, destroy）
+  - Api::Subscriptions::Rates/Notifications/Visibilities/FoldersController
+  - Api::Feed::Discoveries/FaviconsController
+  - Model Concerns（Feed::Crawlable, Feed::FaviconFetchable）
+  - Controller Concern（BulkSubscriptionUpdates）
 
 ---
 
@@ -152,11 +158,15 @@
 - CrawlStatus, Favicon, Feed, Folder, Item
 - Member, Pin, Settings, SimpleOpml, Subscription
 
-### コントローラー (20/20 = 100%)
+### コントローラー (29/29 = 100%)
 - Account, Api, Contents, Export, Import
 - Members, Mobile, Reader, Rpc, Sessions
 - Share, Subscribe, User, Utility::Bookmarklet
 - Api::Config, Api::Feed, Api::Folder, Api::Pin
+- Api::Subscriptions, Api::Subscriptions::Rates
+- Api::Subscriptions::Notifications, Api::Subscriptions::Visibilities
+- Api::Subscriptions::Folders
+- Api::Feed::Discoveries, Api::Feed::Favicons
 
 ### Lib (7/7 = 100%)
 - Fastladder::Crawler, Fastladder::Fetcher

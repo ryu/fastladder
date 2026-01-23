@@ -203,7 +203,7 @@ class Member < ActiveRecord::Base
   # フォルダIDが有効かチェック
   def valid_folder_id?(folder_id)
     id = folder_id.to_i
-    id > 0 && folders.exists?(id)
+    id.positive? && folders.exists?(id)
   end
 
   protected

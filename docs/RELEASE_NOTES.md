@@ -77,7 +77,30 @@
 - レイアウトパーシャルの整理（navigation, flash_messages）
 - Flash メッセージキーの統一（`flash[:error]` → `flash[:alert]`）
 
-### 6. レガシーコードの削除
+### 6. 37signals スタイル コントローラーリファクタリング
+
+Rails/DHH スタイルに則り、コントローラーを「7つの標準アクション」パターンに準拠させました。
+
+#### 新規 RESTful コントローラー
+| コントローラー | アクション | 説明 |
+|--------------|----------|------|
+| `Api::SubscriptionsController` | show, create, update, destroy | 購読の CRUD |
+| `Api::Subscriptions::RatesController` | update | レート設定 |
+| `Api::Subscriptions::NotificationsController` | update | 通知設定（バルク） |
+| `Api::Subscriptions::VisibilitiesController` | update | 公開設定（バルク） |
+| `Api::Subscriptions::FoldersController` | update | フォルダ移動（バルク） |
+| `Api::Feed::DiscoveriesController` | create | フィード検索 |
+| `Api::Feed::FaviconsController` | create | favicon 取得 |
+
+#### Concerns の導入
+- `Feed::Crawlable` - クロール処理のカプセル化
+- `Feed::FaviconFetchable` - favicon 取得ロジック
+- `BulkSubscriptionUpdates` - バルク更新のヘルパー
+
+#### 後方互換性
+レガシー API パス（`/api/feed/subscribe`, `/api/feed/set_rate` 等）は引き続き動作します。
+
+### 7. レガシーコードの削除
 
 - **削除されたファイル/機能**:
   - `config/initializers/konacha.rb` (未使用テストフレームワーク設定)
@@ -85,13 +108,12 @@
   - IE 7 条件付き CSS
   - Flash チュートリアル、Firefox 2 用コンテンツ
 
-### 7. テストカバレッジの向上
+### 8. テストカバレッジの向上
 
-- **新規テストファイル**: 6ファイル
-- **拡張テストファイル**: 4ファイル
-- **追加テスト数**: 77テスト / 207アサーション
+- **総テスト数**: 412 ユニット/統合テスト + 11 システムテスト
+- **総アサーション数**: 969
 - **モデルカバレッジ**: 100% (10/10)
-- **コントローラーカバレッジ**: 100% (20/20)
+- **コントローラーカバレッジ**: 100% (29/29)
 
 ---
 

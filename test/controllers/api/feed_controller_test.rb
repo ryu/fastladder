@@ -1,127 +1,39 @@
+# frozen_string_literal: true
+
 require "test_helper"
 
 class Api::FeedControllerTest < ActionController::TestCase
   def setup
-    @member = create_member(password: "mala", password_confirmation: "mala")
-    @feed = create_feed(feedlink: "http://feeds.feedburner.com/mala/blog")
-    @subscription = create_subscription(feed: @feed, member: @member)
-    @folder = create_folder(member: @member)
+    @member = create_member(password: "test", password_confirmation: "test")
   end
 
-  test "POST discover renders json" do
-    stub_request(:any, "http://feeds.feedburner.com/mala/blog")
-    post :discover, params: { url: @feed.feedlink }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
+  # add_tags and remove_tags are the only remaining actions on this controller
+  # Other actions have been moved to RESTful controllers:
+  # - discover -> Api::Feed::DiscoveriesController#create
+  # - subscribe/unsubscribe/subscribed/update -> Api::SubscriptionsController
+  # - set_rate -> Api::Subscriptions::RatesController#update
+  # - set_notify -> Api::Subscriptions::NotificationsController#update
+  # - set_public -> Api::Subscriptions::VisibilitiesController#update
+  # - move -> Api::Subscriptions::FoldersController#update
+  # - fetch_favicon -> Api::Feed::FaviconsController#create
 
-  test "POST discover renders error without url" do
-    post :discover, session: { member_id: @member.id }
-    assert_json_error response.body
-  end
-
-  test "POST subscribed renders json" do
-    post :subscribed, params: { feedlink: @feed.feedlink, subscribe_id: @subscription.id }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
-
-  test "POST subscribe renders json" do
-    post :subscribe, params: { feedlink: @feed.feedlink }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
-
-  test "POST subscribe renders error without feedlink" do
-    post :subscribe, session: { member_id: @member.id }
-    assert_json_error response.body
-  end
-
-  test "POST update renders json" do
-    post :update, params: { subscribe_id: @subscription.id, folder_id: @folder.id }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
-
-  test "POST update renders error without subscribe_id" do
-    post :update, params: { folder_id: @folder.id }, session: { member_id: @member.id }
-    assert_json_error response.body
-  end
-
-  test "POST unsubscribe renders json" do
-    post :unsubscribe, params: { subscribe_id: @subscription.id, folder_id: @folder.id }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
-
-  test "POST unsubscribe renders error without subscribe_id" do
-    post :unsubscribe, params: { folder_id: @folder.id }, session: { member_id: @member.id }
-    assert_json_error response.body
-  end
-
-  test "POST set_rate renders json" do
-    post :set_rate, params: { subscribe_id: @subscription.id, rate: 3 }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
-
-  test "POST set_rate renders error without subscribe_id" do
-    post :set_rate, params: { rate: 3 }, session: { member_id: @member.id }
-    assert_json_error response.body
-  end
-
-  test "POST move renders json" do
-    post :move, params: { subscribe_id: @subscription.id, to: @folder.name }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
-
-  test "POST move renders error without subscribe_id" do
-    post :move, params: { to: @folder.name }, session: { member_id: @member.id }
-    assert_json_error response.body
-  end
-
-  test "POST set_notify renders json" do
-    post :set_notify, params: { subscribe_id: @subscription.id, ignore: "0" }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
-
-  test "POST set_notify renders error without subscribe_id" do
-    post :set_notify, params: { ignore: "0" }, session: { member_id: @member.id }
-    assert_json_error response.body
-  end
-
-  test "POST set_public renders json" do
-    post :set_public, params: { subscribe_id: @subscription.id, public: "0" }, session: { member_id: @member.id }
-    assert_valid_json response.body
-  end
-
-  test "POST set_public renders error without subscribe_id" do
-    post :set_public, params: { public: "0" }, session: { member_id: @member.id }
-    assert_json_error response.body
-  end
-
-  test "POST fetch_favicon renders json" do
-    Feed.stub :find_by, @feed do
-      @feed.stub :fetch_favicon!, nil do
-        post :fetch_favicon, params: { feedlink: @feed.feedlink }, session: { member_id: @member.id }
-        assert_valid_json response.body
-      end
-    end
-  end
-
-  test "not logged in renders blank page for discover" do
-    post :discover, params: { url: @feed.feedlink }
-    assert response.body.blank?
+  test "POST add_tags renders response" do
+    post :add_tags, session: { member_id: @member.id }
     assert_response :success
   end
 
-  private
-
-  def assert_valid_json(body)
-    JSON.parse(body)
-    assert true
-  rescue JSON::ParserError
-    flunk "Expected valid JSON, got: #{body}"
+  test "POST remove_tags renders response" do
+    post :remove_tags, session: { member_id: @member.id }
+    assert_response :success
   end
 
-  def assert_json_error(body)
-    json = JSON.parse(body)
-    assert_equal false, json["isSuccess"]
-  rescue JSON::ParserError
-    flunk "Expected valid JSON, got: #{body}"
+  test "add_tags requires login" do
+    post :add_tags
+    assert response.body.blank?
+  end
+
+  test "remove_tags requires login" do
+    post :remove_tags
+    assert response.body.blank?
   end
 end

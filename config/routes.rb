@@ -10,19 +10,36 @@ Rails.application.routes.draw do
       post :clear
     end
 
+    # RESTful subscriptions (7 actions pattern)
+    resources :subscriptions, only: [:show, :create, :update, :destroy] do
+      resource :rate, only: :update, controller: "subscriptions/rates"
+    end
+    # Bulk operations as singular resources
+    resource :subscriptions_notification, only: :update,
+                                          controller: "subscriptions/notifications", as: :subscriptions_notifications
+    resource :subscriptions_visibility, only: :update,
+                                        controller: "subscriptions/visibilities", as: :subscriptions_visibilities
+    resource :subscriptions_folder, only: :update,
+                                    controller: "subscriptions/folders", as: :subscriptions_folders
+
     namespace :feed do
-      match :discover, via: [:get, :post]
-      post :subscribe
-      post :unsubscribe
-      match :subscribed, via: [:get, :post]
-      post :update
-      post :move
-      post :set_rate
-      post :set_notify
-      post :set_public
+      # RESTful resources
+      resources :discoveries, only: :create
+      resources :favicons, only: :create
+
+      # Legacy routes (backward compatibility)
+      match :discover, to: "discoveries#create", via: [:get, :post]
+      post :subscribe, to: "/api/subscriptions#create"
+      post :unsubscribe, to: "/api/subscriptions#destroy"
+      match :subscribed, to: "/api/subscriptions#show", via: [:get, :post]
+      post :update, to: "/api/subscriptions#update"
+      post :move, to: "/api/subscriptions/folders#update"
+      post :set_rate, to: "/api/subscriptions/rates#update"
+      post :set_notify, to: "/api/subscriptions/notifications#update"
+      post :set_public, to: "/api/subscriptions/visibilities#update"
       post :add_tags
       post :remove_tags
-      post :fetch_favicon
+      post :fetch_favicon, to: "favicons#create"
     end
 
     namespace :folder do
@@ -105,6 +122,7 @@ Rails.application.routes.draw do
       get name
     end
     post 'apikey'
+    post 'password'
   end
 
   namespace :rpc do

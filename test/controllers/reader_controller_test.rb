@@ -2,29 +2,36 @@
 
 require "test_helper"
 
-class ReaderControllerTest < ActionController::TestCase
+class ReaderControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @member = create_member(password: "password")
+    @member = create_member(password: "password", password_confirmation: "password")
   end
 
   test "GET welcome requires login" do
-    get :welcome
+    get "/"
     assert_redirected_to "/login"
   end
 
-  test "GET welcome redirects to index when logged in" do
-    get :welcome, session: { member_id: @member.id }
-    assert_redirected_to action: :index, trailing_slash: true
+  test "GET welcome redirects to reader when logged in" do
+    login_as(@member, password: "password")
+    get "/"
+    assert_redirected_to "/reader/"
   end
 
   test "GET index requires login" do
-    get :index
+    get "/reader"
     assert_redirected_to "/login"
   end
 
-  test "GET index renders without layout when logged in" do
-    get :index, session: { member_id: @member.id }
+  test "GET index renders when logged in" do
+    login_as(@member, password: "password")
+    get "/reader"
     assert_response :success
-    assert_template :index
+  end
+
+  private
+
+  def login_as(member, password:)
+    post "/session", params: { username: member.username, password: password }
   end
 end

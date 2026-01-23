@@ -23,14 +23,13 @@ class RpcControllerTest < ActionController::TestCase
   test "auth method does not authenticate with wrong api_key" do
     # This would render public/404 which doesn't exist, so we test via exception
     # The important thing is that the request doesn't succeed
-    begin
-      post :update_feed, params: { api_key: "definitely_invalid_key", feedlink: @feed.feedlink }
-      # If no exception, check that response indicates failure
-      refute_equal 200, response.status
-    rescue ActionView::MissingTemplate => e
-      # Expected - trying to render missing 404 template
-      assert_includes e.message, "public/404"
-    end
+
+    post :update_feed, params: { api_key: "definitely_invalid_key", feedlink: @feed.feedlink }
+    # If no exception, check that response indicates failure
+    assert_not_equal 200, response.status
+  rescue ActionView::MissingTemplate => e
+    # Expected - trying to render missing 404 template
+    assert_includes e.message, "public/404"
   end
 
   # Update feed tests
@@ -46,7 +45,7 @@ class RpcControllerTest < ActionController::TestCase
     end
 
     assert_response :success
-    json = JSON.parse(response.body)
+    json = response.parsed_body
     assert json["result"]
 
     item = Item.last
@@ -143,19 +142,18 @@ class RpcControllerTest < ActionController::TestCase
 
   test "GET export with invalid format attempts to return 404" do
     # Controller tries to render 'public/404' which doesn't exist as template
-    begin
-      get :export, params: { api_key: @api_key, format: "invalid" }
-      refute_equal 200, response.status
-    rescue ActionView::MissingTemplate => e
-      assert_includes e.message, "public/404"
-    end
+
+    get :export, params: { api_key: @api_key, format: "invalid" }
+    assert_not_equal 200, response.status
+  rescue ActionView::MissingTemplate => e
+    assert_includes e.message, "public/404"
   end
 
   # Check digest tests
   # Note: The check_digest action has a bug in the query (Item.where(digests) should be Item.where(digest: digests))
   # This test documents the expected behavior when the bug is fixed
   test "POST check_digest responds with json" do
-    digests = ["digest-1", "digest-2"].to_json
+    digests = %w[digest-1 digest-2].to_json
 
     post :check_digest, params: {
       api_key: @api_key,
@@ -163,7 +161,7 @@ class RpcControllerTest < ActionController::TestCase
     }
 
     assert_response :success
-    result = JSON.parse(response.body)
+    result = response.parsed_body
     assert_kind_of Array, result
   end
 end

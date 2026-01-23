@@ -55,7 +55,12 @@ module Feed::FaviconFetchable
   end
 
   def fetch_and_convert_favicon(uri)
+    # Only allow HTTP/HTTPS URLs for favicon fetching
+    return nil unless %w[http https].include?(uri.scheme)
+
+    # rubocop:disable Security/Open -- URI scheme is validated above
     response = URI.open(uri.to_s)
+    # rubocop:enable Security/Open
     return nil if response.status.last.to_i >= 400
 
     convert_to_png(response)

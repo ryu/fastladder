@@ -208,13 +208,26 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
-### 2026-01-23 (37signals スタイル適用)
+### 2026-01-23 (37signals スタイル「7アクション」リファクタリング)
+- **新規 RESTful コントローラー作成**:
+  - Api::SubscriptionsController（show, create, update, destroy）
+  - Api::Subscriptions::RatesController（update）
+  - Api::Subscriptions::NotificationsController（update）
+  - Api::Subscriptions::VisibilitiesController（update）
+  - Api::Subscriptions::FoldersController（update）
+  - Api::Feed::DiscoveriesController（create）
+  - Api::Feed::FaviconsController（create）
+- Api::FeedController 簡素化（add_tags, remove_tags のみ残存）
+- レガシールート後方互換維持（/api/feed/subscribe 等は新コントローラにルーティング）
+- テスト追加: 新コントローラ用統合テスト作成
+- POST /account/password ルート追加（既存コントローラのPOST処理に対応）
+
+### 2026-01-23 (37signals スタイル Concern 導入)
 - Feed::Crawlable Concern 作成（クロールロジック分離）
 - Feed::FaviconFetchable Concern 作成（favicon取得ロジック分離）
 - BulkSubscriptionUpdates Controller Concern 作成（バルク操作共通化）
 - Subscription#apply_settings メソッド追加（設定一括適用）
 - Member#find_folder_by_name_or_id メソッド追加
-- Api::FeedController 簡素化（Concern とモデルメソッド使用）
 - **方針**: Service Object 不使用、ドメインロジックはモデルに、Concern で整理
 
 ### 2026-01-23 (リリースノート作成)

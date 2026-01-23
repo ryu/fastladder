@@ -5,22 +5,22 @@ require "test_helper"
 class SettingsTest < ActiveSupport::TestCase
   test "provides max_unread_count" do
     assert_kind_of Integer, Settings.max_unread_count
-    assert Settings.max_unread_count > 0
+    assert_predicate Settings.max_unread_count, :positive?
   end
 
   test "provides subscribe_limit" do
     assert_kind_of Integer, Settings.subscribe_limit
-    assert Settings.subscribe_limit > 0
+    assert_predicate Settings.subscribe_limit, :positive?
   end
 
   test "provides save_pin_limit" do
     assert_kind_of Integer, Settings.save_pin_limit
-    assert Settings.save_pin_limit > 0
+    assert_predicate Settings.save_pin_limit, :positive?
   end
 
   test "provides crawl_interval" do
     assert_kind_of Integer, Settings.crawl_interval
-    assert Settings.crawl_interval > 0
+    assert_predicate Settings.crawl_interval, :positive?
   end
 
   test "provides allow_tags as array" do
@@ -37,6 +37,6 @@ class SettingsTest < ActiveSupport::TestCase
 
   test "provides default_favicon path" do
     assert_kind_of String, Settings.default_favicon
-    assert Settings.default_favicon.include?("default.png")
+    assert_includes Settings.default_favicon, "default.png"
   end
 end

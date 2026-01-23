@@ -2,9 +2,9 @@
 
 require "test_helper"
 
-class ExportControllerTest < ActionController::TestCase
+class ExportControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @member = create_member(password: "password")
+    @member = create_member(password: "password", password_confirmation: "password")
     @feed = create_feed(
       title: "Test Feed",
       link: "http://example.com/",
@@ -14,18 +14,20 @@ class ExportControllerTest < ActionController::TestCase
   end
 
   test "GET opml requires login" do
-    get :opml
+    get "/export/opml"
     assert_redirected_to "/login"
   end
 
   test "GET opml returns XML content type" do
-    get :opml, session: { member_id: @member.id }
+    login_as(@member, password: "password")
+    get "/export/opml"
     assert_response :success
     assert_equal "application/xml; charset=utf-8", response.content_type
   end
 
   test "GET opml returns valid OPML structure" do
-    get :opml, session: { member_id: @member.id }
+    login_as(@member, password: "password")
+    get "/export/opml"
     assert_response :success
 
     xml = response.body
@@ -36,7 +38,8 @@ class ExportControllerTest < ActionController::TestCase
   end
 
   test "GET opml includes subscribed feeds" do
-    get :opml, session: { member_id: @member.id }
+    login_as(@member, password: "password")
+    get "/export/opml"
     assert_response :success
 
     xml = response.body
@@ -48,7 +51,8 @@ class ExportControllerTest < ActionController::TestCase
     folder = create_folder(member: @member, name: "Tech")
     @subscription.update!(folder: folder)
 
-    get :opml, session: { member_id: @member.id }
+    login_as(@member, password: "password")
+    get "/export/opml"
     assert_response :success
 
     xml = response.body
@@ -56,7 +60,8 @@ class ExportControllerTest < ActionController::TestCase
   end
 
   test "GET opml handles feeds without folder" do
-    get :opml, session: { member_id: @member.id }
+    login_as(@member, password: "password")
+    get "/export/opml"
     assert_response :success
     # Feed without folder should still be included
     assert_includes response.body, "Test Feed"
@@ -65,11 +70,18 @@ class ExportControllerTest < ActionController::TestCase
   test "GET opml with no subscriptions returns empty OPML" do
     @subscription.destroy
 
-    get :opml, session: { member_id: @member.id }
+    login_as(@member, password: "password")
+    get "/export/opml"
     assert_response :success
 
     xml = response.body
     assert_includes xml, "<opml"
     assert_includes xml, "<body>"
+  end
+
+  private
+
+  def login_as(member, password:)
+    post "/session", params: { username: member.username, password: password }
   end
 end
