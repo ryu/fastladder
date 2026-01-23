@@ -182,7 +182,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ### Deliverables
 - [x] README/runbook を最新化（起動、ENV、トラブルシュート）
-- [ ] 不要コード/設定の削除（互換レイヤ撤去）
+- [x] 不要コード/設定の削除（konacha.rb, IE 7 CSS, render NOTHING）
 - [ ] リリースノート（移行に伴う変更点・注意点）
 
 ### 完了したPR
@@ -206,6 +206,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-23 (不要コード削除)
+- config/initializers/konacha.rb 削除（未使用テストフレームワーク設定）
+- `render NOTHING` → `head :not_found` に修正（Rails 5+ 非推奨 API）
+- share/index.html.erb から IE 7 条件付き CSS を削除
 
 ### 2026-01-23 (DB最適化: unique制約)
 - members.auth_key に partial unique index 追加
