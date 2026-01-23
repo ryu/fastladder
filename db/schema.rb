@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_23_092652) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_23_124348) do
   create_table "crawl_statuses", force: :cascade do |t|
     t.datetime "crawled_on", precision: nil
     t.datetime "created_on", precision: nil, null: false
@@ -87,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_23_092652) do
     t.string "salt"
     t.datetime "updated_on", precision: nil, null: false
     t.string "username", null: false
+    t.index ["auth_key"], name: "index_members_on_auth_key", unique: true, where: "auth_key IS NOT NULL"
     t.index ["username"], name: "index_members_on_username", unique: true
   end
 
