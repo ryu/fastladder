@@ -211,6 +211,8 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - config/initializers/konacha.rb 削除（未使用テストフレームワーク設定）
 - `render NOTHING` → `head :not_found` に修正（Rails 5+ 非推奨 API）
 - share/index.html.erb から IE 7 条件付き CSS を削除
+- ie_xmlhttp.js 簡素化（46行→3行、IE 6/7 ActiveXObject shim 削除）
+- bookmarklet ページ簡素化（Flash チュートリアル、IE 検出、Firefox 2 用コンテンツ削除）
 
 ### 2026-01-23 (DB最適化: unique制約)
 - members.auth_key に partial unique index 追加
