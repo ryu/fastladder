@@ -27,7 +27,7 @@ class Subscription < ActiveRecord::Base
   scope :has_unread, ->{ where(has_unread: true) }
   scope :recent, ->(num){ order("created_on DESC").limit(num) }
   scope :with_unread_count, ->{
-    select("subscriptions.*, (select count(0) from items where feed_id = subscriptions.id and stored_on >= viewed_on) as unread_count")
+    select("subscriptions.*, (select count(0) from items where feed_id = subscriptions.feed_id and stored_on >= viewed_on) as unread_count")
   }
 
   def update_public_fields

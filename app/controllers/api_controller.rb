@@ -73,7 +73,7 @@ class ApiController < ApplicationController
     items = []
     subscriptions = @member.subscriptions
     subscriptions = subscriptions.has_unread if params[:unread].to_i != 0
-    subscriptions.order("subscriptions.id").includes(:folder, { feed: :crawl_status }).each do |sub|
+    subscriptions.order("subscriptions.id").includes(:folder, { feed: [:crawl_status, :favicon] }).each do |sub|
       unread_count = sub.feed.items.stored_since(sub.viewed_on).count
       next if params[:unread].to_i > 0 and unread_count == 0
       next if sub.id < from_id
@@ -107,7 +107,7 @@ class ApiController < ApplicationController
 
   def lite_subs
     items = []
-    @member.subscriptions.includes(:folder, :feed).each do |sub|
+    @member.subscriptions.includes(:folder, { feed: :favicon }).each do |sub|
       feed = sub.feed
       modified_on = feed.modified_on
       item = {
