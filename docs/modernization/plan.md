@@ -157,6 +157,8 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [ ] 更新結果の差分反映（Turbo Streams）
 
 ### Step C: Stimulus 置換（必要な分だけ）
+- [x] tab_controller, checkbox_group_controller（import/fetch ページ）
+- [x] keyboard_nav_controller, hotkey_controller（mobile ページ）
 - [ ] 既存JSのうち、操作系をStimulus controllerへ
 - [ ] 不要になった資産の削除（別PR）
 
@@ -169,6 +171,8 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - `feat: apply form validation to password change page`
 - `feat: add clipboard controller for API key copy`
 - `refactor: convert all HAML templates to ERB and remove haml gem`
+- `feat: add tab and checkbox-group Stimulus controllers`
+- `feat: add keyboard navigation Stimulus controllers for mobile pages`
 
 ---
 
@@ -200,6 +204,19 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-23 (Stimulus移行: モバイルページ)
+- hotkey_controller.js 追加（シンプルなキー操作トリガー）
+- keyboard_nav_controller.js 追加（j/k/p/v/s キーボードナビゲーション）
+- mobile/index.html.erb を hotkey controller に移行
+- mobile/read_feed.html.erb を keyboard-nav controller に移行
+- インライン JavaScript を Stimulus controller に置換
+
+### 2026-01-23 (Stimulus移行: インポートページ)
+- tab_controller.js 追加（タブ切替）
+- checkbox_group_controller.js 追加（全選択/全解除）
+- import/fetch.html.erb を Stimulus controller に移行
+- インライン JavaScript を削除
 
 ### 2026-01-23 (DB最適化)
 - crawl_statuses.feed_id に unique index 追加
