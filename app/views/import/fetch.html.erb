@@ -1,36 +1,4 @@
 <div id="content">
-<script type="text/javascript">
-function get_target(button){
-	var id = button.id.replace("button_","");
-	return _$("ul_" + id);
-}
-
-function selectfolder(event){
-	Event.stop(event);
-	var ul = get_target(this);
-	if(!ul) return;
-	var ck = ul.getElementsByTagName("input");
-	var len = ck.length;
-	for(var i=0;i<len;i++) ck[i].checked = true;
-}
-
-function unselectfolder(event){
-	Event.stop(event);
-	var ul = get_target(this);
-	if(!ul) return;
-	var ck = ul.getElementsByTagName("input");
-	var len = ck.length;
-	for(var i=0;i<len;i++) ck[i].checked = false;
-}
-
-function s_toggle(mode,tab){
-	switchClass("registerbox", "show-"+mode);
-	var tabs = _$("import_tab");
-	foreach(tabs.getElementsByTagName("div"),function(el){
-		el == tab ? addClass(tab,"tab-active") : removeClass(el, "tab-active")
-	})
-}
-</script>
 <div style="padding:5px 15px 0;text-align:left;">
 	<h2 class="px18 guidesubttl" style="border:none">Subscription list</h2>
 </div>
@@ -38,40 +6,42 @@ function s_toggle(mode,tab){
 <% if @opml.present? -%>
 <%= form_for :import, url: import_finish_path do |f| %>
 <%= f.hidden_field :api_key, name: "ApiKey", value: session[:session_id] %>
-<div id="registerbox" style="width:auto;margin:0 10px">
+<div id="registerbox" style="width:auto;margin:0 10px" data-controller="tab">
 	<div id="import_tab" class="tabs" style="text-align:left;padding-left:15px;">
-		<div class="tab tab-active" onclick="s_toggle('all',this)">All<span class="num">(<%= all_count = (all_items = @folders.values.flatten).length %>)</span></div>
-		<div class="tab" onclick="s_toggle('not_subscribed',this)">Without Subscribed feed<span class="num">(<%= unsubscribe_count = all_items.reject {|item| item[:subscribed] }.length %>)</span></div>
-		<div class="tab" onclick="s_toggle('subscribed',this)">Subscribed<span class="num">(<%= all_count - unsubscribe_count %>)</span></div>
+		<div class="tab tab-active" data-tab-target="tab" data-action="click->tab#switch" data-tab-mode="all">All<span class="num">(<%= all_count = (all_items = @folders.values.flatten).length %>)</span></div>
+		<div class="tab" data-tab-target="tab" data-action="click->tab#switch" data-tab-mode="not_subscribed">Without Subscribed feed<span class="num">(<%= unsubscribe_count = all_items.reject {|item| item[:subscribed] }.length %>)</span></div>
+		<div class="tab" data-tab-target="tab" data-action="click->tab#switch" data-tab-mode="subscribed">Subscribed<span class="num">(<%= all_count - unsubscribe_count %>)</span></div>
 	</div>
 
 	<div class="importbox">
 <% @folders.each_with_index do |(folder_name, items), i| %>
+	<div data-controller="checkbox-group">
 	<h3 class="px18 importttl">
 		<%= folder_name.present? ? folder_name : "Uncategolized" %>
 		<span style="font-size:12px;color:#05308c;font-weight:normal;padding-left:10px;">
-			<span class="button" onclick="selectfolder.call(this,event)" id="button_<%= i %>">Select All</span>
+			<span class="button" data-action="click->checkbox-group#selectAll">Select All</span>
 			&nbsp;|&nbsp;
-			<span class="button" onclick="unselectfolder.call(this,event)" id="button_<%= i %>">None</span>
+			<span class="button" data-action="click->checkbox-group#selectNone">None</span>
 		</span>
 	</h3>
 
 	<ul id="ul_<%= i %>">
-	<% items.select {|item| item[:feedlink].present? }.each_with_index do |item, i| -%>
-		<li class="<%= "not_" unless item[:subscribed]-%>subscribed">
+	<% items.select {|item| item[:feedlink].present? }.each_with_index do |item, j| -%>
+		<li class="<%= "not_" unless item[:subscribed]-%>subscribed" data-tab-target="content" data-tab-mode="<%= item[:subscribed] ? 'subscribed' : 'not_subscribed' %>">
 		<% if item[:subscribed] -%>
 			<%= link_to item[:title], item[:link] %>
 			<span style="color: #f00;">[Subscribed]</span>
 		<% else -%>
-			<%= f.hidden_field :titles, name: "titles[#{i}]", value: item[:title] %>
-			<%= f.hidden_field :links, name: "links[#{i}]", value: item[:link] %>
-			<%= f.hidden_field :feedlinks, name: "feedlinks[#{i}]", value: "#{folder_name}:#{item[:feedlink]}" %>
-			<%= f.check_box :check_for_subscribe, name: "check_for_subscribes[#{i}]", checked: true %>
+			<%= f.hidden_field :titles, name: "titles[#{j}]", value: item[:title] %>
+			<%= f.hidden_field :links, name: "links[#{j}]", value: item[:link] %>
+			<%= f.hidden_field :feedlinks, name: "feedlinks[#{j}]", value: "#{folder_name}:#{item[:feedlink]}" %>
+			<input type="checkbox" name="check_for_subscribes[<%= j %>]" value="1" checked data-checkbox-group-target="checkbox">
 			<%= link_to item[:title], item[:link] %>
 		<% end -%>
 		</li>
 	<% end -%>
 	</ul>
+	</div>
 <% end -%>
 </div>
 
