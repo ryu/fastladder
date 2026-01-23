@@ -114,15 +114,22 @@ crawler を「壊れにくく」「再実行安全」「観測可能」にする
 
 ---
 
-## 6. DB（SQLite）最適化と整合性 📋 未着手
+## 6. DB（SQLite）最適化と整合性 🔄 進行中
 
 ### Goal
 SQLite 前提で長期運用に耐える。
 
 ### Deliverables
-- [ ] 必要な index の追加（N+1も合わせて潰す）
+- [x] 必要な index の追加（crawl_statuses.feed_id に unique index）
+- [x] N+1 クエリの修正（api#subs, api#count_items, user#index, member#export）
+- [x] with_unread_count スコープのバグ修正（NULL viewed_on 対応）
 - [ ] unique制約の追加（重複排除の最後の砦）
 - [ ] migration を後方互換に（段階的に）
+
+### 完了したPR
+- `perf: add database optimizations for feed queries`
+- `perf: fix N+1 queries in API and user controllers`
+- `chore: track db/schema.rb in version control`
 
 ---
 
@@ -193,6 +200,18 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-23 (DB最適化)
+- crawl_statuses.feed_id に unique index 追加
+- N+1 修正:
+  - api#subs: with_unread_count スコープ使用
+  - api#count_items: ROW_NUMBER() ウィンドウ関数でバッチ取得
+  - api#lite_subs: favicon includes 追加
+  - user#index: feed includes 追加
+  - member#public_subs, member#export: feed includes 追加
+- with_unread_count スコープのバグ修正（NULL viewed_on の場合に全アイテムをカウント）
+- db/schema.rb をバージョン管理に追加
+- .gitignore 整理（.claude/ を ignore、copilot-instructions.md を track）
 
 ### 2026-01-23 (ドキュメント整理)
 - Hotwire 完了 PR リストを更新
