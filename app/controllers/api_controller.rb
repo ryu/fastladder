@@ -164,7 +164,7 @@ class ApiController < ApplicationController
   def find_sub
     @id = (params[:subscribe_id] || params[:id] || 0).to_i
     unless @sub = @member.subscriptions.includes(:feed).find_by(id: @id)
-      render NOTHING
+      head :not_found
       return false
     end
     return true
