@@ -142,5 +142,7 @@ Rails.application.routes.draw do
   get '/mobile', to: 'mobile#index'
   get '/mobile/:feed_id', to: 'mobile#read_feed'
   get '/mobile/:feed_id/read', to: 'mobile#mark_as_read'
+  post '/mobile/:feed_id/read', to: 'mobile#mark_as_read'
   get '/mobile/:item_id/pin', to: 'mobile#pin'
+  post '/mobile/:item_id/pin', to: 'mobile#pin'
 end

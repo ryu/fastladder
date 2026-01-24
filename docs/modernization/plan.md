@@ -154,8 +154,8 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] HAML から ERB への変換（全て完了、haml gem 削除）
 
 ### Step B: Turbo 化（価値の高い操作から）
-- [ ] 購読追加/削除
-- [ ] 既読/未読切替
+- [~] 購読追加/削除（削除は Turbo Stream 対応完了、追加は subscribe.js のまま）
+- [~] 既読/未読切替（モバイルページは Stimulus 対応完了、reader ページは LDR JS のまま）
 - [ ] 更新結果の差分反映（Turbo Streams）
 
 ### Step C: Stimulus 置換（必要な分だけ）
@@ -213,6 +213,30 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-24 (Turbo Stream: 購読削除 + モバイル Pin)
+- **subscription_controller.js 作成**: Delete ボタン用の Stimulus controller
+  - POST /api/feed/unsubscribe を fetch で呼び出し
+  - Turbo Stream レスポンスで自動 DOM 更新、JSON フォールバックで手動削除
+  - ローディング状態表示（Deleting...）
+- **Api::SubscriptionsController#destroy 拡張**: Turbo Stream 対応
+  - `respond_to` で turbo_stream / json / any フォーマットを分岐
+  - turbo_stream.remove で該当 li 要素を削除
+- **subscribe/confirm.html.erb 更新**:
+  - li 要素に id="subscription-{id}" と data-controller="subscription" 追加
+  - Delete ボタンを data-action="click->subscription#delete" に変更
+- **テスト追加**: Turbo Stream レスポンスの検証
+- **pin_controller.js 作成**: モバイルページの Pin 機能用 Stimulus controller
+  - POST でピン作成、JSON レスポンスでインラインフィードバック
+  - ページ遷移なしで "Pinned!" 表示
+- **MobileController#pin 拡張**: JSON レスポンス対応
+  - already_pinned フラグで重複検知を通知
+- **ルート追加**: POST /mobile/:item_id/pin
+- **mark_read_controller.js 作成**: モバイルページの既読マーク用 Stimulus controller
+  - POST で既読化、成功後にリダイレクト
+  - フィードバック表示（"Marking..." → "Done! Redirecting..."）
+- **MobileController#mark_as_read 拡張**: JSON レスポンス対応
+- **ルート追加**: POST /mobile/:feed_id/read
 
 ### 2026-01-24 (マイグレーション後方互換性 + Stimulus 移行調査)
 - **バグ修正**: 009_add_items_index.rb の down メソッド修正（`remove_index :items_search_index` → `remove_index :items, name: :items_search_index`）

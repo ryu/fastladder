@@ -116,6 +116,23 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_not json["isSuccess"]
   end
 
+  test "POST /api/feed/unsubscribe returns turbo_stream when requested" do
+    subscription_id = @subscription.id
+    assert_difference("Subscription.count", -1) do
+      post "/api/feed/unsubscribe",
+           params: { subscribe_id: subscription_id },
+           headers: {
+             "HTTP_COOKIE" => login_cookie,
+             "Accept" => "text/vnd.turbo-stream.html"
+           }
+    end
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "subscription-#{subscription_id}"
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, 'action="remove"'
+  end
+
   private
 
   def login_cookie

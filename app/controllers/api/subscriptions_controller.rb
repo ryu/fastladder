@@ -55,8 +55,16 @@ class Api::SubscriptionsController < ApplicationController
     sub = find_subscription_by_id
     return render_json_status(false) unless sub
 
+    subscription_id = sub.id
     sub.destroy
-    render_json_status(true)
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.remove("subscription-#{subscription_id}")
+      end
+      format.json { render_json_status(true) }
+      format.any { render_json_status(true) }
+    end
   end
 
   private

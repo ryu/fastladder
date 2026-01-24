@@ -62,6 +62,24 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     assert_equal Time.at(timestamp + 1).to_i, @subscription.viewed_on.to_i
   end
 
+  test "POST mark_as_read returns JSON response" do
+    timestamp = Time.current.to_i
+    login_as(@member, password: "password")
+    post "/mobile/#{@subscription.id}/read",
+         params: { timestamp: timestamp },
+         headers: { "Accept" => "application/json" }
+
+    assert_response :success
+
+    json = response.parsed_body
+
+    assert json["success"]
+    assert_equal "/mobile", json["redirect_to"]
+    @subscription.reload
+
+    assert_not @subscription.has_unread
+  end
+
   # Pin tests
   test "GET pin requires login" do
     get "/mobile/#{@item.id}/pin"
@@ -89,6 +107,35 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
       get "/mobile/#{@item.id}/pin"
     end
     assert_redirected_to "/mobile/#{@item.feed_id}#item-#{@item.id}"
+  end
+
+  test "POST pin returns JSON response" do
+    login_as(@member, password: "password")
+    assert_difference "Pin.count", 1 do
+      post "/mobile/#{@item.id}/pin",
+           headers: { "Accept" => "application/json" }
+    end
+    assert_response :success
+
+    json = response.parsed_body
+
+    assert json["success"]
+    assert_not json["already_pinned"]
+  end
+
+  test "POST pin returns already_pinned in JSON when duplicate" do
+    @member.pins.create!(link: @item.link, title: @item.title)
+    login_as(@member, password: "password")
+    assert_no_difference "Pin.count" do
+      post "/mobile/#{@item.id}/pin",
+           headers: { "Accept" => "application/json" }
+    end
+    assert_response :success
+
+    json = response.parsed_body
+
+    assert json["success"]
+    assert json["already_pinned"]
   end
 
   private

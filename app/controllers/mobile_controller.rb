@@ -19,16 +19,25 @@ class MobileController < ApplicationController
     @subscription = Subscription.find(params[:feed_id])
     @subscription.update!(has_unread: false, viewed_on: Time.at(params[:timestamp].to_i + 1))
 
-    redirect_to '/mobile'
+    respond_to do |format|
+      format.json { render json: { success: true, redirect_to: "/mobile" } }
+      format.html { redirect_to "/mobile" }
+    end
   end
 
   def pin
     item = Item.find(params[:item_id])
+    already_pinned = false
+
     begin
       current_member.pins.create!(link: item.link, title: item.title)
     rescue ActiveRecord::RecordNotUnique
+      already_pinned = true
     end
 
-    redirect_to "/mobile/#{item.feed_id}#item-#{item.id}"
+    respond_to do |format|
+      format.json { render json: { success: true, already_pinned: already_pinned } }
+      format.html { redirect_to "/mobile/#{item.feed_id}#item-#{item.id}" }
+    end
   end
 end
