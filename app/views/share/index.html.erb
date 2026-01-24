@@ -1,103 +1,72 @@
-<div id="content">
+<div id="content"
+     data-controller="share"
+     data-share-api-key-value="<%= session[:session_id] %>"
+     data-share-limit-value="20">
 <div class="share">
 <h2>Manage Sharing</h2>
 <div class="share_body">
 	<div class="status">
 		<% if current_member.public %>
-			<button onclick="set_member_public(0);return false">Disable Sharing</button>
+			<button data-action="click->share#setMemberPublic" data-public-value="0">Disable Sharing</button>
 		<% else %>
-			<button onclick="set_member_public(1);return false">Enable Sharing</button>
+			<button data-action="click->share#setMemberPublic" data-public-value="1">Enable Sharing</button>
 		<% end %>
 		<ul>
-			<li>Sharing: <span id="member_public"><%= current_member.public ? "ON" : "OFF" %></span>
+			<li>Sharing: <span data-share-target="memberPublic"><%= current_member.public ? "ON" : "OFF" %></span>
 			<% if current_member.public %>(<%= link_to("Show public subscriptions", user_path(current_member.username)) %>)<% end %>
 			</li>
-			<li>Public feeds: <span id="public_subs_count"></span></li>
-		 	<li>Private feeds: <span id="private_subs_count"></span></li>
+			<li>Public feeds: <span data-share-target="publicCount"></span></li>
+		 	<li>Private feeds: <span data-share-target="privateCount"></span></li>
 		</ul>
 	</div>
 	<div class="search_form">
-		<form onsubmit="do_search();return false;">
+		<form data-action="submit->share#search" onsubmit="return false;">
 		<table>
 			<tr><td>Target</td>
 			<td>
-				<input type="radio" name="search_from" id="filter_from_all" checked>
-				<label for="filter_from_all">All</label>
-				<input type="radio" name="search_from" id="filter_from_public">
-				<label for="filter_from_public">Public feeds</label>
-				<input type="radio" name="search_from" id="filter_from_private">
-				<label for="filter_from_private">Private feeds</label>
+				<input type="radio" name="search_from" data-share-target="filterFromAll" data-action="click->share#search" checked>
+				<label>All</label>
+				<input type="radio" name="search_from" data-share-target="filterFromPublic" data-action="click->share#search">
+				<label>Public feeds</label>
+				<input type="radio" name="search_from" data-share-target="filterFromPrivate" data-action="click->share#search">
+				<label>Private feeds</label>
 			</td></tr>
 			<tr><td>Subscribers</td>
 			<td>
-				over <input type="text" value="" id="filter_subscriber_min" size="4"> subscribers and
-				under <input type="text" value="" id="filter_subscriber_max" size="4"> subscribers
-				(example: 	
-					<span onclick="set_query({subscriber_max:'',subscriber_min:100});" class="query_sample">over 100 subscribers</span>
-					<span onclick="set_query({subscriber_max:10,subscriber_min:''});" class="query_sample">under 10 subscribers</span>)
+				over <input type="text" value="" data-share-target="filterSubscriberMin" data-action="keyup->share#searchDebounced" size="4"> subscribers and
+				under <input type="text" value="" data-share-target="filterSubscriberMax" data-action="keyup->share#searchDebounced" size="4"> subscribers
+				(example:
+					<span data-action="click->share#setQuery" data-query='{"subscriber_max":"","subscriber_min":100}' class="query_sample">over 100 subscribers</span>
+					<span data-action="click->share#setQuery" data-query='{"subscriber_max":10,"subscriber_min":""}' class="query_sample">under 10 subscribers</span>)
 			</td></tr>
 			<tr><td>Title or URL</td>
-			<td><input type="text" value="" id="filter_string">
+			<td><input type="text" value="" data-share-target="filterString" data-action="keyup->share#searchDebounced">
 			</td></tr>
 		</table>
 		<div class="mspace">
 		<table>
 			<tr>
-				<th>Folders (<span class="query_sample" onclick="mspace_reset('folder')">Select all</span>)</th>
-				<th>Ratings (<span class="query_sample" onclick="mspace_reset('rate')">Select all</span>)</th>
+				<th>Folders (<span class="query_sample" data-action="click->share#resetMspace" data-mspace-type="folder">Select all</span>)</th>
+				<th>Ratings (<span class="query_sample" data-action="click->share#resetMspace" data-mspace-type="rate">Select all</span>)</th>
 			</tr>
 			<tr>
-				<td><div id="mspace_folders"></div></td>
-				<td><div id="mspace_rate"></div></td>
+				<td><div data-share-target="mspaceFolders"></div></td>
+				<td><div data-share-target="mspaceRate"></div></td>
 			</tr>
 		</table>
 		</div>
 		</form>
 	</div>
-	<h3>Result: <span id="filtered_subs_count"></span> <button class="select_all" onclick="select_all()">Select all</button></h3>
+	<h3>Result: <span data-share-target="resultsCount"></span> <button class="select_all" data-action="click->share#selectAll">Select all</button></h3>
 	<div class="buttons">
-		<button onclick="set_public(1)">Set to Public</button><button onclick="set_public(0)">Set to Private</button>
-		<span id="set_public_progress"></span>
+		<button data-action="click->share#setPublic" data-public-value="1">Set to Public</button>
+		<button data-action="click->share#setPublic" data-public-value="0">Set to Private</button>
+		<span data-share-target="progress"></span>
 	</div>
-	<div id="filtered_subs"></div>
-	<span id="show_all" onclick="show_all()">Display all</span>
+	<div data-share-target="results"></div>
+	<span data-share-target="showAll" data-action="click->share#showAll" style="display:none;cursor:pointer;color:#0066cc;text-decoration:underline;">Display all</span>
 </div>
 </div>
 </div>
 
-<script type="text/javascript">var ApiKey = "<%= session[:session_id] %>";</script>
-
-<%= javascript_include_tag "vendor/flow.min" %>
-<%= javascript_include_tag "vendor/zepto.min" %>
-
-<%= javascript_include_tag "lib/namespace" %>
-
-<%= javascript_include_tag "lib/utils/DateTime" %>
-<%= javascript_include_tag "lib/utils/array_extra" %>
-<%= javascript_include_tag "lib/utils/common" %>
-<%= javascript_include_tag "lib/utils/dom" %>
-<%= javascript_include_tag "lib/utils/ie_xmlhttp" %>
-<%= javascript_include_tag "lib/utils/preload" %>
-<%= javascript_include_tag "lib/utils/proto" %>
-<%= javascript_include_tag "lib/utils/roma" %>
-
-<%= javascript_include_tag "lib/events/event_dispatcher" %>
-<%= javascript_include_tag "lib/events/hotkey" %>
-<%= javascript_include_tag "lib/events/mouse_wheel" %>
-<%= javascript_include_tag "lib/events/queryCSS" %>
-
-<%= javascript_include_tag "lib/template" %>
-<%= javascript_include_tag "lib/api" %>
-<%= javascript_include_tag "lib/reader/style_initializer" %>
-<%= javascript_include_tag "lib/ldr" %>
-
-<%= javascript_include_tag "lib/ui/feed" %>
-<%= javascript_include_tag "lib/ui/flat_menu" %>
-<%= javascript_include_tag "lib/ui/item" %>
-<%= javascript_include_tag "lib/ui/rate" %>
-
-
-<%= javascript_include_tag "lib/models/pref" %>
-<%= javascript_include_tag "lib/share/share" %>
-
-
+<%= javascript_importmap_tags %>

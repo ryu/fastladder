@@ -162,10 +162,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] tab_controller, checkbox_group_controller（import/fetch ページ）
 - [x] keyboard_nav_controller, hotkey_controller（mobile ページ）
 - [x] form_validation_controller を import ページに適用
+- [x] share_controller（share/index ページ）← LDR JS から独立していたため移行完了
 - [~] 既存JSのうち、操作系をStimulus controllerへ（※大部分は LDR JS と深く統合されており、Step B の Turbo 化が先決）
 - [x] 不要になった資産の削除
 
-**注記**: reader/index, contents/manage, share/index 等の主要ページは legacy LDR JavaScript（lib/ldr.js, lib/api.js 等）と深く統合されている。これらのインライン JS を Stimulus に置換するには、まず API を Turbo Streams 対応にする必要がある（Step B）。
+**注記**: reader/index, contents/manage 等の主要ページは legacy LDR JavaScript（lib/ldr.js, lib/api.js 等）と深く統合されている。これらのインライン JS を Stimulus に置換するには、まず API を Turbo Streams 対応にする必要がある（Step B）。share/index は LDR JS から独立していたため Stimulus 化完了。
 
 ### 完了したPR
 - `feat: add Hotwire foundation with Turbo Drive disabled`
@@ -213,6 +214,27 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-24 (Share ページ Stimulus 移行)
+- **share_controller.js 作成**: 購読共有管理ページ用の Stimulus controller（320行）
+  - loadSubs: API から購読一覧を取得
+  - setupMspace: フォルダ/評価のマルチセレクト生成
+  - search, matchesFilter: 購読のフィルタリング（公開/非公開、購読者数、文字列、フォルダ、評価）
+  - render, formatRow: 結果テーブルのレンダリング
+  - rowMouseDown, rowMouseOver: ドラッグ選択
+  - selectAll: 全選択/全解除
+  - setQuery, resetMspace: フィルタープリセット
+  - showAll: 全件表示（確認ダイアログ付き）
+  - setMemberPublic: メンバー公開設定の切替
+  - setPublic: 選択した購読の一括公開/非公開
+  - searchDebounced: 入力遅延検索
+  - escapeHtml: XSS 対策
+- **share/index.html.erb 更新**:
+  - 30+ の `<script>` 参照を削除（lib/share/share.js, ldr.js 等）
+  - インラインの onclick を data-action に置換
+  - data-controller="share" + data-share-target で Stimulus 化
+  - data-share-api-key-value で ApiKey を渡す
+- **テスト追加**: share_test.rb（システムテスト）
 
 ### 2026-01-24 (Turbo Stream: 購読削除 + モバイル Pin)
 - **subscription_controller.js 作成**: Delete ボタン用の Stimulus controller
