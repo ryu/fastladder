@@ -1,5 +1,5 @@
 class CreateSubscriptions < ActiveRecord::Migration[4.2]
-  def self.up
+  def up
     create_table :subscriptions do |t|
       t.integer :member_id, default: 0, null: false
       t.integer :folder_id
@@ -17,7 +17,7 @@ class CreateSubscriptions < ActiveRecord::Migration[4.2]
     add_index :subscriptions, :feed_id
   end
 
-  def self.down
+  def down
     drop_table :subscriptions
   end
 end

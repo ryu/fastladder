@@ -1,5 +1,5 @@
 class CreateFolders < ActiveRecord::Migration[4.2]
-  def self.up
+  def up
     create_table :folders do |t|
       t.integer :member_id, default: 0, null: false
       t.string :name, null: false
@@ -9,7 +9,7 @@ class CreateFolders < ActiveRecord::Migration[4.2]
     add_index :folders, %i[member_id name], unique: true
   end
 
-  def self.down
+  def down
     drop_table :folders
   end
 end

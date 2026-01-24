@@ -2,10 +2,13 @@ class AddGuidToItems < ActiveRecord::Migration[4.2]
   def up
     add_column :items, :guid, :string
     remove_index :items, %i[feed_id link]
-    Item.find_each do |item|
-      item.guid ||= item.link
-      item.save!
-    end
+
+    # Use raw SQL to avoid dependency on Item model
+    # This ensures the migration works even if the model changes
+    execute <<~SQL.squish
+      UPDATE items SET guid = link WHERE guid IS NULL
+    SQL
+
     add_index :items, %i[feed_id guid], unique: true
   end
 

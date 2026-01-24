@@ -1,5 +1,5 @@
 class CreateItems < ActiveRecord::Migration[4.2]
-  def self.up
+  def up
     create_table :items do |t|
       t.integer :feed_id, default: 0, null: false
       t.string :link, default: "", null: false
@@ -19,7 +19,7 @@ class CreateItems < ActiveRecord::Migration[4.2]
     add_index :items, %i[feed_id link], unique: true
   end
 
-  def self.down
+  def down
     drop_table :items
   end
 end

@@ -1,5 +1,5 @@
 class CreateCrawlStatuses < ActiveRecord::Migration[4.2]
-  def self.up
+  def up
     create_table :crawl_statuses do |t|
       t.integer :feed_id, default: 0, null: false
       t.integer :status, default: 1, null: false
@@ -15,7 +15,7 @@ class CreateCrawlStatuses < ActiveRecord::Migration[4.2]
     add_index :crawl_statuses, %i[status crawled_on]
   end
 
-  def self.down
+  def down
     drop_table :crawl_statuses
   end
 end

@@ -6,7 +6,7 @@
 - Web と crawler の2プロセス構成（foreman で同時起動）
 - 目標は「壊さずに上げる」「更新し続けられる」「観測できる」
 
-**最終更新: 2026-01-23**
+**最終更新: 2026-01-24**
 
 ---
 
@@ -114,7 +114,7 @@ crawler を「壊れにくく」「再実行安全」「観測可能」にする
 
 ---
 
-## 6. DB（SQLite）最適化と整合性 🔄 進行中
+## 6. DB（SQLite）最適化と整合性 ✅ 完了
 
 ### Goal
 SQLite 前提で長期運用に耐える。
@@ -124,13 +124,14 @@ SQLite 前提で長期運用に耐える。
 - [x] N+1 クエリの修正（api#subs, api#count_items, user#index, member#export）
 - [x] with_unread_count スコープのバグ修正（NULL viewed_on 対応）
 - [x] unique制約の追加（auth_key に partial unique index）
-- [ ] migration を後方互換に（段階的に）
+- [x] migration を後方互換に（段階的に）
 
 ### 完了したPR
 - `perf: add database optimizations for feed queries`
 - `perf: fix N+1 queries in API and user controllers`
 - `chore: track db/schema.rb in version control`
 - `perf: add unique index on members.auth_key for API authentication`
+- `fix: make migrations backward compatible and reversible`
 
 ---
 
@@ -207,6 +208,13 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-24 (マイグレーション後方互換性)
+- **バグ修正**: 009_add_items_index.rb の down メソッド修正（`remove_index :items_search_index` → `remove_index :items, name: :items_search_index`）
+- **可逆性確保**: 20240816071421_items_medium_text_body.rb を `change` から `up`/`down` に変更
+- **モデル依存除去**: 20140601154904_add_guid_to_items.rb から `Item.find_each` を raw SQL に置換
+- **構文統一**: レガシー `def self.up`/`def self.down` を modern `def up`/`def down` に統一（001-009）
+- 全マイグレーションがロールバック/再適用可能に
 
 ### 2026-01-23 (37signals スタイル「7アクション」リファクタリング)
 - **新規 RESTful コントローラー作成**:

@@ -1,5 +1,5 @@
 class CreateFeeds < ActiveRecord::Migration[4.2]
-  def self.up
+  def up
     create_table :feeds do |t|
       t.string :feedlink, null: false
       t.string :link, null: false
@@ -15,7 +15,7 @@ class CreateFeeds < ActiveRecord::Migration[4.2]
     add_index :feeds, :feedlink, unique: true
   end
 
-  def self.down
+  def down
     drop_table :feeds
   end
 end

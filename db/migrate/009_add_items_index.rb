@@ -1,9 +1,9 @@
 class AddItemsIndex < ActiveRecord::Migration[4.2]
-  def self.up
+  def up
     add_index :items, %i[feed_id stored_on created_on id], name: :items_search_index
   end
 
-  def self.down
-    remove_index :items_search_index
+  def down
+    remove_index :items, name: :items_search_index
   end
 end

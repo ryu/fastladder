@@ -1,5 +1,5 @@
 class CreateMembers < ActiveRecord::Migration[5.2]
-  def self.up
+  def up
     create_table :members do |t|
       t.string :username, null: false
       t.string :email
@@ -15,7 +15,7 @@ class CreateMembers < ActiveRecord::Migration[5.2]
     add_index :members, :username, unique: true
   end
 
-  def self.down
+  def down
     drop_table :members
   end
 end

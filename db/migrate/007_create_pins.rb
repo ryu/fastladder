@@ -1,5 +1,5 @@
 class CreatePins < ActiveRecord::Migration[4.2]
-  def self.up
+  def up
     create_table :pins do |t|
       t.integer :member_id, default: 0, null: false
       t.string :link, default: "", null: false
@@ -10,7 +10,7 @@ class CreatePins < ActiveRecord::Migration[4.2]
     add_index :pins, %i[member_id link], unique: true
   end
 
-  def self.down
+  def down
     drop_table :pins
   end
 end
