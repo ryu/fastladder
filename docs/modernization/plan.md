@@ -170,6 +170,8 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 **注記**: reader/index, contents/manage 等の主要ページは legacy LDR JavaScript（lib/ldr.js, lib/api.js 等）と深く統合されている。これらのインライン JS を Stimulus に置換するには、まず API を Turbo Streams 対応にする必要がある（Step B）。share/index は LDR JS から独立していたため Stimulus 化完了。
 
+**ブリッジアプローチ**: turbo_bridge.js を導入し、既存の LDR.API クラスを拡張して Turbo Stream レスポンスを自動的に処理できるようにした。これにより、LDR JS を完全に置換することなく、Turbo Stream の恩恵を受けられる。
+
 ### 完了したPR
 - `feat: add Hotwire foundation with Turbo Drive disabled`
 - `feat: add first Stimulus controller for password validation`
@@ -216,6 +218,21 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-24 (Turbo Bridge: LDR JS と Turbo の統合)
+- **turbo_bridge.js 作成**: LDR.API クラスを拡張して Turbo Stream サポート追加
+  - 既存の LDR.API.post() メソッドを拡張
+  - Turbo Stream 対応エンドポイントへのリクエストに Accept ヘッダー追加
+  - Turbo Stream レスポンス時に Turbo.renderStreamMessage() で自動適用
+  - JSON レスポンスは従来通り処理（後方互換性維持）
+  - 対応エンドポイント: pin/add, pin/remove, pin/clear, touch_all, set_rate, move, set_public, unsubscribe
+- **reader/index.html.erb 更新**:
+  - javascript_importmap_tags 追加（Turbo をロード）
+  - turbo_bridge.js をインクルード
+- **メリット**:
+  - LDR JS のコードを変更せずに Turbo Stream の恩恵を受けられる
+  - 既存機能は完全に維持
+  - 段階的な移行が可能
 
 ### 2026-01-24 (API Turbo Stream 対応)
 - **Api::PinController Turbo Stream 対応**:
