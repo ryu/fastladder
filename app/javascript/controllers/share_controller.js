@@ -116,7 +116,8 @@ export default class extends Controller {
   }
 
   // Search and filter
-  search() {
+  search(event) {
+    if (event) event.preventDefault()
     this.showAllMode = false
     this.filteredSubs = this.subs.filter(sub => this.matchesFilter(sub))
     this.render()
