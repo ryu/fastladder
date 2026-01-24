@@ -163,7 +163,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] keyboard_nav_controller, hotkey_controller（mobile ページ）
 - [x] form_validation_controller を import ページに適用
 - [~] 既存JSのうち、操作系をStimulus controllerへ（※大部分は LDR JS と深く統合されており、Step B の Turbo 化が先決）
-- [ ] 不要になった資産の削除（別PR）
+- [x] 不要になった資産の削除
 
 **注記**: reader/index, contents/manage, share/index 等の主要ページは legacy LDR JavaScript（lib/ldr.js, lib/api.js 等）と深く統合されている。これらのインライン JS を Stimulus に置換するには、まず API を Turbo Streams 対応にする必要がある（Step B）。
 
@@ -180,6 +180,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - `feat: add keyboard navigation Stimulus controllers for mobile pages`
 - `refactor: extract layout partials and standardize flash messages`
 - `feat: add form validation to import page`
+- `chore: remove unused JavaScript and CSS assets`
 
 ---
 
@@ -223,6 +224,12 @@ UI刷新はアップグレード完了後に「小さく」やる。
   - 結論: 大部分は LDR JS と深く統合されており、API の Turbo 化が先決
 - **import ページ改善**: form_validation_controller を適用、ファイル入力対応追加
 - **form_validation_controller 拡張**: ファイル入力（type="file"）の検証に対応
+- **不要資産削除**:
+  - `lib/round_corner.js` - 未使用（subscribe.js に重複）
+  - `lib/reader/widgets.js` - 日本語版（widgets_en.js のみ使用）
+  - `reader.js`, `share.js` - 未使用の Sprockets manifest
+  - `guide.css` - common.css と重複
+  - `lite.css` - 未使用（モバイルは sakura.css）
 
 ### 2026-01-23 (37signals スタイル「7アクション」リファクタリング)
 - **新規 RESTful コントローラー作成**:
