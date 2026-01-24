@@ -2,22 +2,26 @@
 	<h2>Import</h2>
 	<p>Fastladder supports the importing of OPML format subscription list.</p>
 
-	<%= form_for :import, html: {multipart: true} do |f| %>
+	<%= form_for :import, url: import_path, html: {multipart: true, data: {controller: "form-validation", action: "submit->form-validation#validate"}}, method: :post do |f| %>
 	<h3>Upload OPML</h3>
 	<div class="sub-content">
-		<%= f.file_field :opml, name: "opml" %>
-		<%= f.submit "Import" %>
+		<%= f.file_field :opml, name: "opml", id: "opml", data: {form_validation_target: "field", required: "true", field_name: "OPML file"} %>
+		<span data-form-validation-target="error" data-for="opml"></span>
+		<%= f.submit "Import", data: {form_validation_target: "submit", loading_text: "Importing..."} %>
 	</div>
+	<% end %>
 
+	<%= form_for :import, url: import_path, html: {data: {controller: "form-validation", action: "submit->form-validation#validate"}}, method: :post do |f| %>
 	<h3>URL Import</h3>
 	<div class="sub-content">
-		<%= f.text_field :url, name: "url", value: "http://", size: 50 %>
-		<%= f.submit "Import" %>
+		<%= f.text_field :url, name: "url", id: "url", placeholder: "https://example.com/feed.opml", size: 50, data: {form_validation_target: "field", required: "true", field_name: "URL"} %>
+		<span data-form-validation-target="error" data-for="url"></span>
+		<%= f.submit "Import", data: {form_validation_target: "submit", loading_text: "Importing..."} %>
 	</div>
 	<% end %>
 
 	<div class="sub-content">
-		<h4>Attension</h4>
+		<h4>Attention</h4>
 		<p>If you have many subscription list, it takes time to import. Please wait to finish importing.</p>
 	</div>
 </div>

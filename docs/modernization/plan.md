@@ -161,8 +161,11 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ### Step C: Stimulus 置換（必要な分だけ）
 - [x] tab_controller, checkbox_group_controller（import/fetch ページ）
 - [x] keyboard_nav_controller, hotkey_controller（mobile ページ）
-- [ ] 既存JSのうち、操作系をStimulus controllerへ
+- [x] form_validation_controller を import ページに適用
+- [~] 既存JSのうち、操作系をStimulus controllerへ（※大部分は LDR JS と深く統合されており、Step B の Turbo 化が先決）
 - [ ] 不要になった資産の削除（別PR）
+
+**注記**: reader/index, contents/manage, share/index 等の主要ページは legacy LDR JavaScript（lib/ldr.js, lib/api.js 等）と深く統合されている。これらのインライン JS を Stimulus に置換するには、まず API を Turbo Streams 対応にする必要がある（Step B）。
 
 ### 完了したPR
 - `feat: add Hotwire foundation with Turbo Drive disabled`
@@ -176,6 +179,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - `feat: add tab and checkbox-group Stimulus controllers`
 - `feat: add keyboard navigation Stimulus controllers for mobile pages`
 - `refactor: extract layout partials and standardize flash messages`
+- `feat: add form validation to import page`
 
 ---
 
@@ -209,12 +213,16 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
-### 2026-01-24 (マイグレーション後方互換性)
+### 2026-01-24 (マイグレーション後方互換性 + Stimulus 移行調査)
 - **バグ修正**: 009_add_items_index.rb の down メソッド修正（`remove_index :items_search_index` → `remove_index :items, name: :items_search_index`）
 - **可逆性確保**: 20240816071421_items_medium_text_body.rb を `change` から `up`/`down` に変更
 - **モデル依存除去**: 20140601154904_add_guid_to_items.rb から `Item.find_each` を raw SQL に置換
 - **構文統一**: レガシー `def self.up`/`def self.down` を modern `def up`/`def down` に統一（001-009）
 - 全マイグレーションがロールバック/再適用可能に
+- **Stimulus 移行調査**: 主要ページ（reader, manage, share）のインライン JS を調査
+  - 結論: 大部分は LDR JS と深く統合されており、API の Turbo 化が先決
+- **import ページ改善**: form_validation_controller を適用、ファイル入力対応追加
+- **form_validation_controller 拡張**: ファイル入力（type="file"）の検証に対応
 
 ### 2026-01-23 (37signals スタイル「7アクション」リファクタリング)
 - **新規 RESTful コントローラー作成**:

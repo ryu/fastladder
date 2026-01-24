@@ -21,7 +21,7 @@ export default class extends Controller {
     let isValid = true
 
     this.fieldTargets.forEach((field) => {
-      if (field.dataset.required === "true" && !field.value.trim()) {
+      if (field.dataset.required === "true" && !this.hasValue(field)) {
         isValid = false
         this.showError(field, `${field.dataset.fieldName || "This field"} is required`)
       }
@@ -31,12 +31,20 @@ export default class extends Controller {
       event.preventDefault()
       // Focus first invalid field
       const firstInvalid = this.fieldTargets.find(
-        (f) => f.dataset.required === "true" && !f.value.trim()
+        (f) => f.dataset.required === "true" && !this.hasValue(f)
       )
       if (firstInvalid) firstInvalid.focus()
     } else {
       this.showLoading()
     }
+  }
+
+  hasValue(field) {
+    // Handle file inputs differently
+    if (field.type === "file") {
+      return field.files && field.files.length > 0
+    }
+    return field.value.trim() !== ""
   }
 
   showError(field, message) {
