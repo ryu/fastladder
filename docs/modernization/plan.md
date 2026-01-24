@@ -185,7 +185,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - `feat: add keyboard navigation Stimulus controllers for mobile pages`
 - `refactor: extract layout partials and standardize flash messages`
 - `feat: add form validation to import page`
-- `chore: remove unused JavaScript and CSS assets`
+- `chore: remove unused JavaScript and CSS assets` (2回: 85d873b, fa64118)
 
 ---
 
@@ -218,6 +218,12 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-24 (不要資産クリーンアップ 2)
+- **share/index.html.erb 修正**: 冗長な `onsubmit="return false"` を削除
+- **share_controller.js 修正**: search() メソッドに event.preventDefault() 追加
+- **lib/share/share.js 削除**: share_controller.js で完全に置換されたため不要
+- **public/swf/ 削除**: 未使用の Flash チュートリアルファイル（tutorial_ff.swf, tutorial_ie.swf）
 
 ### 2026-01-24 (Turbo Bridge: LDR JS と Turbo の統合)
 - **turbo_bridge.js 作成**: LDR.API クラスを拡張して Turbo Stream サポート追加
