@@ -237,6 +237,13 @@ UI刷新はアップグレード完了後に「小さく」やる。
   - フィードバック表示（"Marking..." → "Done! Redirecting..."）
 - **MobileController#mark_as_read 拡張**: JSON レスポンス対応
 - **ルート追加**: POST /mobile/:feed_id/read
+- **モバイル Pins ページ新設**: /pins でピン一覧表示
+  - pin_remove_controller.js: ピン削除用 Stimulus controller（Turbo Stream 対応）
+  - MobileController#pins, #remove_pin アクション追加
+  - 既存の /pins リンク（mobile/index）が動作するように
+- **contents/guide.html.erb 修正**: 壊れた keyboard shortcut リンクを修正
+  - `<% link_to %>` (出力なし) を説明テキストに置換
+  - キーボードショートカットは reader で `?` を押すと表示される旨を記載
 
 ### 2026-01-24 (マイグレーション後方互換性 + Stimulus 移行調査)
 - **バグ修正**: 009_add_items_index.rb の down メソッド修正（`remove_index :items_search_index` → `remove_index :items, name: :items_search_index`）

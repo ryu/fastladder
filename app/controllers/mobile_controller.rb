@@ -10,6 +10,27 @@ class MobileController < ApplicationController
     end
   end
 
+  def pins
+    @pins = current_member.pins.order(created_on: :desc)
+  end
+
+  def remove_pin
+    pin = current_member.pins.find_by(id: params[:pin_id])
+
+    if pin&.destroy
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.remove("pin-#{params[:pin_id]}") }
+        format.json { render json: { success: true } }
+        format.html { redirect_to "/pins" }
+      end
+    else
+      respond_to do |format|
+        format.json { render json: { success: false } }
+        format.html { redirect_to "/pins" }
+      end
+    end
+  end
+
   def read_feed
     @subscription = Subscription.find(params[:feed_id])
     @items = @subscription.feed.items.stored_since(@subscription.viewed_on).order('stored_on asc').limit(200)

@@ -138,6 +138,57 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     assert json["already_pinned"]
   end
 
+  # Pins page tests
+  test "GET pins requires login" do
+    get "/pins"
+
+    assert_redirected_to "/login"
+  end
+
+  test "GET pins renders pins list" do
+    @member.pins.create!(link: "https://example.com", title: "Test Pin")
+    login_as(@member, password: "password")
+    get "/pins"
+
+    assert_response :success
+    assert_includes response.body, "Test Pin"
+  end
+
+  test "DELETE pins/:id removes pin" do
+    pin = @member.pins.create!(link: "https://example.com", title: "Test Pin")
+    login_as(@member, password: "password")
+    assert_difference "Pin.count", -1 do
+      delete "/pins/#{pin.id}"
+    end
+    assert_redirected_to "/pins"
+  end
+
+  test "DELETE pins/:id returns turbo_stream when requested" do
+    pin = @member.pins.create!(link: "https://example.com", title: "Test Pin")
+    login_as(@member, password: "password")
+    assert_difference "Pin.count", -1 do
+      delete "/pins/#{pin.id}",
+             headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    end
+    assert_response :success
+    assert_includes response.body, "pin-#{pin.id}"
+    assert_includes response.body, "turbo-stream"
+  end
+
+  test "DELETE pins/:id returns JSON when requested" do
+    pin = @member.pins.create!(link: "https://example.com", title: "Test Pin")
+    login_as(@member, password: "password")
+    assert_difference "Pin.count", -1 do
+      delete "/pins/#{pin.id}",
+             headers: { "Accept" => "application/json" }
+    end
+    assert_response :success
+
+    json = response.parsed_body
+
+    assert json["success"]
+  end
+
   private
 
   def login_as(member, password:)

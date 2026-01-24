@@ -1,0 +1,46 @@
+<title>Pins - Fastladder Mobile</title>
+<link href='https://unpkg.com/sakura.css/css/sakura.css' media='screen' rel='stylesheet' type='text/css'>
+<meta content='width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+<%= csrf_meta_tags %>
+<%= javascript_importmap_tags %>
+
+<div>
+<h1>
+  <a href="/mobile">
+    <img src="/img/logo_small.gif" alt="Fastladder">
+  </a>
+</h1>
+<h2>Pins (<%= @pins.count %>)</h2>
+
+<% if @pins.any? %>
+<ul id="pins-list">
+  <% @pins.each do |pin| %>
+  <li id="pin-<%= pin.id %>"
+      data-controller="pin-remove"
+      data-pin-remove-id-value="<%= pin.id %>">
+    <a href="<%= pin.link %>" target="_blank"><%= pin.title %></a>
+    <br>
+    <small style="color: #666;">
+      <%= pin.created_on.localtime.strftime("%Y-%m-%d %H:%M") %>
+      &middot;
+      <a href="#" data-action="click->pin-remove#remove" style="color: #c00;">Remove</a>
+    </small>
+  </li>
+  <% end %>
+</ul>
+<% else %>
+<p>No pins yet.</p>
+<% end %>
+
+<p><a href="/mobile">Back to feeds</a></p>
+</div>
+
+<style>
+  body {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  #pins-list li {
+    margin-bottom: 1em;
+  }
+</style>
