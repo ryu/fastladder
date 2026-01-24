@@ -155,7 +155,9 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ### Step B: Turbo 化（価値の高い操作から）
 - [~] 購読追加/削除（削除は Turbo Stream 対応完了、追加は subscribe.js のまま）
-- [~] 既読/未読切替（モバイルページは Stimulus 対応完了、reader ページは LDR JS のまま）
+- [x] 既読マーク（touch_all Turbo Stream 対応完了）
+- [x] Pin 操作（add/remove/clear Turbo Stream 対応完了）
+- [x] 購読設定（rate/folder/visibility Turbo Stream 対応完了）
 - [ ] 更新結果の差分反映（Turbo Streams）
 
 ### Step C: Stimulus 置換（必要な分だけ）
@@ -214,6 +216,28 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-24 (API Turbo Stream 対応)
+- **Api::PinController Turbo Stream 対応**:
+  - `add`: ピン追加時に turbo_stream でピン一覧に追加、カウント更新
+  - `remove`: ピン削除時に turbo_stream で要素削除、カウント更新
+  - `clear`: 全削除時に turbo_stream でリストクリア、カウントをゼロに
+  - `_pin.html.erb` 部分テンプレート追加
+- **ApiController#touch_all Turbo Stream 対応**:
+  - 既読マーク時に turbo_stream で未読カウント表示を更新
+  - 複数購読の一括既読マークに対応
+- **Api::Subscriptions::RatesController Turbo Stream 対応**:
+  - 評価変更時に turbo_stream で星アイコンを更新
+- **Api::Subscriptions::FoldersController Turbo Stream 対応**:
+  - フォルダ移動時に turbo_stream でフォルダ名表示を更新
+  - バルク操作（複数購読の一括移動）に対応
+- **Api::Subscriptions::VisibilitiesController Turbo Stream 対応**:
+  - 公開/非公開切替時に turbo_stream で状態表示を更新
+  - バルク操作（複数購読の一括変更）に対応
+- **テスト追加**: 全 Turbo Stream レスポンスの検証
+  - Pin コントローラ: 3テスト追加
+  - API コントローラ: 2テスト追加
+  - Subscription コントローラ: 6テスト追加
 
 ### 2026-01-24 (Share ページ Stimulus 移行)
 - **share_controller.js 作成**: 購読共有管理ページ用の Stimulus controller（320行）

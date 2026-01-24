@@ -10,7 +10,23 @@ class Api::Subscriptions::FoldersController < ApplicationController
   # Bulk move subscriptions to a folder
   def update
     folder = @member.find_folder_by_name_or_id(params[:to])
-    member_subscriptions(parse_subscription_ids).update_all(folder_id: folder&.id)
-    render_json_status(true)
+    subscription_ids = parse_subscription_ids
+    member_subscriptions(subscription_ids).update_all(folder_id: folder&.id)
+
+    folder_name = folder&.name || ""
+
+    respond_to do |format|
+      format.turbo_stream do
+        streams = subscription_ids.map do |id|
+          turbo_stream.replace(
+            "subscription-folder-#{id}",
+            html: %(<span class="folder-name">#{ERB::Util.html_escape(folder_name)}</span>)
+          )
+        end
+        render turbo_stream: streams
+      end
+      format.json { render_json_status(true) }
+      format.any { render_json_status(true) }
+    end
   end
 end

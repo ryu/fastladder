@@ -12,7 +12,24 @@ class Api::Subscriptions::VisibilitiesController < ApplicationController
     is_public = parse_boolean(params[:public])
     return render_json_status(false) if is_public.nil?
 
-    member_subscriptions(parse_subscription_ids).update_all(public: is_public)
-    render_json_status(true)
+    subscription_ids = parse_subscription_ids
+    member_subscriptions(subscription_ids).update_all(public: is_public)
+
+    visibility_text = is_public ? "Public" : "Private"
+    visibility_class = is_public ? "public" : "private"
+
+    respond_to do |format|
+      format.turbo_stream do
+        streams = subscription_ids.map do |id|
+          turbo_stream.replace(
+            "subscription-visibility-#{id}",
+            html: %(<span class="visibility #{visibility_class}">#{visibility_text}</span>)
+          )
+        end
+        render turbo_stream: streams
+      end
+      format.json { render_json_status(true) }
+      format.any { render_json_status(true) }
+    end
   end
 end

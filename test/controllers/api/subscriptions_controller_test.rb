@@ -133,6 +133,96 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'action="remove"'
   end
 
+  # Rate update Turbo Stream tests
+  test "POST /api/feed/set_rate returns turbo_stream when requested" do
+    post "/api/feed/set_rate",
+         params: { subscribe_id: @subscription.id, rate: 4 },
+         headers: {
+           "HTTP_COOKIE" => login_cookie,
+           "Accept" => "text/vnd.turbo-stream.html"
+         }
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "subscription-rate-#{@subscription.id}"
+    assert_includes response.body, "rate/4.gif"
+  end
+
+  test "POST /api/feed/set_rate returns JSON by default" do
+    post "/api/feed/set_rate",
+         params: { subscribe_id: @subscription.id, rate: 3 },
+         headers: { "HTTP_COOKIE" => login_cookie }
+
+    assert_response :success
+    json = response.parsed_body
+
+    assert json["isSuccess"]
+    @subscription.reload
+
+    assert_equal 3, @subscription.rate
+  end
+
+  # Folder move Turbo Stream tests
+  test "POST /api/feed/move returns turbo_stream when requested" do
+    post "/api/feed/move",
+         params: { subscribe_id: @subscription.id, to: @folder.name },
+         headers: {
+           "HTTP_COOKIE" => login_cookie,
+           "Accept" => "text/vnd.turbo-stream.html"
+         }
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "subscription-folder-#{@subscription.id}"
+    assert_includes response.body, @folder.name
+  end
+
+  test "POST /api/feed/move returns JSON by default" do
+    post "/api/feed/move",
+         params: { subscribe_id: @subscription.id, to: @folder.name },
+         headers: { "HTTP_COOKIE" => login_cookie }
+
+    assert_response :success
+    json = response.parsed_body
+
+    assert json["isSuccess"]
+    @subscription.reload
+
+    assert_equal @folder.id, @subscription.folder_id
+  end
+
+  # Visibility Turbo Stream tests
+  test "POST /api/feed/set_public returns turbo_stream when requested" do
+    post "/api/feed/set_public",
+         params: { subscribe_id: @subscription.id, public: 1 },
+         headers: {
+           "HTTP_COOKIE" => login_cookie,
+           "Accept" => "text/vnd.turbo-stream.html"
+         }
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "subscription-visibility-#{@subscription.id}"
+    assert_includes response.body, "Public"
+  end
+
+  test "POST /api/feed/set_public returns JSON by default" do
+    post "/api/feed/set_public",
+         params: { subscribe_id: @subscription.id, public: 1 },
+         headers: { "HTTP_COOKIE" => login_cookie }
+
+    assert_response :success
+    json = response.parsed_body
+
+    assert json["isSuccess"]
+    @subscription.reload
+
+    assert @subscription.public
+  end
+
   private
 
   def login_cookie

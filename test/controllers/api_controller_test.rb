@@ -149,4 +149,32 @@ class ApiControllerTest < ActionController::TestCase
 
     assert_predicate response.body, :blank?
   end
+
+  # Turbo Stream tests
+  test "POST touch_all returns turbo_stream when requested" do
+    post :touch_all,
+         params: { subscribe_id: @subscription.id.to_s },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "subscription-unread-#{@subscription.id}"
+  end
+
+  test "POST touch_all with multiple ids returns turbo_stream for each" do
+    feed2 = create_feed
+    subscription2 = create_subscription(feed: feed2, member: @member)
+
+    post :touch_all,
+         params: { subscribe_id: "#{@subscription.id},#{subscription2.id}" },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "subscription-unread-#{@subscription.id}"
+    assert_includes response.body, "subscription-unread-#{subscription2.id}"
+  end
 end

@@ -83,6 +83,48 @@ class Api::PinControllerTest < ActionController::TestCase
     assert_predicate response.body, :blank?
   end
 
+  # Turbo Stream tests
+  test "POST add returns turbo_stream when requested" do
+    post :add,
+         params: { link: "http://example.com/article", title: "Test Article" },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "pin-count"
+  end
+
+  test "POST remove returns turbo_stream when requested" do
+    link = "http://example.com/to-remove"
+    pin = create_pin(member: @member, link: link, title: "Remove Me")
+
+    post :remove,
+         params: { link: link },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "pin-#{pin.id}"
+  end
+
+  test "POST clear returns turbo_stream when requested" do
+    create_pin(member: @member)
+    create_pin(member: @member, link: "http://example.com/2")
+
+    post :clear,
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, "pins-list"
+  end
+
   private
 
   def assert_valid_json(body)

@@ -12,8 +12,20 @@ class Api::Subscriptions::RatesController < ApplicationController
     return render_json_status(false) unless sub
 
     rate = params[:rate].to_i
-    sub.update!(rate: rate) if (0..5).cover?(rate)
-    render_json_status(true)
+    return render_json_status(false) unless (0..5).cover?(rate)
+
+    sub.update!(rate: rate)
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "subscription-rate-#{sub.id}",
+          html: %(<img src="/img/rate/#{rate}.gif" alt="#{rate} stars" class="rate-icon">)
+        )
+      end
+      format.json { render_json_status(true) }
+      format.any { render_json_status(true) }
+    end
   end
 
   private

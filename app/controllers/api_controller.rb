@@ -37,12 +37,25 @@ class ApiController < ApplicationController
   end
 
   def touch_all
-    params[:subscribe_id].split(/\s*,\s*/).each do |id|
+    updated_ids = []
+    params[:subscribe_id].to_s.split(/\s*,\s*/).each do |id|
       if sub = @member.subscriptions.find_by(id: id)
         sub.update(has_unread: false, viewed_on: DateTime.now)
+        updated_ids << id.to_i
       end
     end
-    render_json_status(true)
+
+    respond_to do |format|
+      format.turbo_stream do
+        streams = updated_ids.map do |id|
+          turbo_stream.replace("subscription-unread-#{id}",
+                               html: '<span class="unread-count" data-count="0">0</span>')
+        end
+        render turbo_stream: streams
+      end
+      format.json { render_json_status(true) }
+      format.any { render_json_status(true) }
+    end
   end
 
   def touch
