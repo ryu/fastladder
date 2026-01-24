@@ -244,6 +244,8 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - **contents/guide.html.erb 修正**: 壊れた keyboard shortcut リンクを修正
   - `<% link_to %>` (出力なし) を説明テキストに置換
   - キーボードショートカットは reader で `?` を押すと表示される旨を記載
+- **システムテスト追加**: モバイルページ用
+  - mobile/index、/pins ページのレンダリング検証
 
 ### 2026-01-24 (マイグレーション後方互換性 + Stimulus 移行調査)
 - **バグ修正**: 009_add_items_index.rb の down メソッド修正（`remove_index :items_search_index` → `remove_index :items, name: :items_search_index`）
