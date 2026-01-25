@@ -222,34 +222,38 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
-### 2026-01-25 (Reader テンプレート ERB 移行: Tier 1 & 2)
-- **Tier 1 ERB パーシャル**: reader/templates/ ディレクトリに単純なテンプレートを ERB 化
-  - `_clip_register.html.erb`: 静的 HTML（変数なし）
-  - `_viewmode_item.html.erb`: ビューモード切替メニュー項目
-  - `_sortmode_item.html.erb`: ソートモード切替メニュー項目
-  - `_folder_item.html.erb`: フォルダ選択メニュー項目
-  - `_subscribe_folder.html.erb`: サイドバーのフォルダ表示
-- **Tier 2 ERB パーシャル**: より複雑なテンプレートを ERB 化
-  - `_menu_item.html.erb`: Others ドロップダウンメニュー項目
-  - `_pin_item.html.erb`: ピンドロップダウンメニュー項目
-  - `_subscribe_item.html.erb`: サイドバーの購読項目
-- **Stimulus コントローラー追加**:
-  - `menu_item_controller.js`: メニュー項目のホバー/選択を処理
-    - レガシー MenuItem/Control/FlatMenu との橋渡し
-    - view/sort/move/execute アクションをサポート
-  - `pin_item_controller.js`: ピン項目のホバー/選択を処理
-    - レガシー PinItem/Control との橋渡し
-  - `subscription_item_controller.js`: 購読項目のホバー/選択を処理
-    - レガシー SubsItem/Control との橋渡し
-    - 未読数更新メソッド
-- **ヘルパー追加**: `reader_helper.rb`
-  - VIEW_MODES / SORT_MODES 定数
-  - Tier 1: render_viewmode_item/menu, render_sortmode_item/menu, render_folder_item, render_subscribe_folder, render_clip_register
-  - Tier 2: render_menu_item, render_pin_item, render_subscribe_item, render_subscription_list
+### 2026-01-25 (Reader テンプレート ERB 移行: 全 17 テンプレート完了)
+- **Tier 1 ERB パーシャル** (5個): 単純なテンプレート
+  - `_clip_register.html.erb`: 静的 HTML
+  - `_viewmode_item.html.erb`, `_sortmode_item.html.erb`: モード切替メニュー
+  - `_folder_item.html.erb`, `_subscribe_folder.html.erb`: フォルダ関連
+- **Tier 2 ERB パーシャル** (3個): メニュー/リスト項目
+  - `_menu_item.html.erb`: Others ドロップダウン
+  - `_pin_item.html.erb`: ピンリスト
+  - `_subscribe_item.html.erb`: 購読リスト
+- **Tier 3 ERB パーシャル** (3個): フィード発見/広告
+  - `_discover_item.html.erb`: フィード発見結果（sub/unsub統合）
+  - `_ads_body.html.erb`, `_ads_item.html.erb`: 広告表示
+- **Tier 4 ERB パーシャル** (5個): 複雑なテンプレート
+  - `_inbox_feed.html.erb`: フィードヘッダー
+  - `_inbox_adfeeds.html.erb`: スポンサーフィードヘッダー
+  - `_inbox_item.html.erb`: フィードアイテム
+  - `_clip_info.html.erb`, `_clip_form.html.erb`: クリップ機能
+- **Stimulus コントローラー追加** (11個):
+  - `menu_item_controller.js`: メニュー項目（view/sort/move/execute）
+  - `pin_item_controller.js`: ピン項目選択
+  - `subscription_item_controller.js`: 購読項目選択
+  - `discover_item_controller.js`: フィード購読/解除
+  - `feed_item_controller.js`: アイテム管理
+  - `item_close_controller.js`: アイテム閉じる
+  - `feed_nav_controller.js`: フィードページング
+  - `feed_rate_controller.js`: 評価設定
+  - `folder_toggle_controller.js`: フォルダドロップダウン
+- **ヘルパー追加**: `reader_helper.rb`（全テンプレート対応）
 - **移行戦略**:
   - textarea テンプレートは互換性のため保持
   - ERB パーシャルはサーバーサイドレンダリング用
-  - 将来的に Turbo Streams で動的更新に活用
+  - Turbo Streams で動的更新に活用可能
 
 ### 2026-01-25 (Reader ページ Hotwire 移行開始)
 - **Stimulus コントローラー追加**:

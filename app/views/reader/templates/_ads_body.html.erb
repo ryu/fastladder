@@ -1,0 +1,7 @@
+<%# Reader Template: Ads Body %>
+<%# This partial replaces the textarea#ads_body template %>
+<%# Container for ad items %>
+<%# locals: items (String - rendered ad items HTML) %>
+<div>
+  <%= items.html_safe if local_assigns[:items] %>
+</div>

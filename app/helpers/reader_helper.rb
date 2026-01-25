@@ -179,5 +179,115 @@ module ReaderHelper
   def render_subscription_list(subscriptions)
     safe_join(subscriptions.map { |sub| render_subscribe_item(sub, unread_count: sub.unread_count || 0) })
   end
+
+  # --- Tier 3 Templates ---
+
+  # Render a discover item (feed in discovery results)
+  #
+  # @param feed [Hash] feed info with :feedlink, :link, :title, :subscribers_count
+  # @param subscribed [Boolean] whether the user is already subscribed
+  # @return [String] rendered HTML
+  def render_discover_item(feed, subscribed: false)
+    render partial: "reader/templates/discover_item",
+           locals: {
+             feed: feed,
+             subscribed: subscribed
+           }
+  end
+
+  # Render the ads body container
+  #
+  # @param items [String] rendered ad items HTML
+  # @return [String] rendered HTML
+  def render_ads_body(items: "")
+    render partial: "reader/templates/ads_body",
+           locals: { items: items }
+  end
+
+  # Render an ad item (currently empty/unused)
+  #
+  # @param url [String] ad URL
+  # @param title [String] ad title
+  # @param domain [String] ad domain
+  # @return [String] rendered HTML
+  def render_ads_item(url:, title:, domain:)
+    render partial: "reader/templates/ads_item",
+           locals: {
+             url: url,
+             title: title,
+             domain: domain
+           }
+  end
+
+  # --- Tier 4 Templates ---
+
+  # Render the inbox feed header (channel info)
+  #
+  # @param feed [Hash] feed data with :link, :title, :description, :image, :folder, :rate, :subscribe_id, :widgets, :items
+  # @return [String] rendered HTML
+  def render_inbox_feed(feed)
+    render partial: "reader/templates/inbox_feed",
+           locals: { feed: feed }
+  end
+
+  # Render the inbox ad feed header (sponsor feed)
+  #
+  # @param feed [Hash] feed data with :link, :title, :description, :image, :feedlink, :ads_expire, :items
+  # @return [String] rendered HTML
+  def render_inbox_adfeeds(feed)
+    render partial: "reader/templates/inbox_adfeeds",
+           locals: { feed: feed }
+  end
+
+  # Render an inbox item (feed entry)
+  #
+  # @param item [Hash/Item] item data
+  # @param item_count [Integer] item index in the list
+  # @param loop_context [String] CSS class for odd/even styling
+  # @param pinned [Boolean] whether the item is pinned
+  # @param pin_active [String] CSS class for pin state
+  # @return [String] rendered HTML
+  def render_inbox_item(item, item_count: 0, loop_context: "", pinned: false, pin_active: "pin_inactive")
+    render partial: "reader/templates/inbox_item",
+           locals: {
+             item: item,
+             item_count: item_count,
+             loop_context: loop_context,
+             pinned: pinned,
+             pin_active: pin_active
+           }
+  end
+
+  # Render clip info display
+  #
+  # @param public_clip_count [Integer] number of public clips
+  # @param link [String] the clipped URL
+  # @param created_on [Time] when the clip was created
+  # @return [String] rendered HTML
+  def render_clip_info(public_clip_count:, link:, created_on:)
+    render partial: "reader/templates/clip_info",
+           locals: {
+             public_clip_count: public_clip_count,
+             link: link,
+             created_on: created_on
+           }
+  end
+
+  # Render the clip form
+  #
+  # @param item [Hash] item data with :id, :title, :link, :tags, :notes
+  # @return [String] rendered HTML
+  def render_clip_form(item)
+    render partial: "reader/templates/clip_form",
+           locals: { item: item }
+  end
+
+  # Helper to generate clip page link
+  #
+  # @param link [String] the URL to clip
+  # @return [String] the clip page URL
+  def clip_page_link(link)
+    "http://clip.livedoor.com/page/#{ERB::Util.url_encode(link)}"
+  end
 end
 # rubocop:enable Metrics/ModuleLength

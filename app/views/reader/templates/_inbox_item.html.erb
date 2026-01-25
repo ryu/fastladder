@@ -1,0 +1,64 @@
+<%# Reader Template: Inbox Item (Feed Entry) %>
+<%# This partial replaces the textarea#inbox_items template %>
+<%# Used to display individual feed items/entries %>
+<%# locals: item (Hash/Object with item properties) %>
+<% id = item[:id] || item.try(:id) %>
+<% item_count = local_assigns[:item_count] || 0 %>
+<% loop_context = local_assigns[:loop_context] || "" %>
+<% pinned = local_assigns[:pinned] ? "pinned" : "" %>
+<% pin_active = local_assigns[:pin_active] || "pin_inactive" %>
+<% link = item[:link] || item.try(:link) %>
+<% title = item[:title] || item.try(:title) %>
+<% body = item[:body] || item.try(:body) || "" %>
+<% relative_date = item[:relative_date] || "" %>
+<% author = item[:author] || "" %>
+<% category = item[:category] || "" %>
+<% enclosure = item[:enclosure] || "" %>
+<% widgets = item[:widgets] || "" %>
+
+<div class="item <%= loop_context %> <%= pinned %>" id="item_<%= id %>"
+     data-controller="feed-item"
+     data-feed-item-id-value="<%= id %>">
+  <div class="padding" id="item_count_<%= item_count %>">
+    <div class="item_header">
+      <div class="item_buttons" style="float: right; padding-right: 4px; padding-top: 4px;">
+        <span id="pin_<%= id %>"
+              style="display: block; width: 18px; height: 18px; margin-right: 4px; float: left;"
+              class="<%= pin_active %>"
+              data-controller="reader-pin"
+              data-reader-pin-item-id-value="<%= id %>"
+              data-reader-pin-link-value="<%= link %>"
+              data-reader-pin-title-value="<%= title %>">
+          <img src="/img/icon/pin.gif"
+               data-action="mousedown->reader-pin#toggle">
+        </span>
+        <img src="/img/icon/batu.gif"
+             data-controller="item-close"
+             data-item-close-id-value="<%= id %>"
+             data-action="mousedown->item-close#closeAndNext">
+      </div>
+      <h2 class="item_title" id="head_<%= id %>" count="<%= item_count %>">
+        <a href="<%= link %>"><%= title %></a>
+      </h2>
+    </div>
+    <div class="item_info">
+      <a href="<%= link %>" target="blank">Permalink</a> |
+      <small class="rel"><%= relative_date %></small>
+      <% if author.present? %>
+        <small class="author"><%= author %></small>
+      <% end %>
+      <% if category.present? %>
+        <small class="category"><%= category %></small>
+      <% end %>
+      <% if enclosure.present? %>
+        <small class="enclosure"><%= enclosure.html_safe %></small>
+      <% end %>
+    </div>
+    <div class="item_body" id="item_body_<%= id %>">
+      <div class="body"><%= body.html_safe %></div>
+    </div>
+    <div class="item_footer">
+      <div class="entry_widgets"><%= widgets.html_safe if widgets.present? %></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<%# Reader Template: Inbox Ad Feeds (Sponsor Feed Header) %>
+<%# This partial replaces the textarea#inbox_adfeeds template %>
+<%# Used to display sponsor feed headers %>
+<%# locals: feed (Hash with :link, :title, :description, :image, :feedlink, :ads_expire, :items) %>
+<% link = feed[:link] || feed.try(:link) %>
+<% title = feed[:title] || feed.try(:title) %>
+<% description = feed[:description] || feed.try(:description) %>
+<% image = feed[:image] || feed.try(:image) %>
+<% feedlink = feed[:feedlink] || feed.try(:feedlink) %>
+<% ads_expire = feed[:ads_expire] || 0 %>
+<% items_html = feed[:items] || "" %>
+
+<div class="channel" style="margin: 0 10px; padding: 0;">
+  <h1 class="title" style="margin: 2px 10px 2px 10px; padding: 10px 0 8px 0;">
+    <div>
+      <table style="width: 98%;">
+        <tr>
+          <td width="95%"><a href="<%= link %>"><%= title %></a></td>
+          <td rowspan="2" valign="top"><%= image.html_safe if image.present? %></td>
+        </tr>
+        <tr>
+          <td style="padding-top: 6px;">
+            <small class="description" style="padding: 0; margin: 0; line-height: 16px;"><%= description %></small>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </h1>
+</div>
+
+<div class="channel_toolbar channel_adfeeds" style="margin: 0 10px;">
+  <table>
+    <tr>
+      <td valign="bottom" nowrap style="padding: 0 6px; line-height: 22px; height: 22px; overflow: hidden;" id="channel_info">
+        これはスポンサーフィードです。あと<%= ads_expire %>日で自動的に解除されます。
+        <a href="/subscribe/<%= feedlink %>">このフィードを購読する</a>
+      </td>
+    </tr>
+  </table>
+  <div style="clear: both; font-size: 1px; height: 1px;"></div>
+</div>
+
+<div class="footer" style="position: relative; clear: both;"></div>
+<%= items_html.html_safe if items_html.present? %>

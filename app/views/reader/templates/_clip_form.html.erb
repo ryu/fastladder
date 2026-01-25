@@ -1,0 +1,55 @@
+<%# Reader Template: Clip Form %>
+<%# This partial replaces the textarea#clip_form template %>
+<%# Form for bookmarking/clipping items %>
+<%# locals: item (Hash with :id, :title, :link, :tags, :notes) %>
+<% id = item[:id] || item.try(:id) %>
+<% title = item[:title] || item.try(:title) %>
+<% link = item[:link] || item.try(:link) %>
+<% tags = item[:tags] || "" %>
+<% notes = item[:notes] || "" %>
+
+<div class="clip_form_body">
+  <%= form_tag "/clip/add", id: "clip_form_#{id}", class: "clip_form", target: "_blank", method: :post do %>
+    <div class="rate_pad_wrapper">
+      <img id="clip_rate_<%= id %>"
+           class="rate_pad"
+           src="/img/rate/pad/0.gif"
+           item_id="<%= id %>"
+           data-controller="clip-rate"
+           data-clip-rate-item-id-value="<%= id %>"
+           data-action="click->clip-rate#click mouseout->clip-rate#out mousemove->clip-rate#hover">
+    </div>
+    <h3>Bookmark
+      <span id="clip_info_<%= id %>"></span>
+    </h3>
+    <input type="hidden" name="title" value="<%= title %>">
+    <input type="hidden" name="link" value="<%= link %>">
+    <input type="hidden" name="rate" value="">
+    <input type="hidden" name="from" value="reader">
+    <table class="compact">
+      <tr>
+        <th width="80">Tag</th>
+        <td>
+          <input type="text" name="tags" value="<%= tags %>"
+                 data-controller="clip-input"
+                 data-clip-input-item-id-value="<%= id %>"
+                 data-action="keypress->clip-input#handleEscape keyup->clip-input#handleEscape">
+        </td>
+      </tr>
+      <tr>
+        <th width="80">Comment</th>
+        <td><textarea name="notes"><%= notes %></textarea></td>
+      </tr>
+      <tr>
+        <th>&nbsp;</th>
+        <td style="font-size: 90%;">
+          <input type="submit" value="Bookmark" class="clip_submit">
+          <select name="public">
+            <option value="on" selected>Public</option>
+            <option value="off">Private</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  <% end %>
+</div>

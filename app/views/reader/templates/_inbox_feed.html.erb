@@ -1,0 +1,74 @@
+<%# Reader Template: Inbox Feed (Channel Header) %>
+<%# This partial replaces the textarea#inbox_feed template %>
+<%# Used to display the feed header when reading items %>
+<%# locals: feed (Hash/Object with :link, :title, :description, :image, :folder, :rate, :subscribe_id, :widgets, :items) %>
+<% link = feed[:link] || feed.try(:link) %>
+<% title = feed[:title] || feed.try(:title) %>
+<% description = feed[:description] || feed.try(:description) %>
+<% image = feed[:image] || feed.try(:image) %>
+<% folder = feed[:folder] || feed.try(:folder) || "" %>
+<% rate = feed[:rate] || feed.try(:rate) || 0 %>
+<% subscribe_id = feed[:subscribe_id] || feed.try(:id) %>
+<% widgets = feed[:widgets] || "" %>
+<% items_html = feed[:items] || "" %>
+
+<div class="channel" style="margin: 0 10px; padding: 0;">
+  <h1 class="title" style="margin: 2px 10px 2px 10px; padding: 10px 0 8px 0;">
+    <div>
+      <table style="width: 98%;">
+        <tr>
+          <td width="95%"><a href="<%= link %>"><%= title %></a></td>
+          <td rowspan="2" valign="top"><%= image.html_safe if image.present? %></td>
+        </tr>
+        <tr>
+          <td style="padding-top: 6px;">
+            <small class="description" style="padding: 0; margin: 0; line-height: 16px;"><%= description %></small>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </h1>
+</div>
+
+<div class="channel_toolbar" style="margin: 0 10px;">
+  <table align="right">
+    <tr>
+      <td nowrap style="padding-right: 10px;">
+        <span class="channel_folder button move" id="folder_label"
+              style="background: url('/img/icon/close.gif') no-repeat; padding-left: 20px;"
+              data-controller="folder-toggle"
+              data-action="mousedown->folder-toggle#click">
+          <%= folder %> <img src="/img/icon/tri_d.gif">
+        </span>
+      </td>
+      <td style="padding-right: 15px; position: relative;">
+        <img id="rate_img"
+             class="rate_pad"
+             src="/img/rate/pad/<%= rate %>.gif"
+             sid="<%= subscribe_id %>"
+             data-controller="feed-rate"
+             data-feed-rate-subscribe-id-value="<%= subscribe_id %>"
+             data-action="click->feed-rate#click mouseout->feed-rate#out mousemove->feed-rate#hover">
+      </td>
+      <td nowrap>
+        <span id="feed_prev" title="Show newer items" class="button"
+              data-controller="feed-nav"
+              data-action="click->feed-nav#prev">&lt;</span>
+        <span id="feed_next" title="Show older items" class="button"
+              data-controller="feed-nav"
+              data-action="click->feed-nav#next">&gt;</span>
+      </td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td valign="bottom" nowrap style="padding: 0 6px; line-height: 22px; height: 22px; overflow: hidden;" id="channel_info">
+        <%= widgets.html_safe if widgets.present? %>
+      </td>
+    </tr>
+  </table>
+  <div style="clear: both; font-size: 1px; height: 1px;"></div>
+</div>
+
+<div class="footer" style="position: relative; clear: both;"></div>
+<%= items_html.html_safe if items_html.present? %>

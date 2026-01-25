@@ -1,0 +1,39 @@
+<%# Reader Template: Discover Item (subscribed or not) %>
+<%# This partial replaces discover_select_sub and discover_select_unsub templates %>
+<%# Used in feed discovery results %>
+<%# locals: feed (Hash with :feedlink, :link, :title, :subscribers_count), subscribed (Boolean) %>
+<% feedlink = feed[:feedlink] || feed["feedlink"] %>
+<% link = feed[:link] || feed["link"] %>
+<% title = feed[:title] || feed["title"] %>
+<% subscribers_count = feed[:subscribers_count] || feed["subscribers_count"] || 0 %>
+<% users_label = subscribers_count == 1 ? "user" : "users" %>
+<div class="discover_item">
+  <div style="float: right;" class="<%= subscribed ? 'subscribed' : '' %>">
+    <% if subscribed %>
+      <a href="<%= feedlink %>"
+         rel="unsubscribe"
+         class="unsub_button"
+         data-controller="discover-item"
+         data-action="click->discover-item#unsubscribe"
+         data-discover-item-feedlink-value="<%= feedlink %>">Unsubscribe</a>
+    <% else %>
+      <a href="<%= feedlink %>"
+         rel="subscribe"
+         class="sub_button"
+         data-controller="discover-item"
+         data-action="click->discover-item#subscribe"
+         data-discover-item-feedlink-value="<%= feedlink %>">Add</a>
+    <% end %>
+    <br>
+  </div>
+  <%= image_tag favicon_path(feedlink), width: 16, height: 16 %>
+  <a href="<%= link %>"><%= title %></a>
+  &nbsp;|&nbsp;&nbsp;
+  <b style="color: #717578;"><%= subscribers_count %></b>
+  <span style="color: #717578;"><%= users_label %></span>
+  <% if subscribed %>
+    &nbsp;<span style="color: red;">[Subscribed]</span>
+  <% end %>
+  <br>
+  <small><a href="<%= feedlink %>" class="feedlink"><%= feedlink %></a></small>
+</div>

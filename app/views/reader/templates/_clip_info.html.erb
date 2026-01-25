@@ -1,0 +1,11 @@
+<%# Reader Template: Clip Info %>
+<%# This partial replaces the textarea#clip_info template %>
+<%# Displays clip count and date for bookmarked items %>
+<%# locals: public_clip_count (Integer), link (String), created_on (Time/DateTime) %>
+<% if local_assigns[:public_clip_count] && public_clip_count > 0 %>
+  <a href="<%= clip_page_link(link) %>" target="_blank">
+    <b><%= public_clip_count %></b> <%= public_clip_count > 1 ? "users" : "user" %>
+  </a>
+<% end %>
+｜
+<%= l(created_on, format: :short) if local_assigns[:created_on] %>にクリップ済み
