@@ -57,11 +57,11 @@ class Api::FolderControllerTest < ActionController::TestCase
   private
 
   def assert_valid_json(body)
-    JSON.parse(body)
+    result = JSON.parse(body)
 
-    assert true
-  rescue JSON::ParserError
-    flunk "Expected valid JSON, got: #{body}"
+    assert_not_nil result, "Expected valid JSON, got: #{body}"
+  rescue JSON::ParserError => e
+    flunk "Expected valid JSON: #{e.message}"
   end
 
   def assert_json_error(body)

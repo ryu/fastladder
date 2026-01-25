@@ -78,10 +78,11 @@ Metrics/PerceivedComplexity:
   Max: 18
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
+# Note: about_controller_test.rb and application_controller_test.rb use
+# assert_equal true/false intentionally to check exact boolean values
 Minitest/AssertTruthy:
   Exclude:
     - 'test/controllers/about_controller_test.rb'
-    - 'test/controllers/api/pin_controller_test.rb'
     - 'test/controllers/application_controller_test.rb'
 
 # Configuration parameters: Max.
