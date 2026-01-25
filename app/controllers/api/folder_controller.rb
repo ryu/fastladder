@@ -21,7 +21,6 @@ class Api::FolderController < ApplicationController
       return render_json_status(false)
     end
 
-    # Subscription.update_all "folder_id = 0", ["folder_id = ?", folder_id]
     folder.destroy
     render_json_status(true)
   end
@@ -32,7 +31,7 @@ class Api::FolderController < ApplicationController
     end
 
     name = params[:name]
-    folder.update_attribute(:name, name)
+    folder.update(name: name)
     render_json_status(true)
   end
 

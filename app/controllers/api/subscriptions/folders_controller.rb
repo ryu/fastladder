@@ -15,18 +15,16 @@ class Api::Subscriptions::FoldersController < ApplicationController
 
     folder_name = folder&.name || ""
 
-    respond_to do |format|
-      format.turbo_stream do
-        streams = subscription_ids.map do |id|
-          turbo_stream.replace(
-            "subscription-folder-#{id}",
-            html: %(<span class="folder-name">#{ERB::Util.html_escape(folder_name)}</span>)
-          )
-        end
-        render turbo_stream: streams
+    if turbo_stream_request?
+      streams = subscription_ids.map do |id|
+        turbo_stream.replace(
+          "subscription-folder-#{id}",
+          html: %(<span class="folder-name">#{ERB::Util.html_escape(folder_name)}</span>)
+        )
       end
-      format.json { render_json_status(true) }
-      format.any { render_json_status(true) }
+      render turbo_stream: streams
+    else
+      render_json_status(true)
     end
   end
 end

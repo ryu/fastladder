@@ -157,8 +157,6 @@ class RpcControllerTest < ActionController::TestCase
   end
 
   # Check digest tests
-  # Note: The check_digest action has a bug in the query (Item.where(digests) should be Item.where(digest: digests))
-  # This test documents the expected behavior when the bug is fixed
   test "POST check_digest responds with json" do
     digests = %w[digest-1 digest-2].to_json
 

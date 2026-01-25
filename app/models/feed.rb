@@ -87,7 +87,7 @@ class Feed < ActiveRecord::Base
 
   def update_subscribers_count
     logger.warn "subscribers: #{subscribers_count}"
-    update_attribute(:subscribers_count, subscriptions.size)
+    update(subscribers_count: subscriptions.size)
   end
 
   def avg_rate

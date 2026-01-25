@@ -18,18 +18,16 @@ class Api::Subscriptions::VisibilitiesController < ApplicationController
     visibility_text = is_public ? "Public" : "Private"
     visibility_class = is_public ? "public" : "private"
 
-    respond_to do |format|
-      format.turbo_stream do
-        streams = subscription_ids.map do |id|
-          turbo_stream.replace(
-            "subscription-visibility-#{id}",
-            html: %(<span class="visibility #{visibility_class}">#{visibility_text}</span>)
-          )
-        end
-        render turbo_stream: streams
+    if turbo_stream_request?
+      streams = subscription_ids.map do |id|
+        turbo_stream.replace(
+          "subscription-visibility-#{id}",
+          html: %(<span class="visibility #{visibility_class}">#{visibility_text}</span>)
+        )
       end
-      format.json { render_json_status(true) }
-      format.any { render_json_status(true) }
+      render turbo_stream: streams
+    else
+      render_json_status(true)
     end
   end
 end

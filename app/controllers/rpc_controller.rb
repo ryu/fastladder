@@ -9,8 +9,9 @@ class RpcController < ApplicationController
   end
 
   def check_digest
-    digests = JSON.parse(params[:digests]).uniq.sort
-    render json: (digests - Item.where(digests).map { |x| x.digest }.uniq.sort)
+    digests = JSON.parse(params[:digests]).uniq
+    existing_digests = Item.where(digest: digests).pluck(:digest)
+    render json: (digests - existing_digests)
   end
 
   # TODO: Fix Baaaaaad SQL
@@ -36,18 +37,18 @@ class RpcController < ApplicationController
   private
 
   def auth
-    @member = Member.where(auth_key: params[:api_key]).first
+    @member = Member.find_by(auth_key: params[:api_key])
     render 'public/404', layout: false, status: :not_found and return unless @member
   end
 
   def create_item(options, member)
     if options[:feedtitle]
-      feed = Feed.where(feedlink: options[:feedlink]).first
+      feed = Feed.find_by(feedlink: options[:feedlink])
       unless feed
         description = options[:feeddescription] || options[:feedtitle]
         feed = Feed.create(feedlink: options[:feedlink], title: options[:feedtitle], link: options[:feedlink], description: description)
       end
-      sub = member.subscriptions.where(feed_id: feed.id).first
+      sub = member.subscriptions.find_by(feed_id: feed.id)
       sub ||= member.subscriptions.create(feed_id: feed.id, has_unread: true)
     else
       sub = member.subscribe_feed options[:feedlink]

@@ -130,7 +130,27 @@ crawler は Web とは別プロセスです。
 ---
 
 ## 現状の起動コマンド
-- Web: `bundle exec rails server` 
-- crawler: `bundle exec ruby script/crawler` 
-- foreman: `foreman start`（web/crawler同時） 
+- Web: `bundle exec rails server`
+- crawler: `bundle exec ruby script/crawler`
+- foreman: `foreman start`（web/crawler同時）
+
+---
+
+## 変更前の検証（必須）
+変更をコミットする前に、必ず `bin/ci` を実行して全チェックをパスすることを確認する。
+
+```bash
+bin/ci
+```
+
+このコマンドは以下を順番に実行する:
+- Setup（依存関係とDB準備）
+- Security: Gem audit（脆弱性チェック）
+- Security: Brakeman（静的セキュリティ解析）
+- Lint: RuboCop（コードスタイル）
+- Tests: Rails（ユニット/統合テスト）
+- Tests: System（ブラウザテスト）
+- Tests: Seeds（シードデータ検証）
+
+全てパスしないとコミットしない。 
 

@@ -40,6 +40,11 @@ class ApplicationController < ActionController::Base
     render json: json_status(success, option)
   end
 
+  # Check if the request explicitly asks for Turbo Stream response
+  def turbo_stream_request?
+    request.accepts.any? { |accept| accept.to_s.include?("turbo-stream") }
+  end
+
   # extract URL from request_path(e.g. /about/http://example.com)
   def url_from_path(name)
     if (url = params[name]).present? && (!(parsed_url = Addressable::URI.parse(url)).is_a? Addressable::URI or parsed_url.host.nil?)

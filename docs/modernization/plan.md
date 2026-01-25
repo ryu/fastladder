@@ -6,7 +6,7 @@
 - Web と crawler の2プロセス構成（foreman で同時起動）
 - 目標は「壊さずに上げる」「更新し続けられる」「観測できる」
 
-**最終更新: 2026-01-24**
+**最終更新: 2026-01-25**
 
 ---
 
@@ -218,6 +218,35 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-25 (Turbo Stream 後方互換性修正 + コードクリーンアップ)
+- **バグ修正**: `respond_to` ブロックでの Turbo Stream フォーマット選択問題
+  - Accept ヘッダーなしのリクエストで turbo_stream が選択される可能性があった
+  - 既存の LDR.API（turbo_bridge なし）が Turbo Stream HTML を JSON としてパースしようとしてエラー
+- **解決策**: `turbo_stream_request?` ヘルパーメソッドを導入
+  - Accept ヘッダーに "turbo-stream" が明示的に含まれる場合のみ Turbo Stream を返す
+  - それ以外は JSON レスポンス（後方互換性維持）
+- **コードクリーンアップ**:
+  - `.where().first` → `.find_by()` に置換（4箇所: user_controller, rpc_controller）
+  - 冗長な `.to_json` 削除（8箇所: api_controller）- Rails の render json: は自動でシリアライズする
+  - `update_attribute` → `update` に置換（2箇所: feed.rb, folder_controller）- Rails 6+ で非推奨
+  - コメントアウトされた古いコード削除（folder_controller）
+- **バグ修正**: `rpc_controller#check_digest` のクエリ修正
+  - `Item.where(digests)` → `Item.where(digest: digests).pluck(:digest)` に修正
+  - 不正なクエリが正しいクエリに修正された
+- **修正ファイル**:
+  - `app/controllers/application_controller.rb` - ヘルパーメソッド追加
+  - `app/controllers/api/pin_controller.rb` - add, remove, clear アクション
+  - `app/controllers/api_controller.rb` - touch_all アクション、.to_json 削除
+  - `app/controllers/api/subscriptions_controller.rb` - destroy アクション
+  - `app/controllers/api/subscriptions/rates_controller.rb` - update アクション
+  - `app/controllers/api/subscriptions/folders_controller.rb` - update アクション
+  - `app/controllers/api/subscriptions/visibilities_controller.rb` - update アクション
+  - `app/controllers/api/folder_controller.rb` - update_attribute 修正、古いコメント削除
+  - `app/controllers/user_controller.rb` - find_by 使用
+  - `app/controllers/rpc_controller.rb` - find_by 使用（3箇所）、check_digest クエリ修正
+  - `app/models/feed.rb` - update_attribute 修正
+  - `test/controllers/rpc_controller_test.rb` - バグ修正コメント削除
 
 ### 2026-01-24 (不要資産クリーンアップ 2)
 - **share/index.html.erb 修正**: 冗長な `onsubmit="return false"` を削除

@@ -58,12 +58,10 @@ class Api::SubscriptionsController < ApplicationController
     subscription_id = sub.id
     sub.destroy
 
-    respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.remove("subscription-#{subscription_id}")
-      end
-      format.json { render_json_status(true) }
-      format.any { render_json_status(true) }
+    if turbo_stream_request?
+      render turbo_stream: turbo_stream.remove("subscription-#{subscription_id}")
+    else
+      render_json_status(true)
     end
   end
 

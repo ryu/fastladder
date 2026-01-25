@@ -21,7 +21,7 @@ class ApiController < ApplicationController
       items: items
     }
     result[:ignore_notify] = 1 if @sub.ignore_notify
-    render json: result.to_json
+    render json: result
   end
 
   def unread
@@ -33,7 +33,7 @@ class ApiController < ApplicationController
     }
     result[:last_stored_on] = items.max_by(&:stored_on).stored_on if items.length > 0
     result[:ignore_notify] = 1 if @sub.ignore_notify
-    render json: result.to_json
+    render json: result
   end
 
   def touch_all
@@ -45,16 +45,14 @@ class ApiController < ApplicationController
       end
     end
 
-    respond_to do |format|
-      format.turbo_stream do
-        streams = updated_ids.map do |id|
-          turbo_stream.replace("subscription-unread-#{id}",
-                               html: '<span class="unread-count" data-count="0">0</span>')
-        end
-        render turbo_stream: streams
+    if turbo_stream_request?
+      streams = updated_ids.map do |id|
+        turbo_stream.replace("subscription-unread-#{id}",
+                             html: '<span class="unread-count" data-count="0">0</span>')
       end
-      format.json { render_json_status(true) }
-      format.any { render_json_status(true) }
+      render turbo_stream: streams
+    else
+      render_json_status(true)
     end
   end
 
@@ -69,11 +67,11 @@ class ApiController < ApplicationController
   end
 
   def item_count
-    render json: count_items(unread: false).to_json
+    render json: count_items(unread: false)
   end
 
   def unread_count
-    render json: count_items(unread: true).to_json
+    render json: count_items(unread: true)
   end
 
   def subs
@@ -108,7 +106,7 @@ class ApiController < ApplicationController
       items << item
       break if limit > 0 and limit <= items.size
     end
-    render json: items.to_json
+    render json: items
   end
 
   def lite_subs
@@ -131,7 +129,7 @@ class ApiController < ApplicationController
       item[:ignore_notify] = 1 if sub.ignore_notify
       items << item
     end
-    render json: items.to_json
+    render json: items
   end
 
   def error_subs; end
@@ -147,7 +145,7 @@ class ApiController < ApplicationController
     render json: {
       names: names,
       name2id: name2id
-    }.to_json
+    }
   end
 
   def crawl
@@ -157,9 +155,7 @@ class ApiController < ApplicationController
         success = sub.feed.crawl
       end
     end
-    render json: { a: (success ? true : false) }.to_json
-    # render_json_status(success ? true : false)
-    # return render_json_status(success ? true : false)
+    render json: { a: success }
   end
 
   protected
