@@ -17,7 +17,7 @@ class Api::FolderController < ApplicationController
   end
 
   def delete
-    unless folder = get_folder
+    unless (folder = get_folder)
       return render_json_status(false)
     end
 
@@ -26,7 +26,7 @@ class Api::FolderController < ApplicationController
   end
 
   def update
-    unless folder = get_folder
+    unless (folder = get_folder)
       return render_json_status(false)
     end
 

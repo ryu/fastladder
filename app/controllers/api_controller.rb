@@ -39,7 +39,7 @@ class ApiController < ApplicationController
   def touch_all
     updated_ids = []
     params[:subscribe_id].to_s.split(/\s*,\s*/).each do |id|
-      if sub = @member.subscriptions.find_by(id: id)
+      if (sub = @member.subscriptions.find_by(id: id))
         sub.update(has_unread: false, viewed_on: DateTime.now)
         updated_ids << id.to_i
       end
@@ -162,7 +162,7 @@ class ApiController < ApplicationController
 
   def find_sub
     @id = (params[:subscribe_id] || params[:id] || 0).to_i
-    unless @sub = @member.subscriptions.includes(:feed).find_by(id: @id)
+    unless (@sub = @member.subscriptions.includes(:feed).find_by(id: @id))
       head :not_found
       return false
     end

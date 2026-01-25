@@ -13,8 +13,8 @@ class SubscribeController < ApplicationController
     # params[:url] is http:/example.com because of squeeze("/")
     @url = url_from_path(:url)
     FeedSearcher.search(@url).each do |feedlink|
-      if feed = Feed.find_by(feedlink: feedlink)
-        if sub = current_member.subscribed(feed)
+      if (feed = Feed.find_by(feedlink: feedlink))
+        if (sub = current_member.subscribed(feed))
           feed.subscribe_id = sub.id
         end
         feeds << feed

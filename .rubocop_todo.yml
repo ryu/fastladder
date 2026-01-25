@@ -16,11 +16,6 @@ Lint/AmbiguousRange:
 # Configuration parameters: AllowSafeAssignment.
 Lint/AssignmentInCondition:
   Exclude:
-    - 'app/controllers/api/folder_controller.rb'
-    - 'app/controllers/api/pin_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/subscribe_controller.rb'
-    - 'app/models/member.rb'
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
 

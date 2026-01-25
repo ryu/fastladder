@@ -95,7 +95,7 @@ class Member < ActiveRecord::Base
       return nil
     end
 
-    unless feed = Feed.find_by(feedlink: feedlink)
+    unless (feed = Feed.find_by(feedlink: feedlink))
       if options[:quick]
         feed = Feed.create({
                              feedlink: feedlink,
@@ -112,7 +112,7 @@ class Member < ActiveRecord::Base
     options.delete(:quick)
     options.delete(:title)
 
-    if sub = subscriptions.find_by(feed_id: feed.id)
+    if (sub = subscriptions.find_by(feed_id: feed.id))
       return sub
     end
 
@@ -127,7 +127,7 @@ class Member < ActiveRecord::Base
   end
 
   def check_subscribed(feedlink)
-    return unless feed = Feed.find_by(feedlink: feedlink)
+    return unless (feed = Feed.find_by(feedlink: feedlink))
 
     subscribed(feed)
   end
