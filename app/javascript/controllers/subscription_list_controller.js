@@ -18,20 +18,23 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("[SubscriptionList] Controller connected")
+    // Bind handlers once to enable proper removal
+    this.boundHandleStreamUpdate = this.handleStreamUpdate.bind(this)
+    this.boundHandleFeedRead = this.handleFeedRead.bind(this)
+    this.boundHandleSubscriptionChanged = this.handleSubscriptionChanged.bind(this)
 
     // Listen for custom events from Turbo Stream updates
-    document.addEventListener("turbo:after-stream-render", this.handleStreamUpdate.bind(this))
+    document.addEventListener("turbo:after-stream-render", this.boundHandleStreamUpdate)
 
     // Listen for legacy JS events
-    document.addEventListener("ldr:feed-read", this.handleFeedRead.bind(this))
-    document.addEventListener("ldr:subscription-changed", this.handleSubscriptionChanged.bind(this))
+    document.addEventListener("ldr:feed-read", this.boundHandleFeedRead)
+    document.addEventListener("ldr:subscription-changed", this.boundHandleSubscriptionChanged)
   }
 
   disconnect() {
-    document.removeEventListener("turbo:after-stream-render", this.handleStreamUpdate.bind(this))
-    document.removeEventListener("ldr:feed-read", this.handleFeedRead.bind(this))
-    document.removeEventListener("ldr:subscription-changed", this.handleSubscriptionChanged.bind(this))
+    document.removeEventListener("turbo:after-stream-render", this.boundHandleStreamUpdate)
+    document.removeEventListener("ldr:feed-read", this.boundHandleFeedRead)
+    document.removeEventListener("ldr:subscription-changed", this.boundHandleSubscriptionChanged)
   }
 
   handleStreamUpdate(event) {
@@ -102,8 +105,6 @@ export default class extends Controller {
     if (typeof app !== "undefined" && app.state) {
       app.state.total_unread = total
     }
-
-    console.log("[SubscriptionList] Total unread:", total)
   }
 
   // Actions

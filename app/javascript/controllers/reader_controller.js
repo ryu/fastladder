@@ -11,36 +11,36 @@ import { Controller } from "@hotwired/stimulus"
 //   </body>
 //
 export default class extends Controller {
-  static targets = ["pinCount", "loading", "message"]
-
   connect() {
-    console.log("[Reader] Stimulus controller connected")
+    // Bind handlers once to enable proper removal
+    this.boundBeforeStreamRender = this.beforeStreamRender.bind(this)
+    this.boundAfterStreamRender = this.afterStreamRender.bind(this)
+    this.boundHandlePinAdded = this.handlePinAdded.bind(this)
+    this.boundHandlePinRemoved = this.handlePinRemoved.bind(this)
+    this.boundHandleFeedRead = this.handleFeedRead.bind(this)
 
     // Listen for Turbo Stream events to update UI
-    document.addEventListener("turbo:before-stream-render", this.beforeStreamRender.bind(this))
-    document.addEventListener("turbo:after-stream-render", this.afterStreamRender.bind(this))
+    document.addEventListener("turbo:before-stream-render", this.boundBeforeStreamRender)
+    document.addEventListener("turbo:after-stream-render", this.boundAfterStreamRender)
 
     // Listen for custom events from legacy JS
-    document.addEventListener("ldr:pin-added", this.handlePinAdded.bind(this))
-    document.addEventListener("ldr:pin-removed", this.handlePinRemoved.bind(this))
-    document.addEventListener("ldr:feed-read", this.handleFeedRead.bind(this))
+    document.addEventListener("ldr:pin-added", this.boundHandlePinAdded)
+    document.addEventListener("ldr:pin-removed", this.boundHandlePinRemoved)
+    document.addEventListener("ldr:feed-read", this.boundHandleFeedRead)
   }
 
   disconnect() {
-    document.removeEventListener("turbo:before-stream-render", this.beforeStreamRender.bind(this))
-    document.removeEventListener("turbo:after-stream-render", this.afterStreamRender.bind(this))
-    document.removeEventListener("ldr:pin-added", this.handlePinAdded.bind(this))
-    document.removeEventListener("ldr:pin-removed", this.handlePinRemoved.bind(this))
-    document.removeEventListener("ldr:feed-read", this.handleFeedRead.bind(this))
+    document.removeEventListener("turbo:before-stream-render", this.boundBeforeStreamRender)
+    document.removeEventListener("turbo:after-stream-render", this.boundAfterStreamRender)
+    document.removeEventListener("ldr:pin-added", this.boundHandlePinAdded)
+    document.removeEventListener("ldr:pin-removed", this.boundHandlePinRemoved)
+    document.removeEventListener("ldr:feed-read", this.boundHandleFeedRead)
   }
 
   // Turbo Stream event handlers
   beforeStreamRender(event) {
-    // Log stream actions for debugging during migration
-    const stream = event.target
-    if (stream) {
-      console.log("[Reader] Turbo Stream action:", stream.action, stream.target)
-    }
+    // Hook for future enhancements before Turbo Stream renders
+    // Currently a no-op, can be used to prepare UI or log during development
   }
 
   afterStreamRender(event) {
@@ -87,13 +87,7 @@ export default class extends Controller {
   syncWithLegacyJS() {
     // Called after Turbo Stream updates to sync state with legacy JS
     // This helps during the transition period
-    if (typeof app !== "undefined" && app.state) {
-      // Refresh subscription list if available
-      if (typeof Control !== "undefined" && Control.reload_subs) {
-        // Don't auto-reload, just log for now
-        console.log("[Reader] Turbo Stream update complete, legacy state may need refresh")
-      }
-    }
+    // Future: implement specific sync logic as needed
   }
 
   // Actions that can be called from HTML via data-action

@@ -103,10 +103,13 @@ export default class extends Controller {
       throw new Error(`API call failed: ${response.status}`)
     }
 
-    // If Turbo Stream response, it will be handled automatically
+    // Handle Turbo Stream response manually (fetch doesn't auto-process)
     const contentType = response.headers.get("Content-Type") || ""
     if (contentType.includes("turbo-stream")) {
-      // Turbo will handle DOM updates
+      const html = await response.text()
+      if (window.Turbo && window.Turbo.renderStreamMessage) {
+        window.Turbo.renderStreamMessage(html)
+      }
       return
     }
 
