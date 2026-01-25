@@ -162,18 +162,6 @@ Performance/Count:
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/MapCompact:
-  Exclude:
-    - 'app/models/simple_opml.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: NilOrEmpty, NotPresent, UnlessPresent.
-Rails/Blank:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/subscribe_controller.rb'
-
 Rails/CreateTableWithTimestamps:
   Exclude:
     - 'db/migrate/001_create_members.rb'

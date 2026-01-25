@@ -3,7 +3,7 @@ class SubscribeController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:subscribe]
 
   def index
-    return unless params[:url].present?
+    return if params[:url].blank?
 
     confirm
   end

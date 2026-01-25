@@ -50,7 +50,7 @@ class ApplicationController < ActionController::Base
     if (url = params[name]).present? && (!(parsed_url = Addressable::URI.parse(url)).is_a?(Addressable::URI) || parsed_url.host.nil?)
       url = nil
     end
-    unless url.present?
+    if url.blank?
       # params[name] is http:/example.com because of squeeze("/")
       path = url_for(name => ".", only_path: true)
       url = request.original_fullpath.slice((path.size - 1)..-1)

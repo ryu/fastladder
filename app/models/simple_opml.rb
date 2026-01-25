@@ -20,10 +20,10 @@ class SimpleOpml
     end
 
     def attributes
-      OUTLINE_ATTRIBUTE_KEYS.map do |key|
+      OUTLINE_ATTRIBUTE_KEYS.filter_map do |key|
         value = send(key)
-        value.nil? ? nil : " #{key.to_s.camelize(:lower)}=\"#{value}\""
-      end.compact.join
+        " #{key.to_s.camelize(:lower)}=\"#{value}\"" unless value.nil?
+      end.join
     end
 
     def has_children?
