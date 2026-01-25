@@ -171,6 +171,30 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] reader_pin_controller（Reader ページ内のピン操作）
 - [x] subscription_list_controller（サイドバーの購読リスト管理）
 
+### Step D: Reader テンプレート ERB 移行 ✅ 完了
+Legacy textarea テンプレート（17個）を ERB パーシャルに移行し、サーバーサイドレンダリングを可能にした。
+
+**ERB パーシャル（16ファイル）**:
+- Tier 1: `_clip_register`, `_viewmode_item`, `_sortmode_item`, `_folder_item`, `_subscribe_folder`
+- Tier 2: `_menu_item`, `_pin_item`, `_subscribe_item`
+- Tier 3: `_discover_item`（sub/unsub統合）, `_ads_body`, `_ads_item`
+- Tier 4: `_inbox_feed`, `_inbox_adfeeds`, `_inbox_item`, `_clip_info`, `_clip_form`
+
+**Stimulus コントローラー（11個）**:
+- `menu_item_controller`: メニュー項目（view/sort/move/execute）
+- `pin_item_controller`: ピン項目選択
+- `subscription_item_controller`: 購読項目選択
+- `discover_item_controller`: フィード購読/解除
+- `feed_item_controller`: アイテム管理
+- `item_close_controller`: アイテム閉じる
+- `feed_nav_controller`: フィードページング
+- `feed_rate_controller`: 評価設定
+- `folder_toggle_controller`: フォルダドロップダウン
+
+**ヘルパー**: `reader_helper.rb`（VIEW_MODES/SORT_MODES定数、全テンプレートのレンダリングメソッド）
+
+**テスト**: `test/helpers/reader_helper_test.rb`（16テスト、83アサーション）
+
 **注記**: reader/index, contents/manage 等の主要ページは legacy LDR JavaScript（lib/ldr.js, lib/api.js 等）と深く統合されている。これらのインライン JS を Stimulus に置換するには、まず API を Turbo Streams 対応にする必要がある（Step B）。share/index は LDR JS から独立していたため Stimulus 化完了。
 
 **ブリッジアプローチ**: turbo_bridge.js を導入し、既存の LDR.API クラスを拡張して Turbo Stream レスポンスを自動的に処理できるようにした。これにより、LDR JS を完全に置換することなく、Turbo Stream の恩恵を受けられる。
@@ -189,6 +213,12 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - `refactor: extract layout partials and standardize flash messages`
 - `feat: add form validation to import page`
 - `chore: remove unused JavaScript and CSS assets` (2回: 85d873b, fa64118)
+- `feat: add Stimulus controllers for Reader page Hotwire migration`
+- `feat: add SubscriptionList controller for Reader sidebar`
+- `feat: add Tier 1 ERB partials and helpers for Reader template migration`
+- `feat: add Tier 2 ERB partials and Stimulus controllers for Reader`
+- `feat: complete Reader template ERB migration (Tier 3 & 4)`
+- `test: add ReaderHelper tests and fix favicon handling`
 
 ---
 
