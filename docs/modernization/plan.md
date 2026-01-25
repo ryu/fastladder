@@ -167,6 +167,9 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] share_controller（share/index ページ）← LDR JS から独立していたため移行完了
 - [~] 既存JSのうち、操作系をStimulus controllerへ（※大部分は LDR JS と深く統合されており、Step B の Turbo 化が先決）
 - [x] 不要になった資産の削除
+- [x] reader_controller（Reader ページ統括コントローラー - レガシー JS との橋渡し）
+- [x] reader_pin_controller（Reader ページ内のピン操作）
+- [x] subscription_list_controller（サイドバーの購読リスト管理）
 
 **注記**: reader/index, contents/manage 等の主要ページは legacy LDR JavaScript（lib/ldr.js, lib/api.js 等）と深く統合されている。これらのインライン JS を Stimulus に置換するには、まず API を Turbo Streams 対応にする必要がある（Step B）。share/index は LDR JS から独立していたため Stimulus 化完了。
 
@@ -218,6 +221,26 @@ UI刷新はアップグレード完了後に「小さく」やる。
 ---
 
 ## 進行ログ
+
+### 2026-01-25 (Reader ページ Hotwire 移行開始)
+- **Stimulus コントローラー追加**:
+  - `reader_controller.js`: Reader ページ全体を統括
+    - Turbo Stream イベントのリスニング
+    - レガシー LDR.js との橋渡し
+    - カスタムイベントのディスパッチ
+  - `reader_pin_controller.js`: ピン操作
+    - レガシー Pin モデルとの統合
+    - turbo_bridge.js 経由の API 呼び出し
+    - オプティミスティック UI 更新
+  - `subscription_list_controller.js`: サイドバーの購読リスト
+    - 未読数の更新
+    - Turbo Stream 更新後の DOM 同期
+- **HTML 変更**:
+  - `<body data-controller="reader">` 追加
+- **移行戦略**:
+  - 既存 JS を壊さずに Stimulus を追加
+  - turbo_bridge.js がすでに Turbo Stream と JSON 応答を橋渡し
+  - 段階的にインラインハンドラーを data-action に置き換え予定
 
 ### 2026-01-25 (RuboCop 技術的負債の解消)
 - **Style/AndOr 修正**: `and`/`or` を `&&`/`||` に置換
