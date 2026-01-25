@@ -1,0 +1,20 @@
+<%# Reader Template: Subscribe Item %>
+<%# This partial replaces the textarea#subscribe_item template %>
+<%# Used for subscription items in the sidebar list %>
+<%# locals: subscription (Subscription), icon (String - favicon URL, optional), classname (String, optional), unread_count (Integer) %>
+<% sub = local_assigns[:subscription] %>
+<% subscribe_id = sub.respond_to?(:id) ? sub.id : local_assigns[:subscribe_id] %>
+<% title = sub.respond_to?(:title) ? sub.title : local_assigns[:title] %>
+<% icon = local_assigns.fetch(:icon, sub.respond_to?(:feed) && sub.feed&.favicon&.icon_data_uri || '/img/icon/default.gif') %>
+<% count = local_assigns.fetch(:unread_count, 0) %>
+<% css_class = local_assigns[:classname] %>
+<span
+  id="subs_item_<%= subscribe_id %>"
+  class="treeitem <%= css_class %>"
+  style="background-image: url('<%= icon %>')"
+  data-controller="subscription-item"
+  data-action="mouseover->subscription-item#hover mouseout->subscription-item#unhover click->subscription-item#select"
+  data-subscription-item-id-value="<%= subscribe_id %>"
+  subscribe_id="<%= subscribe_id %>">
+  <%= title %> (<%= count %>)
+</span>

@@ -1,0 +1,12 @@
+<%# Reader Template: Pin Item %>
+<%# This partial replaces the textarea#pin_item template %>
+<%# Used for pinned items in the pin dropdown menu %>
+<%# locals: title (String), link (String), icon (String - favicon URL), target (Boolean - is within open limit) %>
+<% icon_url = local_assigns.fetch(:icon, '/img/icon/default.gif') %>
+<span class="button flat_menu pin_item <%= 'pin-target' if local_assigns[:target] %>"
+  style="background-image: url('<%= icon_url %>'); background-repeat: no-repeat; background-position: 2px 3px;"
+  data-controller="pin-item"
+  data-action="mouseout->pin-item#unhover mouseover->pin-item#hover mouseup->pin-item#select"
+  data-pin-item-link-value="<%= link %>">
+  <%= title %>
+</span>

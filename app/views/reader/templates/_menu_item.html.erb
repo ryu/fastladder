@@ -1,0 +1,11 @@
+<%# Reader Template: Menu Item %>
+<%# This partial replaces the textarea#menu_item template %>
+<%# Used for general dropdown menu items (Others menu) %>
+<%# locals: action (String - JS to execute), title (String) %>
+<span class="button flat_menu"
+  style="background-repeat: no-repeat; background-position: 2px 3px; padding-left: 8px;"
+  data-controller="menu-item"
+  data-action="mouseout->menu-item#unhover mouseover->menu-item#hover mouseup->menu-item#execute"
+  data-menu-item-js-value="<%= action %>">
+  <%= title %>
+</span>

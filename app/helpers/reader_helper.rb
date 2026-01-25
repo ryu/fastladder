@@ -4,6 +4,8 @@
 #
 # Provides server-side support for features being migrated from
 # legacy JavaScript templates to ERB partials.
+#
+# rubocop:disable Metrics/ModuleLength
 module ReaderHelper
   # View mode options for the subscription list
   VIEW_MODES = {
@@ -109,4 +111,73 @@ module ReaderHelper
   def render_clip_register
     render partial: "reader/templates/clip_register"
   end
+
+  # --- Tier 2 Templates ---
+
+  # Render a generic menu item (for "Others" dropdown)
+  #
+  # @param title [String] the menu item label
+  # @param action [String] JavaScript code to execute on click
+  # @return [String] rendered HTML
+  def render_menu_item(title:, action:)
+    render partial: "reader/templates/menu_item",
+           locals: {
+             title: title,
+             action: action
+           }
+  end
+
+  # Render a pin item for the pin dropdown
+  #
+  # @param pin [Pin] the pin object or hash with :title, :link, :icon
+  # @param target [Boolean] whether this pin is within the open limit
+  # @return [String] rendered HTML
+  def render_pin_item(pin, target: false)
+    title = pin.respond_to?(:title) ? pin.title : pin[:title]
+    link = pin.respond_to?(:link) ? pin.link : pin[:link]
+    icon = if pin.respond_to?(:icon)
+             pin.icon.presence || "/img/icon/default.gif"
+           else
+             pin[:icon].presence || "/img/icon/default.gif"
+           end
+
+    render partial: "reader/templates/pin_item",
+           locals: {
+             title: title,
+             link: link,
+             icon: icon,
+             target: target
+           }
+  end
+
+  # Render a subscription item for the sidebar
+  #
+  # @param subscription [Subscription] the subscription object
+  # @param unread_count [Integer] number of unread items (defaults to 0)
+  # @param classname [String, nil] optional CSS class
+  # @return [String] rendered HTML
+  def render_subscribe_item(subscription, unread_count: 0, classname: nil)
+    icon = if subscription.feed&.favicon&.icon_data_uri.present?
+             subscription.feed.favicon.icon_data_uri
+           else
+             "/img/icon/default.gif"
+           end
+
+    render partial: "reader/templates/subscribe_item",
+           locals: {
+             subscription: subscription,
+             icon: icon,
+             unread_count: unread_count,
+             classname: classname
+           }
+  end
+
+  # Render all subscriptions for a member with unread counts
+  #
+  # @param subscriptions [Array<Subscription>] subscriptions with unread counts
+  # @return [String] rendered HTML for all subscription items
+  def render_subscription_list(subscriptions)
+    safe_join(subscriptions.map { |sub| render_subscribe_item(sub, unread_count: sub.unread_count || 0) })
+  end
 end
+# rubocop:enable Metrics/ModuleLength

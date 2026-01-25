@@ -17,7 +17,8 @@ export default class extends Controller {
   static values = {
     action: String,  // "view", "sort", or "move"
     mode: String,    // mode value for view/sort
-    folder: String   // folder name for move action
+    folder: String,  // folder name for move action
+    js: String       // arbitrary JS to execute (for Others menu)
   }
 
   hover() {
@@ -88,5 +89,21 @@ export default class extends Controller {
     if (typeof FlatMenu !== "undefined" && FlatMenu.hideAll) {
       FlatMenu.hideAll()
     }
+  }
+
+  // Execute arbitrary JS code (used by Others menu items)
+  // This is intentionally limited to predefined legacy actions
+  execute() {
+    const jsCode = this.jsValue
+    if (jsCode) {
+      // Execute in context of legacy global functions
+      try {
+        // eslint-disable-next-line no-eval
+        eval(jsCode)
+      } catch (e) {
+        console.error("[MenuItem] Failed to execute:", jsCode, e)
+      }
+    }
+    this.hideMenu()
   }
 }
