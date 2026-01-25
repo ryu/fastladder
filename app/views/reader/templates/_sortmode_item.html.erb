@@ -1,0 +1,11 @@
+<%# Reader Template: Sort Mode Item %>
+<%# This partial replaces the textarea#sortmode_item template %>
+<%# Used in the sort mode dropdown menu %>
+<%# locals: mode (String), label (String), checked (Boolean) %>
+<span class="button flat_menu <%= 'checked' if local_assigns[:checked] %>"
+  data-controller="menu-item"
+  data-action="mouseout->menu-item#unhover mouseover->menu-item#hover mouseup->menu-item#select"
+  data-menu-item-mode-value="<%= mode %>"
+  data-menu-item-action-value="sort">
+  <%= label %>
+</span>

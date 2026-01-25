@@ -1,0 +1,7 @@
+<%# Reader Template: Subscribe Folder %>
+<%# This partial replaces the textarea#subscribe_folder template %>
+<%# Used to display folder items in the subscription sidebar %>
+<%# locals: name (String), unread_count (Integer), classname (String, optional) %>
+<span class="folderitem <%= local_assigns[:classname] %>">
+  <%= name %> (<%= unread_count %>)
+</span>

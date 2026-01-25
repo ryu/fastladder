@@ -222,6 +222,28 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-25 (Reader テンプレート ERB 移行: Tier 1)
+- **ERB パーシャル作成**: reader/templates/ ディレクトリに Tier 1 テンプレートを ERB 化
+  - `_clip_register.html.erb`: 静的 HTML（変数なし）
+  - `_viewmode_item.html.erb`: ビューモード切替メニュー項目
+  - `_sortmode_item.html.erb`: ソートモード切替メニュー項目
+  - `_folder_item.html.erb`: フォルダ選択メニュー項目
+  - `_subscribe_folder.html.erb`: サイドバーのフォルダ表示
+- **Stimulus コントローラー追加**:
+  - `menu_item_controller.js`: メニュー項目のホバー/選択を処理
+    - レガシー MenuItem/Control/FlatMenu との橋渡し
+    - view/sort/move アクションをサポート
+- **ヘルパー追加**: `reader_helper.rb`
+  - VIEW_MODES / SORT_MODES 定数
+  - render_viewmode_item / render_viewmode_menu
+  - render_sortmode_item / render_sortmode_menu
+  - render_folder_item / render_subscribe_folder
+  - render_clip_register
+- **移行戦略**:
+  - textarea テンプレートは互換性のため保持
+  - ERB パーシャルはサーバーサイドレンダリング用
+  - 将来的に Turbo Streams で動的更新に活用
+
 ### 2026-01-25 (Reader ページ Hotwire 移行開始)
 - **Stimulus コントローラー追加**:
   - `reader_controller.js`: Reader ページ全体を統括

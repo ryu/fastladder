@@ -1,0 +1,11 @@
+<%# Reader Template: Folder Item %>
+<%# This partial replaces the textarea#folder_item template %>
+<%# Used in the folder dropdown menu for moving subscriptions %>
+<%# locals: folder_name (String), move_to (String), checked (Boolean) %>
+<span class="button flat_menu <%= 'checked' if local_assigns[:checked] %>"
+  data-controller="menu-item"
+  data-action="mouseout->menu-item#unhover mouseover->menu-item#hover mouseup->menu-item#select"
+  data-menu-item-folder-value="<%= move_to %>"
+  data-menu-item-action-value="move">
+  <%= folder_name %>
+</span>
