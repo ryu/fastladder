@@ -35,6 +35,36 @@ class Api::SubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_not json["isSuccess"]
   end
 
+  test "POST /api/feed/subscribe returns turbo_stream when requested" do
+    new_feed = create_feed(feedlink: "http://example.com/turbo-feed.xml")
+
+    assert_difference("Subscription.count", 1) do
+      post "/api/feed/subscribe",
+           params: { feedlink: new_feed.feedlink },
+           headers: {
+             "HTTP_COOKIE" => login_cookie,
+             "Accept" => "text/vnd.turbo-stream.html"
+           }
+    end
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html; charset=utf-8", response.content_type
+    assert_includes response.body, "turbo-stream"
+    assert_includes response.body, 'action="append"'
+    assert_includes response.body, "feed_candidates"
+    assert_includes response.body, new_feed.title
+  end
+
+  test "POST /api/feed/subscribe with turbo_stream returns error without feedlink" do
+    post "/api/feed/subscribe",
+         headers: {
+           "HTTP_COOKIE" => login_cookie,
+           "Accept" => "text/vnd.turbo-stream.html"
+         }
+
+    assert_response :unprocessable_content
+  end
+
   test "GET /api/feed/subscribed returns subscription info" do
     get "/api/feed/subscribed",
         params: { subscribe_id: @subscription.id },

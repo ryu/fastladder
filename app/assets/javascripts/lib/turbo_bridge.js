@@ -31,6 +31,7 @@
     "/api/feed/move",
     "/api/feed/set_public",
     "/api/feed/unsubscribe",
+    "/api/feed/subscribe",
     "/api/folder/create",
     "/api/folder/update",
     "/api/folder/delete"

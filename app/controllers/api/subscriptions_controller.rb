@@ -25,15 +25,35 @@ class Api::SubscriptionsController < ApplicationController
   # POST /api/subscriptions (alias: /api/feed/subscribe)
   def create
     feedlink = params[:feedlink]
-    return render_json_status(false) if feedlink.blank?
+    if feedlink.blank?
+      return head :unprocessable_content if turbo_stream_request?
+
+      return render_json_status(false)
+    end
 
     options = build_subscription_options
-    return render_json_status(false) unless options
+    if options.nil?
+      return head :unprocessable_content if turbo_stream_request?
+
+      return render_json_status(false)
+    end
 
     sub = @member.subscribe_feed(feedlink, options)
-    return render_json_status(false) unless sub
+    if sub.nil?
+      return head :unprocessable_content if turbo_stream_request?
 
-    render_json_status(true, subscribe_id: sub.id)
+      return render_json_status(false)
+    end
+
+    if turbo_stream_request?
+      render turbo_stream: turbo_stream.append(
+        "feed_candidates",
+        partial: "api/subscriptions/subscription",
+        locals: { subscription: sub, feed: sub.feed }
+      )
+    else
+      render_json_status(true, subscribe_id: sub.id)
+    end
   end
 
   # PATCH /api/subscriptions/:id (alias: /api/feed/update)
