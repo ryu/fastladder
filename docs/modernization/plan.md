@@ -154,7 +154,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] HAML から ERB への変換（全て完了、haml gem 削除）
 
 ### Step B: Turbo 化（価値の高い操作から）
-- [~] 購読追加/削除（削除は Turbo Stream 対応完了、追加は subscribe.js のまま）
+- [x] 購読追加/削除（Turbo Stream 対応完了）
 - [x] 既読マーク（touch_all Turbo Stream 対応完了）
 - [x] Pin 操作（add/remove/clear Turbo Stream 対応完了）
 - [x] 購読設定（rate/folder/visibility Turbo Stream 対応完了）
@@ -221,6 +221,7 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 - `feat: complete Reader template ERB migration (Tier 3 & 4)`
 - `test: add ReaderHelper tests and fix favicon handling`
 - `feat: add Turbo Stream support to folder operations`
+- `feat: add Turbo Stream support to subscription creation`
 
 ---
 
@@ -253,6 +254,15 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 ---
 
 ## 進行ログ
+
+### 2026-01-25 (購読追加 Turbo Stream 対応)
+- **Api::SubscriptionsController#create** に Turbo Stream レスポンス追加:
+  - 購読成功時に feed_candidates リストに新しい購読を追加
+  - subscribe/confirm ページでシームレスな購読更新
+- **turbo_bridge.js** に購読エンドポイント追加
+  - `/api/feed/subscribe`
+- **ERB パーシャル追加**: `api/subscriptions/_subscription.html.erb`
+- **テスト追加**: 2件の Turbo Stream レスポンステスト
 
 ### 2026-01-25 (フォルダ操作 Turbo Stream 対応)
 - **Api::FolderController** に Turbo Stream レスポンス追加:
