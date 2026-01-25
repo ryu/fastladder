@@ -11,7 +11,7 @@ class ApiController < ApplicationController
       limit = Settings.max_unread_count
     else
       limit = params[:limit].to_i
-      limit = Settings.max_unread_count if limit <= 0 or Settings.max_unread_count < limit
+      limit = Settings.max_unread_count if limit <= 0 || Settings.max_unread_count < limit
     end
     offset = params[:offset].blank? ? 0 : params[:offset].to_i
     items = @sub.feed.items.recent(limit, offset)
@@ -59,7 +59,7 @@ class ApiController < ApplicationController
   def touch
     timestamps = params[:timestamp].split(/\s*, \s*/).map { |t| t.to_i }
     params[:subscribe_id].split(/\s*,\s*/).each_with_index do |id, i|
-      if sub = Subscription.find(id) and sub.member_id == @member.id and timestamps[i]
+      if (sub = Subscription.find(id)) && sub.member_id == @member.id && timestamps[i]
         sub.update(has_unread: false, viewed_on: Time.at(timestamps[i] + 1))
       end
     end
@@ -82,7 +82,7 @@ class ApiController < ApplicationController
     subscriptions = subscriptions.has_unread if params[:unread].to_i != 0
     subscriptions.order("subscriptions.id").includes(:folder, { feed: %i[crawl_status favicon] }).with_unread_count.each do |sub|
       unread_count = sub.unread_count.to_i
-      next if params[:unread].to_i > 0 and unread_count == 0
+      next if params[:unread].to_i > 0 && unread_count == 0
       next if sub.id < from_id
 
       feed = sub.feed
@@ -104,7 +104,7 @@ class ApiController < ApplicationController
       }
       item[:ignore_notify] = 1 if sub.ignore_notify
       items << item
-      break if limit > 0 and limit <= items.size
+      break if limit > 0 && limit <= items.size
     end
     render json: items
   end
@@ -151,7 +151,7 @@ class ApiController < ApplicationController
   def crawl
     success = false
     params[:subscribe_id].to_s.split(/\s*,\s*/).each_with_index do |id, _i|
-      if sub = Subscription.find(id) and sub.member_id == @member.id
+      if (sub = Subscription.find(id)) && sub.member_id == @member.id
         success = sub.feed.crawl
       end
     end

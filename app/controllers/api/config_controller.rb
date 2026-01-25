@@ -10,7 +10,7 @@ class Api::ConfigController < ApplicationController
   end
 
   def setter
-    if (pub = params[:member_public]) and pub =~ /^[01]$/
+    if (pub = params[:member_public]) && pub =~ /^[01]$/
       @member.public = pub.to_i != 0
     end
     config = @member.config_dump || {}

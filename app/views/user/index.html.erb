@@ -8,7 +8,7 @@
 <div id="content-inner">
 <div class="user_info">
 	<h3><%= @target_member.username %></h3>
-	<% if logged_in? and @target_member == current_member %>
+	<% if logged_in? && @target_member == current_member %>
 	<% if @target_member.public -%>
 	<p><%= link_to "Manage Sharing", share_path %></p>
 	<% else -%>
@@ -32,7 +32,7 @@
 		<% end -%>
 	</div>
 
-	<% if @target_member.public and @subscriptions.present? -%>
+	<% if @target_member.public && @subscriptions.present? -%>
 	<div class="recent_subscribed" id="recent_subscribed">
 		<h3>Recent Subscriptions</h3>
 		<p>

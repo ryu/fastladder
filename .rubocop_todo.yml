@@ -242,12 +242,6 @@ Rails/RakeEnvironment:
   Exclude:
     - 'Rakefile'
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/ResponseParsedBody:
-  Exclude:
-    - 'test/controllers/api/pin_controller_test.rb'
-    - 'test/controllers/api_controller_test.rb'
-
 Rails/ReversibleMigration:
   Exclude:
     - 'db/migrate/20240816071421_items_medium_text_body.rb'
@@ -297,12 +291,10 @@ Security/Open:
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: always, conditionals
+# Note: 'render ... and return' is a Rails idiom for early return
 Style/AndOr:
   Exclude:
-    - 'app/controllers/api/config_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/application_controller.rb'
-    - 'app/controllers/favicon_controller.rb'
+    - 'app/controllers/rpc_controller.rb'
     - 'lib/fastladder.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
 

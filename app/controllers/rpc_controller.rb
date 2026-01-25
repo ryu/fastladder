@@ -38,7 +38,7 @@ class RpcController < ApplicationController
 
   def auth
     @member = Member.find_by(auth_key: params[:api_key])
-    render 'public/404', layout: false, status: :not_found and return unless @member
+    render('public/404', layout: false, status: :not_found) and return unless @member
   end
 
   def create_item(options, member)

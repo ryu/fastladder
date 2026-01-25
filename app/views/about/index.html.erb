@@ -1,7 +1,7 @@
 <div id="content" class="page_about">
 <div id="content-inner">
 
-<% if @is_feedlink and @feed.present? -%>
+<% if @is_feedlink && @feed.present? -%>
 <%= render "feed", feed: @feed %>
 <% if (subscriptions = @feed.subscriptions).length > 0 -%>
 <div class="subscribers">

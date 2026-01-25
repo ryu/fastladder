@@ -15,7 +15,7 @@ class Api::PinControllerTest < ActionController::TestCase
   test "POST all renders purified link" do
     create_pin(member: @member, link: "http://www.example.com/get?x=1&y=2")
     post :all, session: { member_id: @member.id }
-    json = JSON.parse(response.body)
+    json = response.parsed_body
 
     assert_includes json.last["link"], "&amp;"
   end
@@ -30,7 +30,7 @@ class Api::PinControllerTest < ActionController::TestCase
     post :add, session: { member_id: @member.id }
     error = { "isSuccess" => false, "ErrorCode" => 1 }
 
-    assert_equal error, JSON.parse(response.body)
+    assert_equal error, response.parsed_body
   end
 
   test "POST remove renders json" do
@@ -47,7 +47,7 @@ class Api::PinControllerTest < ActionController::TestCase
 
   test "POST remove returns error code when pin not found" do
     post :remove, params: { link: "http://la.ma.la/blog/diary_200810292006.htm" }, session: { member_id: @member.id }
-    json = JSON.parse(response.body)
+    json = response.parsed_body
 
     assert_includes json, "ErrorCode"
     assert_equal Api::PinController::ErrorCode::NOT_FOUND, json["ErrorCode"]
@@ -57,7 +57,7 @@ class Api::PinControllerTest < ActionController::TestCase
     link = "http://la.ma.la/blog/diary_200810292006.htm"
     create_pin(member: @member, link: link)
     post :remove, params: { link: link }, session: { member_id: @member.id }
-    json = JSON.parse(response.body)
+    json = response.parsed_body
 
     assert_includes json, "isSuccess"
     assert_equal true, json["isSuccess"]

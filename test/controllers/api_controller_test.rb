@@ -14,7 +14,7 @@ class ApiControllerTest < ActionController::TestCase
 
     get :all, params: { subscribe_id: @subscription.id }, session: { member_id: @member.id }
 
-    assert JSON.parse(response.body)
+    assert response.parsed_body
   end
 
   test "GET all limit works" do
@@ -22,7 +22,7 @@ class ApiControllerTest < ActionController::TestCase
 
     get :all, params: { subscribe_id: @subscription.id, limit: 2 }, session: { member_id: @member.id }
 
-    assert_equal 2, JSON.parse(response.body)["items"].size
+    assert_equal 2, response.parsed_body["items"].size
   end
 
   test "GET all offset works" do
@@ -30,7 +30,7 @@ class ApiControllerTest < ActionController::TestCase
 
     get :all, params: { subscribe_id: @subscription.id, offset: 1 }, session: { member_id: @member.id }
 
-    parsed = JSON.parse(response.body)
+    parsed = response.parsed_body
 
     assert_equal 3, parsed["items"].size
     item_ids = parsed["items"].map { |item| item["id"] }
@@ -45,19 +45,19 @@ class ApiControllerTest < ActionController::TestCase
 
     get :all, params: { subscribe_id: subscription.id }, session: { member_id: @member.id }
 
-    assert_includes JSON.parse(response.body)["items"].first["link"], "&amp;"
+    assert_includes response.parsed_body["items"].first["link"], "&amp;"
   end
 
   test "POST touch_all renders json" do
     post :touch_all, params: { subscribe_id: @subscription.id }, session: { member_id: @member.id }
 
-    assert JSON.parse(response.body)
+    assert response.parsed_body
   end
 
   test "POST touch_all renders error" do
     post :touch_all, session: { member_id: @member.id }
 
-    parsed = JSON.parse(response.body)
+    parsed = response.parsed_body
 
     assert_equal false, parsed["isSuccess"]
   end
@@ -65,13 +65,13 @@ class ApiControllerTest < ActionController::TestCase
   test "POST touch renders json" do
     post :touch, params: { timestamp: Time.now.to_i, subscribe_id: @subscription.id }, session: { member_id: @member.id }
 
-    assert JSON.parse(response.body)
+    assert response.parsed_body
   end
 
   test "POST touch renders error" do
     post :touch, session: { member_id: @member.id }
 
-    assert JSON.parse(response.body)
+    assert response.parsed_body
   end
 
   test "POST crawl renders json" do
@@ -87,7 +87,7 @@ class ApiControllerTest < ActionController::TestCase
 
     post :crawl, params: { subscribe_id: @subscription.id }, session: { member_id: @member.id }
 
-    assert JSON.parse(response.body)
+    assert response.parsed_body
   end
 
   test "GET subs has read and unread subscriptions" do
@@ -97,7 +97,7 @@ class ApiControllerTest < ActionController::TestCase
 
     get :subs, session: { member_id: @member.id }
 
-    assert_equal 2, JSON.parse(response.body).count
+    assert_equal 2, response.parsed_body.count
   end
 
   test "GET subs with unread has only unread subscriptions" do
@@ -107,13 +107,13 @@ class ApiControllerTest < ActionController::TestCase
 
     get :subs, params: { unread: 1 }, session: { member_id: @member.id }
 
-    assert_equal 1, JSON.parse(response.body).count
+    assert_equal 1, response.parsed_body.count
   end
 
   test "GET lite_subs renders json" do
     get :lite_subs, session: { member_id: @member.id }
 
-    assert JSON.parse(response.body)
+    assert response.parsed_body
   end
 
   test "GET item_count renders json" do
@@ -125,7 +125,7 @@ class ApiControllerTest < ActionController::TestCase
   test "GET item_count renders error" do
     get :item_count, session: { member_id: @member.id }
 
-    parsed = JSON.parse(response.body)
+    parsed = response.parsed_body
 
     assert_equal false, parsed["isSuccess"]
   end
@@ -139,7 +139,7 @@ class ApiControllerTest < ActionController::TestCase
   test "GET unread_count renders error" do
     get :unread_count, session: { member_id: @member.id }
 
-    parsed = JSON.parse(response.body)
+    parsed = response.parsed_body
 
     assert_equal false, parsed["isSuccess"]
   end
