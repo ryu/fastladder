@@ -53,9 +53,21 @@ class ApplicationController < ActionController::Base
     unless url.present?
       # params[name] is http:/example.com because of squeeze("/")
       path = url_for(name => ".", only_path: true)
-      url = request.original_fullpath.slice(path.size - 1..-1)
+      url = request.original_fullpath.slice((path.size - 1)..-1)
     end
     url
+  end
+
+  def self.params_required(params, options = {})
+    params = [params].flatten
+    before_action(options) do |controller|
+      params.each do |param|
+        if controller.params[param].blank?
+          render json: json_status(false)
+          break false
+        end
+      end
+    end
   end
 
   private
@@ -70,17 +82,5 @@ class ApplicationController < ActionController::Base
 
   def find_current_member_by_auth_key
     params[:auth_key].presence && Member.find_by(auth_key: params[:auth_key])
-  end
-
-  def self.params_required(params, options = {})
-    params = [params].flatten
-    before_action(options) do |controller|
-      params.each do |param|
-        if controller.params[param].blank?
-          render json: json_status(false)
-          break false
-        end
-      end
-    end
   end
 end

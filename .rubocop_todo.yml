@@ -7,12 +7,6 @@
 # versions of RuboCop, may require this file to be generated again.
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: RequireParenthesesForMethodChains.
-Lint/AmbiguousRange:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: AllowSafeAssignment.
 Lint/AssignmentInCondition:
   Exclude:
@@ -33,10 +27,6 @@ Lint/DuplicateBranch:
 Lint/EmptyClass:
   Exclude:
     - 'lib/fastladder/crawler.rb'
-
-Lint/IneffectiveAccessModifier:
-  Exclude:
-    - 'app/controllers/application_controller.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Lint/NonAtomicFileOperation:
