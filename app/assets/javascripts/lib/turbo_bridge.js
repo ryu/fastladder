@@ -30,7 +30,10 @@
     "/api/feed/set_rate",
     "/api/feed/move",
     "/api/feed/set_public",
-    "/api/feed/unsubscribe"
+    "/api/feed/unsubscribe",
+    "/api/folder/create",
+    "/api/folder/update",
+    "/api/folder/delete"
   ];
 
   // Store original post method

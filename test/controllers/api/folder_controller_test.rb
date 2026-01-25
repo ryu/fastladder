@@ -3,7 +3,7 @@ require "test_helper"
 class Api::FolderControllerTest < ActionController::TestCase
   def setup
     @member = create_member(password: "mala", password_confirmation: "mala")
-    @folder = create_folder
+    @folder = create_folder(member: @member)
   end
 
   test "POST create creates new folder" do
@@ -52,6 +52,72 @@ class Api::FolderControllerTest < ActionController::TestCase
     post :update
 
     assert_predicate response.body, :blank?
+  end
+
+  # Turbo Stream tests
+  test "POST create with turbo stream returns turbo stream response" do
+    post :create,
+         params: { name: "New Folder" },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_match "turbo-stream", response.media_type
+    assert_match "manage_folder", response.body
+    assert_match "New Folder", response.body
+  end
+
+  test "POST create with turbo stream returns error for duplicate folder" do
+    @member.folders.create(name: "Existing")
+
+    post :create,
+         params: { name: "Existing" },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :unprocessable_entity
+  end
+
+  test "POST delete with turbo stream removes folder" do
+    post :delete,
+         params: { folder_id: @folder.id },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_match "turbo-stream", response.media_type
+    assert_match "remove", response.body
+    assert_match "folder-#{@folder.id}", response.body
+  end
+
+  test "POST delete with turbo stream returns not found for missing folder" do
+    post :delete,
+         params: { folder_id: 99_999 },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :not_found
+  end
+
+  test "POST update with turbo stream replaces folder" do
+    post :update,
+         params: { folder_id: @folder.id, name: "Updated Name" },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :success
+    assert_match "turbo-stream", response.media_type
+    assert_match "replace", response.body
+    assert_match "Updated Name", response.body
+  end
+
+  test "POST update with turbo stream returns not found for missing folder" do
+    post :update,
+         params: { folder_id: 99_999, name: "New Name" },
+         session: { member_id: @member.id },
+         as: :turbo_stream
+
+    assert_response :not_found
   end
 
   private

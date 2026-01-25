@@ -8,31 +8,57 @@ class Api::FolderController < ApplicationController
 
   def create
     name = params[:name]
-    Folder.transaction do
-      return render_json_status(false, ERR_ALREADY_EXISTS) if @member.folders.find_by(name: name)
+    folder = nil
 
-      @member.folders.create(name: name)
+    Folder.transaction do
+      if @member.folders.find_by(name: name)
+        return head :unprocessable_content if turbo_stream_request?
+
+        return render_json_status(false, ERR_ALREADY_EXISTS)
+      end
+
+      folder = @member.folders.create(name: name)
     end
-    render_json_status(true)
+
+    if turbo_stream_request?
+      render turbo_stream: turbo_stream.append("manage_folder", partial: "api/folder/folder", locals: { folder: folder })
+    else
+      render_json_status(true)
+    end
   end
 
   def delete
     unless (folder = get_folder)
+      return head :not_found if turbo_stream_request?
+
       return render_json_status(false)
     end
 
+    folder_id = folder.id
     folder.destroy
-    render_json_status(true)
+
+    if turbo_stream_request?
+      render turbo_stream: turbo_stream.remove("folder-#{folder_id}")
+    else
+      render_json_status(true)
+    end
   end
 
   def update
     unless (folder = get_folder)
+      return head :not_found if turbo_stream_request?
+
       return render_json_status(false)
     end
 
     name = params[:name]
     folder.update(name: name)
-    render_json_status(true)
+
+    if turbo_stream_request?
+      render turbo_stream: turbo_stream.replace("folder-#{folder.id}", partial: "api/folder/folder", locals: { folder: folder })
+    else
+      render_json_status(true)
+    end
   end
 
   protected
