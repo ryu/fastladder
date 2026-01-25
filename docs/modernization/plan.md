@@ -158,6 +158,7 @@ UI刷新はアップグレード完了後に「小さく」やる。
 - [x] 既読マーク（touch_all Turbo Stream 対応完了）
 - [x] Pin 操作（add/remove/clear Turbo Stream 対応完了）
 - [x] 購読設定（rate/folder/visibility Turbo Stream 対応完了）
+- [x] フォルダ操作（create/update/delete Turbo Stream 対応完了）
 - [ ] 更新結果の差分反映（Turbo Streams）
 
 ### Step C: Stimulus 置換（必要な分だけ）
@@ -219,6 +220,7 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 - `feat: add Tier 2 ERB partials and Stimulus controllers for Reader`
 - `feat: complete Reader template ERB migration (Tier 3 & 4)`
 - `test: add ReaderHelper tests and fix favicon handling`
+- `feat: add Turbo Stream support to folder operations`
 
 ---
 
@@ -251,6 +253,16 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 ---
 
 ## 進行ログ
+
+### 2026-01-25 (フォルダ操作 Turbo Stream 対応)
+- **Api::FolderController** に Turbo Stream レスポンス追加:
+  - `create`: 新しいフォルダを manage_folder リストに追加
+  - `update`: フォルダ名の更新を反映
+  - `delete`: フォルダ要素を DOM から削除
+- **turbo_bridge.js** にフォルダエンドポイント追加
+  - `/api/folder/create`, `/api/folder/update`, `/api/folder/delete`
+- **ERB パーシャル追加**: `api/folder/_folder.html.erb`
+- **テスト追加**: 6件の Turbo Stream レスポンステスト
 
 ### 2026-01-25 (Reader テンプレート ERB 移行: 全 17 テンプレート完了)
 - **Tier 1 ERB パーシャル** (5個): 単純なテンプレート
