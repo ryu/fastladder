@@ -219,6 +219,20 @@ UI刷新はアップグレード完了後に「小さく」やる。
 
 ## 進行ログ
 
+### 2026-01-25 (RuboCop 技術的負債の解消)
+- **Style/AndOr 修正**: `and`/`or` を `&&`/`||` に置換
+  - controllers: api, api/config, application, favicon, rpc
+  - views: about/index, user/index
+- **Rails/ResponseParsedBody 修正**: `JSON.parse(response.body)` を `response.parsed_body` に置換
+  - test/controllers: api_controller_test, api/pin_controller_test
+- **Lint/AssignmentInCondition 修正**: 条件式内の代入に括弧を追加
+  - controllers: api, api/folder, subscribe
+  - models: member
+- **Lint/AmbiguousRange 修正**: 範囲表現に括弧を追加（application_controller）
+- **Lint/IneffectiveAccessModifier 修正**: クラスメソッドを private セクションの前に移動
+- **Minitest/AssertTruthy 修正**: テストヘルパーで意味のあるアサーションを使用
+- **RuboCop TODO 削減**: 除外項目を削減（127件 → 現在約100件未満）
+
 ### 2026-01-25 (Turbo Stream 後方互換性修正 + コードクリーンアップ)
 - **バグ修正**: `respond_to` ブロックでの Turbo Stream フォーマット選択問題
   - Accept ヘッダーなしのリクエストで turbo_stream が選択される可能性があった
