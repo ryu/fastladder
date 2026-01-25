@@ -5,7 +5,7 @@
 <% sub = local_assigns[:subscription] %>
 <% subscribe_id = sub.respond_to?(:id) ? sub.id : local_assigns[:subscribe_id] %>
 <% title = sub.respond_to?(:title) ? sub.title : local_assigns[:title] %>
-<% icon = local_assigns.fetch(:icon, sub.respond_to?(:feed) && sub.feed&.favicon&.icon_data_uri || '/img/icon/default.gif') %>
+<% icon = local_assigns.fetch(:icon, '/img/icon/default.gif') %>
 <% count = local_assigns.fetch(:unread_count, 0) %>
 <% css_class = local_assigns[:classname] %>
 <span

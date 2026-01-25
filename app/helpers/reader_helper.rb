@@ -157,8 +157,8 @@ module ReaderHelper
   # @param classname [String, nil] optional CSS class
   # @return [String] rendered HTML
   def render_subscribe_item(subscription, unread_count: 0, classname: nil)
-    icon = if subscription.feed&.favicon&.icon_data_uri.present?
-             subscription.feed.favicon.icon_data_uri
+    icon = if subscription.feed&.favicon&.image.present?
+             favicon_path(subscription.feed.id)
            else
              "/img/icon/default.gif"
            end
