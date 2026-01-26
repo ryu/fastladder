@@ -224,6 +224,7 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 - `feat: add Turbo Stream support to subscription creation`
 - `refactor: improve RpcController#update_feeds with transaction and error handling`
 - `refactor: introduce ApplicationRecord base class`
+- `refactor: fix RuboCop offenses in model files`
 
 ---
 
@@ -256,6 +257,15 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 ---
 
 ## 進行ログ
+
+### 2026-01-26 (RuboCop 警告修正)
+- **モデルファイルの Rails ベストプラクティス適用**:
+  - `Time.now` → `Time.current` (タイムゾーン対応)
+  - `order("column DESC")` → `order(column: :desc)` (ハッシュ形式)
+  - `where("col < ?", val)` → `where(col: ...val)` (Rails 7+ range syntax)
+  - `> 0` → `.positive?`
+- 修正ファイル: item.rb, crawl_status.rb, pin.rb, subscription.rb
+- `.rubocop_todo.yml` を再生成（除外項目削減）
 
 ### 2026-01-26 (ApplicationRecord 導入)
 - **ApplicationRecord** を作成（Rails 5+ 標準パターン）
