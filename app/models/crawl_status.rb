@@ -19,7 +19,7 @@ class CrawlStatus < ApplicationRecord
   belongs_to :feed, optional: true
 
   scope :status_ok, -> { where(status: Fastladder::Crawler::CRAWL_OK) }
-  scope :expired, ->(ttl) { where("crawled_on IS NULL OR crawled_on < ?", ttl.ago) }
+  scope :expired, ->(ttl) { where(crawled_on: nil).or(where(crawled_on: ...ttl.ago)) }
 
   # Fetches a crawlable feed with atomic locking to prevent concurrent crawls.
   #
@@ -34,7 +34,7 @@ class CrawlStatus < ApplicationRecord
   # @return [Feed, nil] The feed to crawl, or nil if none available
   def self.fetch_crawlable_feed(_options = {}, max_retries: 5)
     # Reset stale crawls (crawls that started but never finished)
-    CrawlStatus.where("crawled_on < ?", 30.minutes.ago)
+    CrawlStatus.where(crawled_on: ...30.minutes.ago)
                .where(status: Fastladder::Crawler::CRAWL_NOW)
                .update_all(status: Fastladder::Crawler::CRAWL_OK)
 
@@ -54,7 +54,7 @@ class CrawlStatus < ApplicationRecord
       # Atomic update - only succeeds if status is still CRAWL_OK
       updated_count = CrawlStatus
                       .where(id: candidate.id, status: Fastladder::Crawler::CRAWL_OK)
-                      .update_all(status: Fastladder::Crawler::CRAWL_NOW, crawled_on: Time.now)
+                      .update_all(status: Fastladder::Crawler::CRAWL_NOW, crawled_on: Time.current)
 
       return candidate.feed if updated_count.positive?
 

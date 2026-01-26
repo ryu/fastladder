@@ -42,7 +42,6 @@ Lint/RescueException:
 # Configuration parameters: AllowComments, AllowNil.
 Lint/SuppressedException:
   Exclude:
-    - 'app/controllers/mobile_controller.rb'
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
     - 'script/crawler'
@@ -78,8 +77,6 @@ Metrics/PerceivedComplexity:
   Max: 18
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
-# Note: about_controller_test.rb and application_controller_test.rb use
-# assert_equal true/false intentionally to check exact boolean values
 Minitest/AssertTruthy:
   Exclude:
     - 'test/controllers/about_controller_test.rb'
@@ -99,11 +96,6 @@ Minitest/RefuteFalse:
     - 'test/controllers/application_controller_test.rb'
     - 'test/controllers/import_controller_test.rb'
     - 'test/models/subscription_test.rb'
-
-Minitest/UselessAssertion:
-  Exclude:
-    - 'test/controllers/api/folder_controller_test.rb'
-    - 'test/controllers/api/pin_controller_test.rb'
 
 Naming/AccessorMethodName:
   Exclude:
@@ -198,9 +190,6 @@ Rails/OrderArguments:
     - 'app/controllers/api_controller.rb'
     - 'app/controllers/mobile_controller.rb'
     - 'app/controllers/user_controller.rb'
-    - 'app/models/item.rb'
-    - 'app/models/pin.rb'
-    - 'app/models/subscription.rb'
 
 Rails/OutputSafety:
   Exclude:
@@ -215,10 +204,6 @@ Rails/Pluck:
 Rails/RakeEnvironment:
   Exclude:
     - 'Rakefile'
-
-Rails/ReversibleMigration:
-  Exclude:
-    - 'db/migrate/20240816071421_items_medium_text_body.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/RootPathnameMethods:
@@ -246,8 +231,6 @@ Rails/TimeZone:
   Exclude:
     - 'app/controllers/api_controller.rb'
     - 'app/controllers/mobile_controller.rb'
-    - 'app/models/crawl_status.rb'
-    - 'app/models/item.rb'
     - 'app/models/member.rb'
     - 'app/models/simple_opml.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
@@ -255,7 +238,6 @@ Rails/TimeZone:
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/WhereRange:
   Exclude:
-    - 'app/models/crawl_status.rb'
     - 'app/models/item.rb'
 
 Security/Open:
@@ -265,10 +247,8 @@ Security/Open:
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: always, conditionals
-# Note: 'render ... and return' is a Rails idiom for early return
 Style/AndOr:
   Exclude:
-    - 'app/controllers/rpc_controller.rb'
     - 'lib/fastladder.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
 
@@ -334,7 +314,6 @@ Style/NumericPredicate:
     - 'app/controllers/sessions_controller.rb'
     - 'app/controllers/subscribe_controller.rb'
     - 'app/helpers/subscribe_helper.rb'
-    - 'app/models/pin.rb'
     - 'app/models/simple_opml.rb'
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
@@ -380,7 +359,6 @@ Style/StringConcatenation:
 Style/SymbolProc:
   Exclude:
     - 'app/controllers/api_controller.rb'
-    - 'app/controllers/rpc_controller.rb'
     - 'app/models/member.rb'
     - 'lib/fastladder/crawler.rb'
     - 'lib/fastladder/fastladder_crawler.rb'

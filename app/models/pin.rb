@@ -13,7 +13,7 @@
 class Pin < ApplicationRecord
   belongs_to :member, optional: true
 
-  scope :past, ->(num) { order("created_on").limit(num) }
+  scope :past, ->(num) { order(:created_on).limit(num) }
 
   after_create :destroy_over_limit_pins
 
@@ -28,6 +28,6 @@ class Pin < ApplicationRecord
   # older pins are collectioned
   def destroy_over_limit_pins
     over_count = member.pins.size - Settings.save_pin_limit
-    member.pins.past(over_count).destroy_all if over_count > 0
+    member.pins.past(over_count).destroy_all if over_count.positive?
   end
 end

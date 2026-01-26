@@ -25,7 +25,7 @@ class Subscription < ApplicationRecord
 
   scope :open, -> { where(public: true) }
   scope :has_unread, -> { where(has_unread: true) }
-  scope :recent, ->(num) { order("created_on DESC").limit(num) }
+  scope :recent, ->(num) { order(created_on: :desc).limit(num) }
   scope :with_unread_count, lambda {
     sql = <<~SQL.squish
       subscriptions.*,

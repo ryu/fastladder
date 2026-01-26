@@ -27,7 +27,7 @@ class Item < ApplicationRecord
   before_save :create_digest, :fill_datetime
 
   scope :stored_since, ->(viewed_on) { viewed_on ? where("stored_on >= ?", viewed_on) : all }
-  scope :recent, ->(limit = nil, offset = nil) { order("created_on DESC, id DESC").limit(limit).offset(offset) }
+  scope :recent, ->(limit = nil, offset = nil) { order(created_on: :desc, id: :desc).limit(limit).offset(offset) }
 
   def default_values
     self.title ||= ""
@@ -35,7 +35,7 @@ class Item < ApplicationRecord
   end
 
   def fill_datetime
-    self.stored_on = Time.now unless stored_on
+    self.stored_on = Time.current unless stored_on
   end
 
   def create_digest
