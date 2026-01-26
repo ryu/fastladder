@@ -21,7 +21,7 @@ class RpcController < ApplicationController
     created_count = 0
     errors = []
 
-    ActiveRecord::Base.transaction do
+    ApplicationRecord.transaction do
       feeds_data.each_with_index do |options, index|
         options.symbolize_keys!
         create_item(options, @member)

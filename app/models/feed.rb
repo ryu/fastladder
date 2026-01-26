@@ -15,7 +15,7 @@
 #  updated_on        :datetime         not null
 #
 
-class Feed < ActiveRecord::Base
+class Feed < ApplicationRecord
   include Feed::Crawlable
   include Feed::FaviconFetchable
 

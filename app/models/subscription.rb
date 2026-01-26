@@ -15,7 +15,7 @@
 #  updated_on    :datetime         not null
 #
 
-class Subscription < ActiveRecord::Base
+class Subscription < ApplicationRecord
   belongs_to :member, optional: true
   belongs_to :feed, optional: true
   belongs_to :folder, optional: true
