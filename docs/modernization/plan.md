@@ -223,6 +223,7 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 - `feat: add Turbo Stream support to folder operations`
 - `feat: add Turbo Stream support to subscription creation`
 - `refactor: improve RpcController#update_feeds with transaction and error handling`
+- `refactor: introduce ApplicationRecord base class`
 
 ---
 
@@ -255,6 +256,12 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 ---
 
 ## 進行ログ
+
+### 2026-01-26 (ApplicationRecord 導入)
+- **ApplicationRecord** を作成（Rails 5+ 標準パターン）
+- 8つのモデルを `ActiveRecord::Base` から `ApplicationRecord` に変更:
+  - CrawlStatus, Favicon, Feed, Folder, Item, Member, Pin, Subscription
+- RpcController で `ApplicationRecord.transaction` を使用
 
 ### 2026-01-26 (RpcController リファクタリング)
 - **RpcController#update_feeds** を改善:
