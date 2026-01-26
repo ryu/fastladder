@@ -222,6 +222,7 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 - `test: add ReaderHelper tests and fix favicon handling`
 - `feat: add Turbo Stream support to folder operations`
 - `feat: add Turbo Stream support to subscription creation`
+- `refactor: improve RpcController#update_feeds with transaction and error handling`
 
 ---
 
@@ -254,6 +255,15 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 ---
 
 ## 進行ログ
+
+### 2026-01-26 (RpcController リファクタリング)
+- **RpcController#update_feeds** を改善:
+  - トランザクションで囲んでSQLite安全性を確保
+  - エラーハンドリングを追加（個別エラーをログ出力）
+  - レスポンスに created count と errors を追加
+  - 空の feeds 配列を適切に処理
+- **テスト追加**: 2件のバッチ更新テスト
+- "Baaaaaad SQL" TODO を解決
 
 ### 2026-01-25 (購読追加 Turbo Stream 対応)
 - **Api::SubscriptionsController#create** に Turbo Stream レスポンス追加:
