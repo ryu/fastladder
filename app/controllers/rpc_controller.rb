@@ -14,13 +14,29 @@ class RpcController < ApplicationController
     render json: (digests - existing_digests)
   end
 
-  # TODO: Fix Baaaaaad SQL
   def update_feeds
-    JSON.parse(params[:feeds]).each do |options|
-      options.symbolize_keys!
-      create_item options, @member
+    feeds_data = JSON.parse(params[:feeds])
+    return render json: { result: false, error: "No feeds provided" } if feeds_data.empty?
+
+    created_count = 0
+    errors = []
+
+    ActiveRecord::Base.transaction do
+      feeds_data.each_with_index do |options, index|
+        options.symbolize_keys!
+        create_item(options, @member)
+        created_count += 1
+      rescue StandardError => e
+        errors << { index: index, feedlink: options[:feedlink], error: e.message }
+        Rails.logger.error("RPC update_feeds error at index #{index}: #{e.message}")
+      end
     end
-    render json: { result: true }
+
+    render json: {
+      result: errors.empty?,
+      created: created_count,
+      errors: errors.presence
+    }.compact
   end
 
   def export

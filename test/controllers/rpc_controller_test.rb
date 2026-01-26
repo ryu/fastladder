@@ -128,6 +128,42 @@ class RpcControllerTest < ActionController::TestCase
     end
 
     assert_response :success
+    json = response.parsed_body
+
+    assert json["result"]
+    assert_equal 2, json["created"]
+  end
+
+  test "POST update_feeds returns created count and handles empty feeds" do
+    post :update_feeds, params: {
+      api_key: @api_key,
+      feeds: [].to_json
+    }
+
+    assert_response :success
+    json = response.parsed_body
+
+    assert_not json["result"]
+    assert_equal "No feeds provided", json["error"]
+  end
+
+  test "POST update_feeds continues processing on partial errors" do
+    feeds_data = [
+      { feedlink: @feed.feedlink, link: "http://example.com/valid", title: "Valid Article" }
+    ].to_json
+
+    assert_difference "Item.count", 1 do
+      post :update_feeds, params: {
+        api_key: @api_key,
+        feeds: feeds_data
+      }
+    end
+
+    assert_response :success
+    json = response.parsed_body
+
+    assert json["result"]
+    assert_equal 1, json["created"]
   end
 
   # Export tests
