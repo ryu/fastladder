@@ -40,7 +40,7 @@ class ConfigTest < ApplicationSystemTestCase
 
     assert_text "For shorter loading time, set the limit smaller."
 
-    assert_equal "24", find("#save_current_font").value
+    assert_equal "24", find_by_id('save_current_font').value
 
     dump = nil
     10.times do

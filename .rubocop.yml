@@ -4,10 +4,12 @@ plugins:
   - rubocop-rails
   - rubocop-minitest
   - rubocop-performance
+  - rubocop-capybara
 
 AllCops:
   TargetRubyVersion: 4.0
   NewCops: enable
+  SuggestExtensions: false
   Exclude:
     - 'db/schema.rb'
     - 'bin/**/*'
