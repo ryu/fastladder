@@ -70,8 +70,8 @@
 			<li class="button icon" id="keyhelp_button" data-controller="keyhelp" data-action="click->keyhelp#toggle" style="background-image:url('/img/icon/key_q.gif');width:auto;padding-left:26px;">&nbsp;Shortcut Keys<kbd>?</kbd></li>
 			<li class="button icon" id="menu_button"
 			 style="text-align:right;width:auto;"
-			 onselectstart="return false"
-			 onmousedown="Control.toggle_menu.call(this,event);"
+			 data-controller="menu-toggle"
+			 data-action="selectstart->menu-toggle#preventSelect mousedown->menu-toggle#toggle"
 			 ><span style="white-space:nowrap;">Others<span class="tri_icon">&nbsp;&nbsp;</span></span>
 			</li>
 		</ul>
@@ -112,19 +112,19 @@
 				<table width="100%" height="20px"><tr>
 					<td width="25%" valign="bottom" >
 						<div class="button" id="viewmode_toggle"
-						onselectstart="return false"
-						onmousedown="ViewmodeToggle.click.call(this,event);return false"
+						data-controller="viewmode-toggle"
+						data-action="selectstart->viewmode-toggle#preventSelect mousedown->viewmode-toggle#toggle"
 						><b id="mode_text_view" style="font-weight:normal">mode</b><span class="tri_icon">&nbsp;&nbsp;</span>
 						</div>
 					<td width="25%" valign="bottom">
 						<div class="button" id="sortmode_toggle"
-						onmousedown="SortmodeToggle.click.call(this,event)"><b id="mode_text_sort" style="font-weight:normal">sort</b><span class="tri_icon">&nbsp;&nbsp;</span>
+						data-controller="sortmode-toggle"
+						data-action="mousedown->sortmode-toggle#toggle"><b id="mode_text_sort" style="font-weight:normal">sort</b><span class="tri_icon">&nbsp;&nbsp;</span>
 						</div>
 					<td valign="bottom">
 						<div class="button" id="show_all_button"
-						onclick="Control.toggle_show_all.call(this,event);show_all_mouseover.call(this,event);"
-						onmouseover="show_all_mouseover.call(this,event);"
-						onmouseout="show_all_mouseout.call(this,event)"
+						data-controller="show-all"
+						data-action="click->show-all#toggle mouseover->show-all#hover mouseout->show-all#out"
 						></div>
 				 </tr></table>
 			</div>
