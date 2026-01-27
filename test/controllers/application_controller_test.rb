@@ -79,7 +79,7 @@ class ApplicationControllerTest < ActionController::TestCase
     result = ApplicationController.json_status(true)
     parsed = JSON.parse(result)
 
-    assert_equal true, parsed["isSuccess"]
+    assert parsed["isSuccess"]
     assert_equal 0, parsed["ErrorCode"]
   end
 
@@ -87,7 +87,7 @@ class ApplicationControllerTest < ActionController::TestCase
     result = ApplicationController.json_status(false)
     parsed = JSON.parse(result)
 
-    assert_equal false, parsed["isSuccess"]
+    assert_not parsed["isSuccess"]
     assert_equal 1, parsed["ErrorCode"]
   end
 
@@ -95,7 +95,7 @@ class ApplicationControllerTest < ActionController::TestCase
     result = ApplicationController.json_status(false, 99)
     parsed = JSON.parse(result)
 
-    assert_equal false, parsed["isSuccess"]
+    assert_not parsed["isSuccess"]
     assert_equal 99, parsed["ErrorCode"]
   end
 
@@ -103,7 +103,7 @@ class ApplicationControllerTest < ActionController::TestCase
     result = ApplicationController.json_status(true, { data: "test" })
     parsed = JSON.parse(result)
 
-    assert_equal true, parsed["isSuccess"]
+    assert parsed["isSuccess"]
     assert_equal 0, parsed["ErrorCode"]
     assert_equal "test", parsed["data"]
   end

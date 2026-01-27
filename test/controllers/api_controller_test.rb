@@ -33,7 +33,7 @@ class ApiControllerTest < ActionController::TestCase
     parsed = response.parsed_body
 
     assert_equal 3, parsed["items"].size
-    item_ids = parsed["items"].map { |item| item["id"] }
+    item_ids = parsed["items"].pluck("id")
 
     assert_equal [@item.id].concat(@items.map(&:id)).sort.slice(0, 3), item_ids.sort
   end
@@ -59,7 +59,7 @@ class ApiControllerTest < ActionController::TestCase
 
     parsed = response.parsed_body
 
-    assert_equal false, parsed["isSuccess"]
+    assert_not parsed["isSuccess"]
   end
 
   test "POST touch renders json" do
@@ -127,7 +127,7 @@ class ApiControllerTest < ActionController::TestCase
 
     parsed = response.parsed_body
 
-    assert_equal false, parsed["isSuccess"]
+    assert_not parsed["isSuccess"]
   end
 
   test "GET unread_count renders json" do
@@ -141,7 +141,7 @@ class ApiControllerTest < ActionController::TestCase
 
     parsed = response.parsed_body
 
-    assert_equal false, parsed["isSuccess"]
+    assert_not parsed["isSuccess"]
   end
 
   test "not logged in renders blank" do

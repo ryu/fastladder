@@ -25,7 +25,7 @@ class SubscriptionTest < ActiveSupport::TestCase
     subscription.public = nil
     subscription.save
 
-    assert_equal false, subscription.public
+    assert_not subscription.public
   end
 
   test "destroy updates subscribers count" do

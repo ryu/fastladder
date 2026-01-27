@@ -14,7 +14,7 @@ class ImportControllerTest < ActionController::TestCase
   end
 
   test "POST fetch assigns folder" do
-    opml_content = File.read(Rails.root.join("test/stubs/opml"))
+    opml_content = Rails.root.join("test/stubs/opml").read
     Fastladder.stub :simple_fetch, opml_content do
       post :fetch, params: { url: "http://example.com" }, session: { member_id: @member.id }
 
@@ -23,7 +23,7 @@ class ImportControllerTest < ActionController::TestCase
   end
 
   test "POST fetch assigns item" do
-    opml_content = File.read(Rails.root.join("test/stubs/opml"))
+    opml_content = Rails.root.join("test/stubs/opml").read
     Fastladder.stub :simple_fetch, opml_content do
       post :fetch, params: { url: "http://example.com" }, session: { member_id: @member.id }
       item = assigns[:folders]["Subscriptions"][0]
@@ -31,7 +31,7 @@ class ImportControllerTest < ActionController::TestCase
       assert_equal "Recent Commits to fastladder:master", item[:title]
       assert_equal "https://github.com/fastladder/fastladder/commits/master", item[:link]
       assert_equal "https://github.com/fastladder/fastladder/commits/master.atom", item[:feedlink]
-      assert_equal false, item[:subscribed]
+      assert_not item[:subscribed]
     end
   end
 end

@@ -2,7 +2,7 @@ require "test_helper"
 
 class FeedTest < ActiveSupport::TestCase
   test "initialize_from_uri sets title correctly" do
-    stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
+    stub_content = Rails.root.join("test/stubs/github.atom").read
     Fastladder.stub :simple_fetch, stub_content do
       feed = Feed.initialize_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
 
@@ -11,7 +11,7 @@ class FeedTest < ActiveSupport::TestCase
   end
 
   test "initialize_from_uri sets feedlink correctly" do
-    stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
+    stub_content = Rails.root.join("test/stubs/github.atom").read
     Fastladder.stub :simple_fetch, stub_content do
       feed = Feed.initialize_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
 
@@ -20,7 +20,7 @@ class FeedTest < ActiveSupport::TestCase
   end
 
   test "initialize_from_uri sets link correctly" do
-    stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
+    stub_content = Rails.root.join("test/stubs/github.atom").read
     Fastladder.stub :simple_fetch, stub_content do
       feed = Feed.initialize_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
 
@@ -29,7 +29,7 @@ class FeedTest < ActiveSupport::TestCase
   end
 
   test "initialize_from_uri sets description correctly" do
-    stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
+    stub_content = Rails.root.join("test/stubs/github.atom").read
     Fastladder.stub :simple_fetch, stub_content do
       feed = Feed.initialize_from_uri("https://github.com/fastladder/fastladder/commits/master.atom")
 
@@ -38,7 +38,7 @@ class FeedTest < ActiveSupport::TestCase
   end
 
   test "create_from_uri creates feed" do
-    stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
+    stub_content = Rails.root.join("test/stubs/github.atom").read
 
     Fastladder.stub :simple_fetch, stub_content do
       assert_difference "Feed.count", 1 do
@@ -48,7 +48,7 @@ class FeedTest < ActiveSupport::TestCase
   end
 
   test "create_from_uri creates crawl_status" do
-    stub_content = File.read(Rails.root.join("test/stubs/github.atom"))
+    stub_content = Rails.root.join("test/stubs/github.atom").read
 
     Fastladder.stub :simple_fetch, stub_content do
       assert_difference "CrawlStatus.count", 1 do
@@ -65,7 +65,7 @@ class FeedTest < ActiveSupport::TestCase
 
   test "stores favicon.ico as PNG" do
     feed = create_feed
-    favicon = File.read(Rails.root.join("test/fixtures/favicon.ico"))
+    favicon = Rails.root.join("test/fixtures/favicon.ico").read
     stub_request(:get, feed.link).to_return(body: "<html></html>")
     stub_request(:get, feed.feedlink).to_return(body: "")
     stub_request(:any, /favicon/).to_return(headers: { "Content-Type" => "image/vnd.microsoft.icon" }, body: favicon)
@@ -76,7 +76,7 @@ class FeedTest < ActiveSupport::TestCase
 
   test "handles gif favicon returning vnd.microsoft.icon" do
     feed = create_feed
-    favicon = File.read(Rails.root.join("test/fixtures/favicon.ico"))
+    favicon = Rails.root.join("test/fixtures/favicon.ico").read
     stub_request(:any, /.*/).to_return(body: favicon, headers: { "Content-Type" => "image/vnd.microsoft.icon" })
     feed.stub :favicon_candidates, [Addressable::URI.parse("http://example.com/favicon?file=favicon.gif")] do
       feed.fetch_favicon!

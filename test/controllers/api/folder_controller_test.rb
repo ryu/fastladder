@@ -133,7 +133,7 @@ class Api::FolderControllerTest < ActionController::TestCase
   def assert_json_error(body)
     json = JSON.parse(body)
 
-    assert_equal false, json["isSuccess"]
+    assert_not json["isSuccess"]
   rescue JSON::ParserError
     flunk "Expected valid JSON, got: #{body}"
   end

@@ -27,7 +27,7 @@ class SimpleOpml
     end
 
     def has_children?
-      @outlines.length > 0
+      !@outlines.empty?
     end
 
     def to_xml

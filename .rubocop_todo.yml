@@ -76,26 +76,10 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 18
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Minitest/AssertTruthy:
-  Exclude:
-    - 'test/controllers/about_controller_test.rb'
-    - 'test/controllers/application_controller_test.rb'
-
 # Configuration parameters: Max.
 Minitest/MultipleAssertions:
   Exclude:
     - 'test/system/subscribe_crawl_read_test.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Minitest/RefuteFalse:
-  Exclude:
-    - 'test/controllers/api/folder_controller_test.rb'
-    - 'test/controllers/api/pin_controller_test.rb'
-    - 'test/controllers/api_controller_test.rb'
-    - 'test/controllers/application_controller_test.rb'
-    - 'test/controllers/import_controller_test.rb'
-    - 'test/models/subscription_test.rb'
 
 Naming/AccessorMethodName:
   Exclude:
@@ -179,12 +163,6 @@ Rails/I18nLocaleTexts:
     - 'app/controllers/subscribe_controller.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/NegateInclude:
-  Exclude:
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/OrderArguments:
   Exclude:
     - 'app/controllers/api_controller.rb'
@@ -196,28 +174,9 @@ Rails/OutputSafety:
     - 'app/helpers/user_helper.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/Pluck:
-  Exclude:
-    - 'test/controllers/api_controller_test.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/RakeEnvironment:
   Exclude:
     - 'Rakefile'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/RootPathnameMethods:
-  Exclude:
-    - 'test/controllers/import_controller_test.rb'
-    - 'test/models/feed_test.rb'
-    - 'test/system/subscribe_crawl_read_test.rb'
-    - 'test/system/subscribe_system_test.rb'
-    - 'test/test_helper.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/SafeNavigationWithBlank:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Rails/StrongParametersExpect:
@@ -234,11 +193,6 @@ Rails/TimeZone:
     - 'app/models/member.rb'
     - 'app/models/simple_opml.rb'
     - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/WhereRange:
-  Exclude:
-    - 'app/models/item.rb'
 
 Security/Open:
   Exclude:
@@ -319,12 +273,6 @@ Style/NumericPredicate:
     - 'lib/fastladder/fastladder_crawler.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
-Style/RedundantInterpolation:
-  Exclude:
-    - 'app/controllers/about_controller.rb'
-    - 'app/models/settings.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: ConvertCodeThatCanStartToReturnNil, AllowedMethods, MaxChainLength.
 # AllowedMethods: present?, blank?, presence, try, try!
 Style/SafeNavigation:
@@ -364,8 +312,3 @@ Style/SymbolProc:
     - 'lib/fastladder/fastladder_crawler.rb'
     - 'test/lib/fastladder/crawler_test.rb'
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/ZeroLengthPredicate:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'app/models/simple_opml.rb'

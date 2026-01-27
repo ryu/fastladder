@@ -296,7 +296,7 @@ module Fastladder
 
       # count differences
       [chars1, chars2].transpose.find_all do |pair|
-        !pair.include?(GETA) and pair[0] != pair[1]
+        pair.exclude?(GETA) and pair[0] != pair[1]
       end.size <= 5
     end
   end

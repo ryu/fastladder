@@ -12,7 +12,7 @@ class AboutControllerTest < ActionController::TestCase
 
       assert_response :success
       assert_equal feed, assigns[:feed]
-      assert_equal true, assigns[:is_feedlink]
+      assert assigns[:is_feedlink]
     end
   end
 

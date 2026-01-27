@@ -13,7 +13,7 @@ class SubscribeSystemTest < ApplicationSystemTestCase
     assert_current_path "/reader/"
 
     stub_request(:get, "https://example.com/feed.rss?keyword=123")
-      .to_return(status: 200, body: File.read(Rails.root.join("test/fixtures/examlpe.com.feed.xml")))
+      .to_return(status: 200, body: Rails.root.join("test/fixtures/examlpe.com.feed.xml").read)
 
     visit "/subscribe/https://example.com/feed.rss?keyword=123"
 

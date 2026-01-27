@@ -31,7 +31,7 @@ class ApiController < ApplicationController
       channel: @sub.feed,
       items: items
     }
-    result[:last_stored_on] = items.max_by(&:stored_on).stored_on if items.length > 0
+    result[:last_stored_on] = items.max_by(&:stored_on).stored_on unless items.empty?
     result[:ignore_notify] = 1 if @sub.ignore_notify
     render json: result
   end
@@ -98,7 +98,7 @@ class ApiController < ApplicationController
         link: feed.link&.html_escape,
         feedlink: feed.feedlink.html_escape,
         title: feed.title.utf8_roundtrip.html_escape,
-        icon: feed.favicon.try(:image)&.blank? ? "/img/icon/default.png" : favicon_path(feed.id),
+        icon: feed.favicon.try(:image).blank? ? "/img/icon/default.png" : favicon_path(feed.id),
         modified_on: modified_on ? modified_on.to_time.to_i : 0,
         subscribers_count: feed.subscribers_count
       }
@@ -122,7 +122,7 @@ class ApiController < ApplicationController
         link: feed.link.html_escape,
         feedlink: feed.feedlink.html_escape,
         title: feed.title.utf8_roundtrip.html_escape,
-        icon: feed.favicon.try(:image)&.blank? ? "/img/icon/default.png" : favicon_path(feed.id),
+        icon: feed.favicon.try(:image).blank? ? "/img/icon/default.png" : favicon_path(feed.id),
         modified_on: modified_on ? modified_on.to_time.to_i : 0,
         subscribers_count: feed.subscribers_count
       }

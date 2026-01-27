@@ -4,7 +4,7 @@ class AboutController < ApplicationController
     @feed = Feed.find_by(feedlink: url) if url.present?
     if @feed.nil?
       respond_to do |format|
-        format.html { render file: "#{Rails.public_path.join('404.html')}", status: :not_found }
+        format.html { render file: Rails.public_path.join('404.html').to_s, status: :not_found }
         format.json { render json: @feed.to_json } # for backward compatibility
         format.any { head :not_found }
       end

@@ -26,7 +26,7 @@ class Item < ApplicationRecord
   before_validation :default_values
   before_save :create_digest, :fill_datetime
 
-  scope :stored_since, ->(viewed_on) { viewed_on ? where("stored_on >= ?", viewed_on) : all }
+  scope :stored_since, ->(viewed_on) { viewed_on ? where(stored_on: viewed_on..) : all }
   scope :recent, ->(limit = nil, offset = nil) { order(created_on: :desc, id: :desc).limit(limit).offset(offset) }
 
   def default_values

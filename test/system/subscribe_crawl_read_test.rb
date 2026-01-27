@@ -16,13 +16,13 @@ class SubscribeCrawlReadTest < ApplicationSystemTestCase
     WebMock.disable_net_connect!(allow_localhost: true)
 
     stub_request(:get,
-                 "http://example.com/").and_return(body: File.read(Rails.root.join("test/fixtures/examlpe.com.index.html")))
+                 "http://example.com/").and_return(body: Rails.root.join("test/fixtures/examlpe.com.index.html").read)
     stub_request(:get,
-                 "http://example.com/feed.xml").and_return(body: File.read(Rails.root.join("test/fixtures/examlpe.com.feed.xml")))
+                 "http://example.com/feed.xml").and_return(body: Rails.root.join("test/fixtures/examlpe.com.feed.xml").read)
     stub_request(:get,
-                 "http://example.com/ebi").and_return(body: File.read(Rails.root.join("test/fixtures/examlpe.com.ebi.html")))
+                 "http://example.com/ebi").and_return(body: Rails.root.join("test/fixtures/examlpe.com.ebi.html").read)
     stub_request(:get,
-                 "http://example.com/ebi.feed.xml").and_return(body: File.read(Rails.root.join("test/fixtures/examlpe.com.ebi.feed.xml")))
+                 "http://example.com/ebi.feed.xml").and_return(body: Rails.root.join("test/fixtures/examlpe.com.ebi.feed.xml").read)
     stub_request(:get, "http://example.com/favicon.ico").and_return(body: "")
   end
 
