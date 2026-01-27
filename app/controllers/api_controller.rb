@@ -57,10 +57,10 @@ class ApiController < ApplicationController
   end
 
   def touch
-    timestamps = params[:timestamp].split(/\s*, \s*/).map { |t| t.to_i }
+    timestamps = params[:timestamp].split(/\s*, \s*/).map(&:to_i)
     params[:subscribe_id].split(/\s*,\s*/).each_with_index do |id, i|
       if (sub = Subscription.find(id)) && sub.member_id == @member.id && timestamps[i]
-        sub.update(has_unread: false, viewed_on: Time.at(timestamps[i] + 1))
+        sub.update(has_unread: false, viewed_on: Time.zone.at(timestamps[i] + 1))
       end
     end
     render_json_status(true)
@@ -82,7 +82,7 @@ class ApiController < ApplicationController
     subscriptions = subscriptions.has_unread if params[:unread].to_i != 0
     subscriptions.order("subscriptions.id").includes(:folder, { feed: %i[crawl_status favicon] }).with_unread_count.each do |sub|
       unread_count = sub.unread_count.to_i
-      next if params[:unread].to_i > 0 && unread_count == 0
+      next if params[:unread].to_i.positive? && unread_count.zero?
       next if sub.id < from_id
 
       feed = sub.feed
@@ -104,14 +104,14 @@ class ApiController < ApplicationController
       }
       item[:ignore_notify] = 1 if sub.ignore_notify
       items << item
-      break if limit > 0 && limit <= items.size
+      break if limit.positive? && limit <= items.size
     end
     render json: items
   end
 
   def lite_subs
     items = []
-    @member.subscriptions.includes(:folder, { feed: :favicon }).each do |sub|
+    @member.subscriptions.includes(:folder, { feed: :favicon }).find_each do |sub|
       feed = sub.feed
       modified_on = feed.modified_on
       item = {
@@ -172,7 +172,7 @@ class ApiController < ApplicationController
   def count_items(options = {})
     subscriptions = @member.subscriptions.includes(:feed)
     subscriptions = subscriptions.has_unread if options[:unread]
-    subs_array = subscriptions.order("id").to_a
+    subs_array = subscriptions.order(:id).to_a
     feed_ids = subs_array.map(&:feed_id)
 
     items_by_feed = {}
@@ -201,10 +201,10 @@ class ApiController < ApplicationController
     end
     counts = []
     params[:since].split(',').each do |s|
-      param_since = /^\d+$/.match?(s) ? Time.new(s.to_i) : Time.parse(s)
+      param_since = /^\d+$/.match?(s) ? Time.zone.local(s.to_i) : Time.zone.parse(s)
       counts << stored_on_list.inject(0) do |sum, pair|
         since = options[:unread] ? [param_since, pair[:subscription].viewed_on.to_time].max : param_since
-        sum + pair[:stored_on].find_all { |stored_on| stored_on > since }.size
+        sum + pair[:stored_on].count { |stored_on| stored_on > since }
       end
     end
     return counts[0] if counts.size == 1

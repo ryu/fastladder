@@ -18,7 +18,7 @@ module Fastladder
       logger = options[:logger]
 
       unless logger
-        target = options[:log_file] || STDOUT
+        target = options[:log_file] || $stdout
         logger = Logger.new(target)
         logger.level = options[:log_level] || Logger::INFO
       end
@@ -167,8 +167,8 @@ module Fastladder
                               category: item.try(:categories)&.first,
                               enclosure: nil,
                               enclosure_type: nil,
-                              stored_on: Time.now,
-                              modified_on: item.published ? item.published.to_datetime : nil
+                              stored_on: Time.zone.now,
+                              modified_on: item.published&.to_datetime
                             })
         new_item.create_digest
         new_item
@@ -199,11 +199,11 @@ module Fastladder
     end
 
     def reject_duplicated(feed, items)
-      items.uniq { |item| item.guid }.reject { |item| feed.items.exists?(["guid = ? and digest = ?", item.guid, item.digest]) }
+      items.uniq(&:guid).reject { |item| feed.items.exists?(["guid = ? and digest = ?", item.guid, item.digest]) }
     end
 
     def new_items_count(feed, items)
-      items.reject { |item| feed.items.exists?(["link = ? and digest = ?", item.link, item.digest]) }.size
+      items.count { |item| !feed.items.exists?(["link = ? and digest = ?", item.link, item.digest]) }
     end
 
     def delete_old_items_if_new_items_are_many(feed, items)
@@ -218,12 +218,12 @@ module Fastladder
       items.reverse_each do |item|
         if old_item = feed.items.find_by(guid: item.guid)
           old_item.increment(:version)
-          unless almost_same(old_item.title, item.title) and almost_same((old_item.body || "").html2text, (item.body || "").html2text)
+          unless almost_same(old_item.title, item.title) && almost_same((old_item.body || "").html2text, (item.body || "").html2text)
             old_item.stored_on = item.stored_on
             result[:updated_items] += 1
           end
           update_columns = %w[link title body author category enclosure enclosure_type digest modified_on]
-          old_item.attributes = item.attributes.select { |column, _value| update_columns.include? column }
+          old_item.attributes = item.attributes.slice(*update_columns)
           old_item.save
         else
           feed.items << item
@@ -233,7 +233,7 @@ module Fastladder
     end
 
     def update_unread_status(feed, result)
-      return unless result[:updated_items] + result[:new_items] > 0
+      return unless (result[:updated_items] + result[:new_items]).positive?
 
       last_item = feed.items.recent.first
       feed.modified_on = last_item.created_on
@@ -250,14 +250,14 @@ module Fastladder
     def almost_same(str1, str2)
       return true if str1 == str2
 
-      chars1 = str1.split('')
-      chars2 = str2.split('')
+      chars1 = str1.chars
+      chars2 = str2.chars
       return false if chars1.length != chars2.length
 
       # count differences
-      [chars1, chars2].transpose.find_all do |pair|
+      [chars1, chars2].transpose.count do |pair|
         pair.exclude?(GETA) and pair[0] != pair[1]
-      end.size <= 5
+      end <= 5
     end
   end
 end

@@ -131,13 +131,6 @@ Naming/VariableNumber:
     - 'test/models/item_test.rb'
     - 'test/models/member_test.rb'
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/Count:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
 Rails/CreateTableWithTimestamps:
   Exclude:
     - 'db/migrate/001_create_members.rb'
@@ -149,25 +142,11 @@ Rails/CreateTableWithTimestamps:
     - 'db/migrate/007_create_pins.rb'
     - 'db/migrate/008_create_favicons.rb'
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: AllowedMethods, AllowedPatterns.
-# AllowedMethods: order, limit, select, lock
-Rails/FindEach:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-
 Rails/I18nLocaleTexts:
   Exclude:
     - 'app/controllers/members_controller.rb'
     - 'app/controllers/sessions_controller.rb'
     - 'app/controllers/subscribe_controller.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Rails/OrderArguments:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/mobile_controller.rb'
-    - 'app/controllers/user_controller.rb'
 
 Rails/OutputSafety:
   Exclude:
@@ -183,65 +162,15 @@ Rails/StrongParametersExpect:
   Exclude:
     - 'app/controllers/members_controller.rb'
 
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: strict, flexible
-Rails/TimeZone:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/mobile_controller.rb'
-    - 'app/models/member.rb'
-    - 'app/models/simple_opml.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
 Security/Open:
   Exclude:
     - 'script/crawler'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, conditionals
-Style/AndOr:
-  Exclude:
-    - 'lib/fastladder.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowOnConstant, AllowOnSelfClass.
 Style/CaseEquality:
   Exclude:
     - 'app/models/member.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/CollectionQuerying:
-  Exclude:
-    - 'app/controllers/sessions_controller.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: each, for
-Style/For:
-  Exclude:
-    - 'app/views/user/index.rss.builder'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/GlobalStdStream:
-  Exclude:
-    - 'config/environments/production.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/HashSlice:
-  Exclude:
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: InverseMethods, InverseBlocks.
-Style/InverseMethods:
-  Exclude:
-    - 'lib/fastladder.rb'
 
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle.
@@ -251,64 +180,8 @@ Style/ItBlockParameter:
     - 'app/controllers/mobile_controller.rb'
 
 # This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: literals, strict
-Style/MutableConstant:
-  Exclude:
-    - 'app/models/simple_opml.rb'
-    - 'lib/fastladder.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: EnforcedStyle, AllowedMethods, AllowedPatterns.
-# SupportedStyles: predicate, comparison
-Style/NumericPredicate:
-  Exclude:
-    - 'app/controllers/api/folder_controller.rb'
-    - 'app/controllers/api_controller.rb'
-    - 'app/controllers/sessions_controller.rb'
-    - 'app/controllers/subscribe_controller.rb'
-    - 'app/helpers/subscribe_helper.rb'
-    - 'app/models/simple_opml.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil, AllowedMethods, MaxChainLength.
-# AllowedMethods: present?, blank?, presence, try, try!
-Style/SafeNavigation:
-  Exclude:
-    - 'app/controllers/favicon_controller.rb'
-    - 'app/helpers/mobile_helper.rb'
-    - 'app/models/member.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-    - 'test/controllers/favicon_controller_test.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: RequireEnglish.
 # SupportedStyles: use_perl_names, use_english_names, use_builtin_english_names
 Style/SpecialGlobalVars:
   EnforcedStyle: use_perl_names
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Style/StringChars:
-  Exclude:
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: Mode.
-Style/StringConcatenation:
-  Exclude:
-    - 'app/helpers/subscribe_helper.rb'
-
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: AllowMethodsWithArguments, AllowedMethods, AllowedPatterns, AllowComments.
-# AllowedMethods: define_method, mail, respond_to
-Style/SymbolProc:
-  Exclude:
-    - 'app/controllers/api_controller.rb'
-    - 'app/models/member.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-    - 'test/lib/fastladder/crawler_test.rb'
 

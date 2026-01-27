@@ -5,8 +5,8 @@ require 'net/http'
 require 'singleton'
 
 module Fastladder
-  Version = '0.0.3'
-  HTTP_ACCEPT = 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'
+  Version = '0.0.3'.freeze
+  HTTP_ACCEPT = 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'.freeze
 
   module ClassMethods
     attr_reader :http_proxy, :http_proxy_except_hosts, :http_open_timeout, :http_read_timeout, :crawler_user_agent
@@ -49,7 +49,7 @@ module Fastladder
     end
 
     def proxy_except_hosts=(patterns)
-      patterns.reject! { |p| !p.is_a?(Regexp) }
+      patterns.select! { |p| p.is_a?(Regexp) }
       @http_proxy_except_hosts = patterns
     end
 
@@ -93,7 +93,7 @@ module Fastladder
     req["Accept"] = Fastladder::HTTP_ACCEPT
     req["User-Agent"] = options[:user_agent] || Fastladder.crawler_user_agent
     req['If-Modified-Since'] = options[:modified_on] if options[:modified_on]
-    req.basic_auth(options[:user] || uri.user, options[:password] || user.password) if options[:user] or uri.user
+    req.basic_auth(options[:user] || uri.user, options[:password] || user.password) if options[:user] || uri.user
 
     http.start
     res = http.request(req)

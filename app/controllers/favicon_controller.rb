@@ -3,7 +3,7 @@ class FaviconController < ApplicationController
     image = nil
     feed_id = url_from_path(:feed)
     feed = /^\d+$/.match?(feed_id) ? Feed.find_by(id: feed_id.to_i) : Feed.find_by(feedlink: feed_id)
-    if feed && feed.favicon
+    if feed&.favicon
       image = feed.favicon.image
     else
       File.open(Settings.default_favicon) do |f|

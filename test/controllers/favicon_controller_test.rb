@@ -17,7 +17,7 @@ class FaviconControllerTest < ActionController::TestCase
   end
 
   test "GET get should send default favicon when feed has no favicon" do
-    @feed.favicon.destroy if @feed.favicon
+    @feed.favicon&.destroy
     @feed.reload
     get :get, params: { feed: @feed.feedlink }
 

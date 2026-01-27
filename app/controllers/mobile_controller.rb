@@ -5,7 +5,7 @@ class MobileController < ApplicationController
   layout false
 
   def index
-    @subscriptions = current_member.subscriptions.includes(:feed).has_unread.order('rate desc').with_unread_count.select do
+    @subscriptions = current_member.subscriptions.includes(:feed).has_unread.order(rate: :desc).with_unread_count.select do
       it.unread_count.positive?
     end
   end
@@ -33,12 +33,12 @@ class MobileController < ApplicationController
 
   def read_feed
     @subscription = Subscription.find(params[:feed_id])
-    @items = @subscription.feed.items.stored_since(@subscription.viewed_on).order('stored_on asc').limit(200)
+    @items = @subscription.feed.items.stored_since(@subscription.viewed_on).order(:stored_on).limit(200)
   end
 
   def mark_as_read
     @subscription = Subscription.find(params[:feed_id])
-    @subscription.update!(has_unread: false, viewed_on: Time.at(params[:timestamp].to_i + 1))
+    @subscription.update!(has_unread: false, viewed_on: Time.zone.at(params[:timestamp].to_i + 1))
 
     respond_to do |format|
       format.json { render json: { success: true, redirect_to: "/mobile" } }

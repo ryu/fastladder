@@ -42,7 +42,7 @@ class SubscribeController < ApplicationController
       public: params[:public],
       rate: params[:rate].to_i
     }
-    unless (folder_id = params[:folder_id].to_i) > 0
+    unless (folder_id = params[:folder_id].to_i).positive?
       folder_id = nil
     end
     options[:folder_id] = folder_id

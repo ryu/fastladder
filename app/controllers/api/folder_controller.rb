@@ -64,7 +64,7 @@ class Api::FolderController < ApplicationController
   protected
 
   def get_folder
-    if (folder_id = params[:folder_id].to_i) > 0
+    if (folder_id = params[:folder_id].to_i).positive?
       return @member.folders.find_by(id: folder_id)
     end
 

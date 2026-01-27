@@ -41,7 +41,7 @@ class Member < ApplicationRecord
   # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(username, password)
     u = find_by(username: username) # need to get the salt
-    u && u.authenticated?(password) ? u : nil
+    u&.authenticated?(password) ? u : nil
   end
 
   # Encrypts some data with the salt.
@@ -189,7 +189,7 @@ class Member < ApplicationRecord
       end
       opml.to_xml
     when 'json'
-      subscriptions.includes(feed: :favicon).map { |x| x.feed }.to_json
+      subscriptions.includes(feed: :favicon).map(&:feed).to_json
     end
   end
 
@@ -212,7 +212,7 @@ class Member < ApplicationRecord
   def encrypt_password
     return if password.blank?
 
-    self.salt = Digest::SHA1.hexdigest("--#{Time.now}--#{username}--") if new_record?
+    self.salt = Digest::SHA1.hexdigest("--#{Time.zone.now}--#{username}--") if new_record?
     self.crypted_password = encrypt(password)
   end
 

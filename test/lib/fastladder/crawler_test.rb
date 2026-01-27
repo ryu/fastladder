@@ -18,7 +18,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
   test "reject_duplicated rejects duplicated items" do
     items = [build_item_with_fixed_guid]
     create_item_with_fixed_guid(feed: @feed)
-    items.each { |item| item.create_digest }
+    items.each(&:create_digest)
 
     result = @crawler.send(:reject_duplicated, @feed, items)
 

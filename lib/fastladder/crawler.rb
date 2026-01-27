@@ -24,7 +24,7 @@ module Fastladder
       logger = options[:logger]
 
       unless logger
-        target = options[:log_file] || STDOUT
+        target = options[:log_file] || $stdout
         logger = Logger.new(target)
         logger.level = options[:log_level] || Logger::INFO
       end
@@ -147,7 +147,7 @@ module Fastladder
     end
 
     def run_body
-      reporter.crawler_idle(@interval) if @interval > 0
+      reporter.crawler_idle(@interval) if @interval.positive?
       sleep @interval
       if feed = CrawlStatus.fetch_crawlable_feed
         @interval = 0
@@ -212,11 +212,11 @@ module Fastladder
     end
 
     def reject_duplicated(feed, items)
-      items.uniq { |item| item.guid }.reject { |item| feed.items.exists?(["guid = ? and digest = ?", item.guid, item.digest]) }
+      items.uniq(&:guid).reject { |item| feed.items.exists?(["guid = ? and digest = ?", item.guid, item.digest]) }
     end
 
     def new_items_count(feed, items)
-      items.reject { |item| feed.items.exists?(["link = ? and digest = ?", item.link, item.digest]) }.size
+      items.count { |item| !feed.items.exists?(["link = ? and digest = ?", item.link, item.digest]) }
     end
 
     def delete_old_items_if_new_items_are_many(feed, items)
@@ -250,7 +250,7 @@ module Fastladder
           result[:updated_items] += 1
         end
         update_columns = %w[link title body author category enclosure enclosure_type digest modified_on]
-        old_item.attributes = item.attributes.select { |column, _value| update_columns.include?(column) }
+        old_item.attributes = item.attributes.slice(*update_columns)
         old_item.save!
       else
         # Insert new item, handling potential race condition
@@ -273,7 +273,7 @@ module Fastladder
     end
 
     def update_unread_status(feed, result)
-      return unless result[:updated_items] + result[:new_items] > 0
+      return unless (result[:updated_items] + result[:new_items]).positive?
 
       last_item = feed.items.recent.first
       feed.modified_on = last_item.created_on
@@ -290,14 +290,14 @@ module Fastladder
     def almost_same(str1, str2)
       return true if str1 == str2
 
-      chars1 = str1.split('')
-      chars2 = str2.split('')
+      chars1 = str1.chars
+      chars2 = str2.chars
       return false if chars1.length != chars2.length
 
       # count differences
-      [chars1, chars2].transpose.find_all do |pair|
+      [chars1, chars2].transpose.count do |pair|
         pair.exclude?(GETA) and pair[0] != pair[1]
-      end.size <= 5
+      end <= 5
     end
   end
 end

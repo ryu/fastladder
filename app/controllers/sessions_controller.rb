@@ -1,7 +1,7 @@
 # This controller handles the login/logout function of the site.
 class SessionsController < ApplicationController
   def new
-    redirect_to sign_up_path if Member.count == 0
+    redirect_to sign_up_path if Member.none?
   end
 
   def create

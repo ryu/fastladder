@@ -1,6 +1,6 @@
 class SimpleOpml
   class Outline < ::SimpleOpml
-    OUTLINE_ATTRIBUTE_KEYS = %i[title html_url text type xml_url]
+    OUTLINE_ATTRIBUTE_KEYS = %i[title html_url text type xml_url].freeze
 
     def initialize(attributes = {})
       super()
@@ -63,7 +63,7 @@ class SimpleOpml
       <opml version="1.0">
       <head>
       <title>Subscriptions</title>
-      <dateCreated>#{Time.now.rfc822}</dateCreated>
+      <dateCreated>#{Time.zone.now.rfc822}</dateCreated>
       <ownerName />
       </head>
       <body>
