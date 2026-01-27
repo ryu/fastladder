@@ -33,12 +33,6 @@ Lint/NonAtomicFileOperation:
   Exclude:
     - 'script/crawler'
 
-Lint/RescueException:
-  Exclude:
-    - 'lib/fastladder.rb'
-    - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
-
 # Configuration parameters: AllowComments, AllowNil.
 Lint/SuppressedException:
   Exclude:

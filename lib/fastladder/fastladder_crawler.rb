@@ -98,7 +98,7 @@ module Fastladder
       rescue SignalException
         @logger.warn "\n=> #{$!.message} trapped. Terminating..."
         return true
-      rescue Exception
+      rescue StandardError
         @logger.error %(Crawler error: #{$!.message}\n#{$!.backtrace.join("\n")})
       ensure
         if @crawl_status

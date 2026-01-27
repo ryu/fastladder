@@ -135,7 +135,7 @@ module Fastladder
       rescue SignalException => e
         reporter.crawler_stopped(reason: "signal: #{e.message}")
         return true
-      rescue Exception => e
+      rescue StandardError => e
         reporter.crawler_error(e)
       ensure
         if @crawl_status
