@@ -106,7 +106,7 @@
 					</td>
 					<td width="30%">
 						<div class="button" onclick="init_manage()" style="background-image:url('/img/icon/mylist.gif')">Edit</div></td>
-					<td width="30%"><div class="button" onclick="Control.show_subscribe_form()"  style="background-image:url('/img/icon/add.gif')">Add</div></td>
+					<td width="30%"><div class="button" data-controller="subscribe-form" data-action="click->subscribe-form#show" style="background-image:url('/img/icon/add.gif')">Add</div></td>
 				</tr></table>
 			</div>
 			<div class="toolbar" id="subs_toolbar" style="padding-left:12px;padding-bottom:4px">
@@ -199,7 +199,7 @@
 			</div>
 		</div>
 		<div class="close">
-			<span class="button" onclick="Control.hide_subscribe_form()">Close</span>
+			<span class="button" data-controller="subscribe-form" data-action="click->subscribe-form#hide">Close</span>
 		</div>
 	</div>
 </div>
