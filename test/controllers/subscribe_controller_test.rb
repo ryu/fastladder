@@ -83,4 +83,83 @@ class SubscribeControllerTest < ActionController::TestCase
     assert_redirected_to action: "confirm", url: "http://example.com"
     assert_equal "please check for subscribe", flash[:notice]
   end
+
+  test "POST subscribe with check_for_subscribe creates subscription and redirects" do
+    feed_url = "http://example.com/feed.xml"
+    stub_request(:get, feed_url)
+      .to_return(status: 200, body: sample_rss_feed, headers: { "Content-Type" => "application/rss+xml" })
+
+    assert_difference "@member.subscriptions.count", 1 do
+      post :subscribe,
+           params: {
+             url: "http://example.com",
+             check_for_subscribe: [feed_url],
+             public: "1",
+             rate: "3"
+           },
+           session: { member_id: @member.id }
+    end
+
+    assert_redirected_to controller: "reader"
+    subscription = @member.subscriptions.last
+
+    assert_equal 3, subscription.rate
+  end
+
+  test "POST subscribe with folder_id creates subscription in folder" do
+    folder = create_folder(member: @member, name: "Tech")
+    feed_url = "http://example.com/feed.xml"
+    stub_request(:get, feed_url)
+      .to_return(status: 200, body: sample_rss_feed, headers: { "Content-Type" => "application/rss+xml" })
+
+    post :subscribe,
+         params: {
+           url: "http://example.com",
+           check_for_subscribe: [feed_url],
+           folder_id: folder.id.to_s
+         },
+         session: { member_id: @member.id }
+
+    subscription = @member.subscriptions.last
+
+    assert_equal folder.id, subscription.folder_id
+  end
+
+  test "POST subscribe with zero folder_id sets folder_id to nil" do
+    feed_url = "http://example.com/feed.xml"
+    stub_request(:get, feed_url)
+      .to_return(status: 200, body: sample_rss_feed, headers: { "Content-Type" => "application/rss+xml" })
+
+    post :subscribe,
+         params: {
+           url: "http://example.com",
+           check_for_subscribe: [feed_url],
+           folder_id: "0"
+         },
+         session: { member_id: @member.id }
+
+    subscription = @member.subscriptions.last
+
+    assert_nil subscription.folder_id
+  end
+
+  private
+
+  def sample_rss_feed
+    <<~XML
+      <?xml version="1.0" encoding="UTF-8"?>
+      <rss version="2.0">
+        <channel>
+          <title>Example Feed</title>
+          <link>http://example.com</link>
+          <description>An example feed</description>
+          <item>
+            <title>Test Item</title>
+            <link>http://example.com/item1</link>
+            <description>Test content</description>
+          </item>
+        </channel>
+      </rss>
+    XML
+  end
 end
