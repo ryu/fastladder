@@ -68,7 +68,7 @@
 			 onmouseout="Control.pin_mouseout.call(this,event);"
 			 onclick="Control.pin_click.call(this,event);"
 			 style="background-image:url('/img/icon/pin.gif')" >&nbsp;<span id="pin_count"></span></li>
-			<li class="button icon" id="keyhelp_button" onclick="Control.toggle_keyhelp()" style="background-image:url('/img/icon/key_q.gif');width:auto;padding-left:26px;">&nbsp;Shortcut Keys<kbd>?</kbd></li>
+			<li class="button icon" id="keyhelp_button" data-controller="keyhelp" data-action="click->keyhelp#toggle" style="background-image:url('/img/icon/key_q.gif');width:auto;padding-left:26px;">&nbsp;Shortcut Keys<kbd>?</kbd></li>
 			<li class="button icon" id="menu_button"
 			 style="text-align:right;width:auto;"
 			 onselectstart="return false"
