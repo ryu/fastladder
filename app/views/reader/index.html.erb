@@ -399,7 +399,7 @@
 		<table class="compact">
 			<tr>
 				<th width="80">Tag</th>
-				<td><input type="text" name="tags" value="[[tags]]" onkeypress="(event.keyCode==27)&&clip_click([[id]])" onkeyup="(event.keyCode==27)&&clip_click([[id]])"></td>
+				<td><input type="text" name="tags" value="[[tags]]" data-controller="clip-escape" data-clip-escape-item-id-value="[[id]]" data-action="keypress->clip-escape#escape keyup->clip-escape#escape"></td>
 			</tr>
 			<tr>
 				<th width="80">Comment</th>
