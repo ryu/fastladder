@@ -55,6 +55,6 @@ Rails.application.configure do
   config.after_initialize do
     Bullet.enable = true
     Bullet.bullet_logger = true
-    Bullet.raise = false # Set to true to fail tests on N+1 queries
+    Bullet.raise = true # Fail tests on N+1 queries
   end
 end
