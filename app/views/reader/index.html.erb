@@ -102,10 +102,10 @@
 			<div class="toolbar" id="subs_buttons" style="padding : 6px 12px 0 12px;">
 				<table width="100%" height="20px"><tr>
 					<td width="30%">
-						<div onclick="Control.reload_subs()" id="reload_button" class="button" style="background-image:url('/img/icon/reload.gif')">Reload</div>
+						<div id="reload_button" class="button" data-controller="subs-reload" data-action="click->subs-reload#reload" style="background-image:url('/img/icon/reload.gif')">Reload</div>
 					</td>
 					<td width="30%">
-						<div class="button" onclick="init_manage()" style="background-image:url('/img/icon/mylist.gif')">Edit</div></td>
+						<div class="button" data-controller="manage" data-action="click->manage#init" style="background-image:url('/img/icon/mylist.gif')">Edit</div></td>
 					<td width="30%"><div class="button" data-controller="subscribe-form" data-action="click->subscribe-form#show" style="background-image:url('/img/icon/add.gif')">Add</div></td>
 				</tr></table>
 			</div>
