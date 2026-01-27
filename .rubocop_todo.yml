@@ -11,17 +11,11 @@
 Lint/AssignmentInCondition:
   Exclude:
     - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
 
 # Configuration parameters: DebuggerMethods, DebuggerRequires.
 Lint/Debugger:
   Exclude:
     - 'test/system/subscribe_crawl_read_test.rb'
-
-# Configuration parameters: IgnoreLiteralBranches, IgnoreConstantBranches, IgnoreDuplicateElseBranch.
-Lint/DuplicateBranch:
-  Exclude:
-    - 'lib/fastladder/fastladder_crawler.rb'
 
 # Configuration parameters: AllowComments.
 Lint/EmptyClass:
@@ -37,7 +31,6 @@ Lint/NonAtomicFileOperation:
 Lint/SuppressedException:
   Exclude:
     - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
     - 'script/crawler'
 
 # Configuration parameters: AllowedMethods, AllowedPatterns, CountRepeatedAttributes, Max.
@@ -59,7 +52,6 @@ Metrics/MethodLength:
     - 'app/controllers/api_controller.rb'
     - 'app/models/member.rb'
     - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
     - 'lib/fastladder/fetcher.rb'
 
 # Configuration parameters: CountKeywordArgs, MaxOptionalParameters.
@@ -105,7 +97,6 @@ Naming/PredicateMethod:
     - 'app/controllers/api_controller.rb'
     - 'app/models/subscription.rb'
     - 'lib/fastladder/crawler.rb'
-    - 'lib/fastladder/fastladder_crawler.rb'
 
 # Configuration parameters: NamePrefix, ForbiddenPrefixes, AllowedMethods, MethodDefinitionMacros, UseSorbetSigs.
 # NamePrefix: is_, has_, have_, does_

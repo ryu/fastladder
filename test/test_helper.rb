@@ -5,8 +5,6 @@ SimpleCov.start "rails" do
   add_filter "/test/"
   add_filter "/config/"
   add_filter "/vendor/"
-  # Legacy file not used in production (replaced by lib/fastladder/crawler.rb)
-  add_filter "lib/fastladder/fastladder_crawler.rb"
 
   add_group "Controllers", "app/controllers"
   add_group "Models", "app/models"
