@@ -80,7 +80,7 @@ class ApiController < ApplicationController
     items = []
     subscriptions = @member.subscriptions
     subscriptions = subscriptions.has_unread if params[:unread].to_i != 0
-    subscriptions.order("subscriptions.id").includes(:folder, { feed: %i[crawl_status favicon] }).with_unread_count.each do |sub|
+    subscriptions.order("subscriptions.id").includes(:folder, { feed: :favicon }).with_unread_count.each do |sub|
       unread_count = sub.unread_count.to_i
       next if params[:unread].to_i.positive? && unread_count.zero?
       next if sub.id < from_id

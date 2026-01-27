@@ -34,6 +34,7 @@ end
 
 group :development, :test do
   gem 'brakeman', require: false
+  gem 'bullet'
   gem 'bundler-audit', require: false
   gem 'rubocop', require: false
   gem 'rubocop-capybara', require: false
