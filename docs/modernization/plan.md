@@ -6,7 +6,7 @@
 - Web と crawler の2プロセス構成（foreman で同時起動）
 - 目標は「壊さずに上げる」「更新し続けられる」「観測できる」
 
-**最終更新: 2026-01-25**
+**最終更新: 2026-01-27**
 
 ---
 
@@ -78,7 +78,7 @@ Rails 8.1 を「上げられる状態」にする。
 Rails 8.1 で動作し、アップグレード後も更新が回る。
 
 ### Deliverables
-- [x] Ruby を target へ（CIで保証）→ Ruby 3.4.8
+- [x] Ruby を target へ（CIで保証）→ Ruby 4.0.1
 - [x] Rails を段階的に 8.1 へ → Rails 8.1.2
 - [x] 互換レイヤ（必要な場合）の導入と、その撤去計画
 
@@ -257,6 +257,22 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 ---
 
 ## 進行ログ
+
+### 2026-01-27 (Ruby 4.0 + Stimulus コントローラー追加)
+- **Ruby 4.0.1 へアップグレード**: 2025年12月25日リリースの Ruby 4.0.1 に更新
+- **RuboCop TargetRubyVersion**: 4.0 に更新
+- **テストカバレッジ改善**: SimpleCov 導入、91.04% カバレッジ達成
+- **Bullet gem 導入**: N+1 クエリ検出
+- **レガシーファイル削除**: `lib/fastladder/fastladder_crawler.rb`（未使用、264行）
+- **RuboCop 修正**:
+  - Naming/HeredocDelimiterNaming: EOS→HTML, EOD→XML
+  - Naming/PredicatePrefix: `has_children?`→`children?`
+- **Stimulus コントローラー追加（4個）**: インライン onclick を data-action に置換
+  - `keyhelp_controller.js`: ショートカットキーヘルプボタン
+  - `subscribe_form_controller.js`: 購読フォームのAdd/Closeボタン
+  - `subs_reload_controller.js`: Reloadボタン
+  - `manage_controller.js`: Editボタン
+- **移行戦略**: 後方互換性維持のため、既存の Control/init_manage 関数に委譲
 
 ### 2026-01-26 (RuboCop 警告修正)
 - **モデルファイルの Rails ベストプラクティス適用**:
@@ -685,7 +701,7 @@ Legacy textarea テンプレート（17個）を ERB パーシャルに移行し
 - モデルテストを追加（CrawlStatus, Folder, SimpleOpml, Favicon）
 
 ### 以前の作業
-- Rails 8.1.2 / Ruby 3.4.8 へアップグレード完了
+- Rails 8.1.2 / Ruby 4.0.1 へアップグレード完了
 - CI 整備（GitHub Actions: test, lint, security）
 - crawler にトランザクション追加
 - システムテスト追加
