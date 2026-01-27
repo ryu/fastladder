@@ -26,13 +26,13 @@ class SimpleOpml
       end.join
     end
 
-    def has_children?
+    def children?
       !@outlines.empty?
     end
 
     def to_xml
-      out = "<outline#{attributes}#{'/' unless has_children?}>"
-      if has_children?
+      out = "<outline#{attributes}#{'/' unless children?}>"
+      if children?
         @outlines.each do |outline|
           out += outline.to_xml
         end
@@ -58,7 +58,7 @@ class SimpleOpml
   end
 
   def to_xml
-    <<~EOD
+    <<~XML
       <?xml version="1.0" encoding="utf-8"?>
       <opml version="1.0">
       <head>
@@ -70,6 +70,6 @@ class SimpleOpml
       #{@outlines.map(&:to_xml).join("\n")}
       </body>
       </opml>
-    EOD
+    XML
   end
 end

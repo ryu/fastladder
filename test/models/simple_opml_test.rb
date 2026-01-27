@@ -40,18 +40,18 @@ class SimpleOpmlTest < ActiveSupport::TestCase
     assert_includes xml, "&amp;"
   end
 
-  test "outline has_children returns false when empty" do
+  test "outline children? returns false when empty" do
     outline = SimpleOpml::Outline.new(title: "Test")
 
-    assert_not outline.has_children?
+    assert_not outline.children?
   end
 
-  test "outline has_children returns true with nested outlines" do
+  test "outline children? returns true with nested outlines" do
     parent = SimpleOpml::Outline.new(title: "Folder")
     child = SimpleOpml::Outline.new(title: "Feed", xml_url: "http://example.com/feed.xml")
     parent << child
 
-    assert_predicate parent, :has_children?
+    assert_predicate parent, :children?
   end
 
   test "self-closing tag for outline without children" do
