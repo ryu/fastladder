@@ -113,4 +113,65 @@ class FastladderTest < ActiveSupport::TestCase
 
     assert_equal "Success", Fastladder.simple_fetch("http://example.com")
   end
+
+  test "simple_fetch returns nil on error" do
+    stub_request(:get, "http://example.com/error")
+      .to_timeout
+
+    assert_nil Fastladder.simple_fetch("http://example.com/error")
+  end
+
+  test "simple_fetch with custom user agent" do
+    stub_request(:get, "http://example.com")
+      .with(headers: { "User-Agent" => "CustomAgent/1.0" })
+      .to_return(status: 200, body: "OK")
+
+    assert_equal "OK", Fastladder.simple_fetch("http://example.com", "User-Agent" => "CustomAgent/1.0")
+  end
+
+  test "fetch makes HTTP request" do
+    stub_request(:get, "http://example.com/feed.xml")
+      .to_return(status: 200, body: "<rss/>", headers: { "Content-Type" => "application/rss+xml" })
+
+    response = Fastladder.fetch("http://example.com/feed.xml")
+
+    assert_equal "200", response.code
+    assert_equal "<rss/>", response.body
+  end
+
+  test "fetch makes HTTPS request" do
+    stub_request(:get, "https://example.com/feed.xml")
+      .to_return(status: 200, body: "<rss/>")
+
+    response = Fastladder.fetch("https://example.com/feed.xml")
+
+    assert_equal "200", response.code
+  end
+
+  test "fetch raises error for unknown scheme" do
+    assert_raises(RuntimeError) do
+      Fastladder.fetch("ftp://example.com/file")
+    end
+  end
+
+  test "fetch with If-Modified-Since header" do
+    modified_time = "Wed, 01 Jan 2025 00:00:00 GMT"
+    stub_request(:get, "http://example.com/feed.xml")
+      .with(headers: { "If-Modified-Since" => modified_time })
+      .to_return(status: 304)
+
+    response = Fastladder.fetch("http://example.com/feed.xml", modified_on: modified_time)
+
+    assert_equal "304", response.code
+  end
+
+  test "fetch accepts URI object" do
+    stub_request(:get, "http://example.com/feed.xml")
+      .to_return(status: 200, body: "OK")
+
+    uri = URI.parse("http://example.com/feed.xml")
+    response = Fastladder.fetch(uri)
+
+    assert_equal "200", response.code
+  end
 end
