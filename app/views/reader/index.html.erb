@@ -254,8 +254,8 @@
 <span style="background-image:url('[[icon]]')"
  id="subs_item_[[ subscribe_id ]]"
  class="treeitem [[ classname ]]"
- onmouseover="SubsItem.onhover.call(this,event)"
- onmouseout="SubsItem.onunhover.call(this,event)"
+ data-controller="subs-item"
+ data-action="mouseover->subs-item#hover mouseout->subs-item#unhover"
  rel="Control:read('[[ subscribe_id ]]')"
  subscribe_id="[[subscribe_id]]">
  [[ title ]] ([[ unread_count ]])
@@ -288,11 +288,11 @@
 	<table align="right"><tr>
 		<td nowrap style="padding-right:10px">
 			<span class="channel_folder" style="background:url('/img/icon/close.gif') no-repeat;padding-left:20px"
-				onselectstart="return false"
-				onmousedown="FolderToggle.click.call(this,event);return false"
+				data-controller="folder-toggle-template"
+				data-action="selectstart->folder-toggle-template#preventSelect mousedown->folder-toggle-template#toggle"
 				class="button move" id="folder_label">[[ folder ]] <img src="/img/icon/tri_d.gif"></span>
 		</td>
-		<td style="padding-right:15px;position:relative"><img id="rate_img" class="rate_pad" src="/img/rate/pad/[[ rate ]].gif" sid="[[subscribe_id]]" onclick="LDR.Rate.click.call(this,event)" onmouseout="LDR.Rate.out.call(this,event)" onmousemove="LDR.Rate.hover.call(this,event)"></td>
+		<td style="padding-right:15px;position:relative"><img id="rate_img" class="rate_pad" src="/img/rate/pad/[[ rate ]].gif" sid="[[subscribe_id]]" data-controller="rate-pad" data-action="click->rate-pad#click mouseout->rate-pad#out mousemove->rate-pad#hover"></td>
 		<td nowrap>
 			<span id="feed_prev" title="Show newer items" class="button" rel="Control:feed_page(-1)">&lt;</span>
 			<span id="feed_next" title="Show older items" class="button" rel="Control:feed_page(1)">&gt;</span>
@@ -346,8 +346,8 @@
 	<div class="padding" id="item_count_[[ item_count ]]">
 	<div class="item_header">
 		<div class="item_buttons" style="float:right;padding-right:4px;padding-top:4px">
-			<span id="pin_[[id]]" style="display:block;width:18px;height:18px;margin-right:4px;float:left;" class="[[pin_active]]"><img onmousedown="toggle_pin([[id]])" src="/img/icon/pin.gif"></span>
-			<img onmousedown="Control.close_and_next_item([[id]],event)" src="/img/icon/batu.gif">
+			<span id="pin_[[id]]" style="display:block;width:18px;height:18px;margin-right:4px;float:left;" class="[[pin_active]]"><img data-controller="item-pin-toggle" data-item-pin-toggle-item-id-value="[[id]]" data-action="mousedown->item-pin-toggle#toggle" src="/img/icon/pin.gif"></span>
+			<img data-controller="item-close-next" data-item-close-next-item-id-value="[[id]]" data-action="mousedown->item-close-next#close" src="/img/icon/batu.gif">
 		</div>
 		<h2 class="item_title" id="head_[[id]]" count="[[ item_count ]]">
 			<a href="[[ link ]]">[[ title ]]</a>
@@ -388,7 +388,7 @@
 <textarea class="template" id="clip_form">
 	<div class="clip_form_body">
 	<form id="clip_form_[[id]]" class="clip_form" target="_blank" method="post" action="/clip/add">
-		<div class="rate_pad_wrapper"><img id="clip_rate_[[id]]" class="rate_pad" src="/img/rate/pad/0.gif" item_id="[[id]]" onclick="ClipRate.click.call(this,event)" onmouseout="ClipRate.out.call(this,event)" onmousemove="ClipRate.hover.call(this,event)"></div>
+		<div class="rate_pad_wrapper"><img id="clip_rate_[[id]]" class="rate_pad" src="/img/rate/pad/0.gif" item_id="[[id]]" data-controller="clip-rate" data-action="click->clip-rate#click mouseout->clip-rate#out mousemove->clip-rate#hover"></div>
 		<h3>Bookmark
 			<span id="clip_info_[[id]]"></span>
 		</h3>
@@ -422,42 +422,45 @@
 
 <textarea class="template" id="folder_item">
 <span class='button flat_menu [[ checked ]]'
- onmouseout='MenuItem.onunhover.call(this,event)'
- onmouseover='MenuItem.onhover.call(this,event)'
- onmouseup='Control.move_to("[[ move_to ]]");FlatMenu.hideAll()'
+ data-controller="menu-item"
+ data-menu-item-action-value="move"
+ data-menu-item-folder-value="[[ move_to ]]"
+ data-action="mouseout->menu-item#unhover mouseover->menu-item#hover mouseup->menu-item#select"
  rel=''>[[ folder_name ]]</span>
 </textarea>
 
 <textarea class="template" id="pin_item">
 <span class='button flat_menu pin_item [[target]]'
  style="background-image:url('[[icon]]');background-repeat:no-repeat;background-position:2px 3px;"
- onmouseout='PinItem.onunhover.call(this,event)'
- onmouseover='PinItem.onhover.call(this,event)'
- onmouseup='Control.read_pin("[[ link ]]");FlatMenu.hideAll()'
+ data-controller="pin-item"
+ data-pin-item-link-value="[[ link ]]"
+ data-action="mouseout->pin-item#unhover mouseover->pin-item#hover mouseup->pin-item#select"
 >[[ title ]]</span>
 </textarea>
 
 <textarea class="template" id="menu_item">
 <span class='button flat_menu' style="background-repeat:no-repeat;background-position:2px 3px;padding-left:8px"
- onmouseout='MenuItem.onunhover.call(this,event)'
- onmouseover='MenuItem.onhover.call(this,event)'
- onmouseup='[[action]]'
+ data-controller="menu-item"
+ data-menu-item-js-value="[[action]]"
+ data-action="mouseout->menu-item#unhover mouseover->menu-item#hover mouseup->menu-item#execute"
 >[[ title ]]</span>
 </textarea>
 
 <textarea class="template" id="viewmode_item">
 <span class='button flat_menu [[ checked ]]'
- onmouseout='MenuItem.onunhover.call(this,event)'
- onmouseover='MenuItem.onhover.call(this,event)'
- onmouseup='Control.change_view("[[ mode ]]");FlatMenu.hideAll()'
+ data-controller="menu-item"
+ data-menu-item-action-value="view"
+ data-menu-item-mode-value="[[ mode ]]"
+ data-action="mouseout->menu-item#unhover mouseover->menu-item#hover mouseup->menu-item#select"
  rel=''>[[ label ]]</span>
 </textarea>
 
 <textarea class="template" id="sortmode_item">
 <span class='button flat_menu [[ checked ]]'
- onmouseout='MenuItem.onunhover.call(this,event)'
- onmouseover='MenuItem.onhover.call(this,event)'
- onmouseup='Control.change_sort("[[ mode ]]");FlatMenu.hideAll()'
+ data-controller="menu-item"
+ data-menu-item-action-value="sort"
+ data-menu-item-mode-value="[[ mode ]]"
+ data-action="mouseout->menu-item#unhover mouseover->menu-item#hover mouseup->menu-item#select"
  rel=''>[[ label ]]</span>
 </textarea>
 <!-- ADS -->
