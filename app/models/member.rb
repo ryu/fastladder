@@ -175,7 +175,7 @@ class Member < ApplicationRecord
 
       opml = SimpleOpml.new
       folders.each do |key, items|
-        outline = key === "" ? opml : (opml << SimpleOpml::Outline.new(text: key)).last
+        outline = key == "" ? opml : (opml << SimpleOpml::Outline.new(text: key)).last
         items.each do |item|
           attributes = {
             title: item[:title],

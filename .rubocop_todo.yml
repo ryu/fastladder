@@ -166,19 +166,6 @@ Security/Open:
   Exclude:
     - 'script/crawler'
 
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowOnConstant, AllowOnSelfClass.
-Style/CaseEquality:
-  Exclude:
-    - 'app/models/member.rb'
-
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: allow_single_line, only_numbered_parameters, always, disallow
-Style/ItBlockParameter:
-  Exclude:
-    - 'app/controllers/mobile_controller.rb'
-
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: RequireEnglish.
 # SupportedStyles: use_perl_names, use_english_names, use_builtin_english_names

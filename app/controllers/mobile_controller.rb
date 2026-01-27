@@ -5,8 +5,8 @@ class MobileController < ApplicationController
   layout false
 
   def index
-    @subscriptions = current_member.subscriptions.includes(:feed).has_unread.order(rate: :desc).with_unread_count.select do
-      it.unread_count.positive?
+    @subscriptions = current_member.subscriptions.includes(:feed).has_unread.order(rate: :desc).with_unread_count.select do |sub|
+      sub.unread_count.positive?
     end
   end
 
