@@ -29,6 +29,7 @@ group :test do
   gem "minitest-rails", "~> 8.0"
   gem 'minitest-retry'
   gem 'selenium-webdriver'
+  gem 'simplecov', require: false
   gem 'webmock'
 end
 
