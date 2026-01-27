@@ -64,9 +64,8 @@
 	<div style="position:absolute;left:0px;" id="control_buttons" class="buttons">
 		<ul id="control_buttons_ul">
 			<li class="button icon" id="pin_button"
-			 onmouseover="Control.pin_hover.call(this,event);"
-			 onmouseout="Control.pin_mouseout.call(this,event);"
-			 onclick="Control.pin_click.call(this,event);"
+			 data-controller="pin-button"
+			 data-action="mouseover->pin-button#hover mouseout->pin-button#out click->pin-button#click"
 			 style="background-image:url('/img/icon/pin.gif')" >&nbsp;<span id="pin_count"></span></li>
 			<li class="button icon" id="keyhelp_button" data-controller="keyhelp" data-action="click->keyhelp#toggle" style="background-image:url('/img/icon/key_q.gif');width:auto;padding-left:26px;">&nbsp;Shortcut Keys<kbd>?</kbd></li>
 			<li class="button icon" id="menu_button"
