@@ -29,7 +29,7 @@
 			<div id="message_box" style="position:absolute;margin-top:4px;z-index:10"><form style="display:inline;margin:0;padding:0" onsubmit="return false">
 				<table cellpadding="0" cellspacing="0"><tr>
 				<td valign="bottom" style="padding-right:7px">
-					<span id="loading" onclick="show_tips()">
+					<span id="loading" data-controller="tips" data-action="click->tips#show">
 					<img id="loadicon" src="/img/icon/loading.gif" width="19" height="19">
 					</span> &lt;
 				</td>
@@ -163,7 +163,7 @@
 	<h2 id="error_title"></h2>
 	<div id="error_body"></div>
 	<div class="close">
-		<span class="button" onclick="Element.hide('error_window')">Close</span>
+		<span class="button" data-controller="element-hide" data-element-hide-target-value="error_window" data-action="click->element-hide#hide">Close</span>
 	</div>
 </div>
 <div id="subscribe_window">
@@ -213,7 +213,7 @@
 </div>
 
 <div id="mini_window">
-	<div id="mini_window_header"><span class="button" onmousedown="DOM.hide('mini_window')">x</span></div>
+	<div id="mini_window_header"><span class="button" data-controller="element-hide" data-element-hide-target-value="mini_window" data-action="mousedown->element-hide#hide">x</span></div>
 	<div id="mini_window_container">
 		<div id="mini_window_body"></div>
 	</div>
