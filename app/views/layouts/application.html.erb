@@ -7,7 +7,6 @@
     <%= stylesheet_link_tag "common" %>
     <%= stylesheet_link_tag "style" %>
     <%= stylesheet_link_tag "main" %>
-    <%= javascript_importmap_tags %>
 
     <% if content_for? :extract_header %>
       <%= yield :extract_header %>
@@ -23,7 +22,27 @@
     <script>
       var ApiKey = '<%= escape_javascript(session[:session_id]) %>';
     </script>
-    <%= javascript_include_tag "application" %>
+    <%# IMPORTANT: Save native JS methods BEFORE legacy code pollutes them %>
+    <script>
+      console.log('=== NATIVE SHIM START ===');
+      window.__nativeJS__ = {
+        ArrayFrom: Array.from,
+        ArrayPrototypeReduce: Array.prototype.reduce,
+        Set: Set,
+        Map: Map,
+        WeakMap: WeakMap
+      };
+      window.__restoreNativeJS__ = function() {
+        console.log('=== RESTORING NATIVE JS ===');
+        if (window.__nativeJS__.ArrayFrom) Array.from = window.__nativeJS__.ArrayFrom;
+        if (window.__nativeJS__.ArrayPrototypeReduce) Array.prototype.reduce = window.__nativeJS__.ArrayPrototypeReduce;
+        if (window.__nativeJS__.Set) window.Set = window.__nativeJS__.Set;
+        if (window.__nativeJS__.Map) window.Map = window.__nativeJS__.Map;
+        if (window.__nativeJS__.WeakMap) window.WeakMap = window.__nativeJS__.WeakMap;
+        console.log('=== NATIVE JS RESTORED ===');
+      };
+      console.log('=== NATIVE SHIM END ===');
+    </script>
     <%= javascript_include_tag "vendor/flow.min" %>
     <%= javascript_include_tag "vendor/zepto.min" %>
 
@@ -52,5 +71,19 @@
     <%= javascript_include_tag "lib/ui/flat_menu" %>
     <%= javascript_include_tag "lib/ui/item" %>
     <%= javascript_include_tag "lib/ui/rate" %>
+
+    <%# IMPORTANT: Restore native JS methods AFTER legacy scripts but BEFORE ES modules run %>
+    <script>
+      console.log('DEBUG: Restore script starting');
+      console.log('DEBUG: __restoreNativeJS__ exists:', typeof __restoreNativeJS__);
+      if (typeof __restoreNativeJS__ === 'function') {
+        __restoreNativeJS__();
+      } else {
+        console.error('DEBUG: __restoreNativeJS__ not found!');
+      }
+    </script>
+
+    <%# Load importmap and ES modules AFTER restoring native JS methods %>
+    <%= javascript_importmap_tags %>
   </body>
 </html>

@@ -1,47 +1,108 @@
-// Import and register all your controllers from the importmap via controllers/**/*_controller
-import { application } from "controllers/application"
+// Register all controllers
+// Stimulus application is already started in application.js
 
-// Eager load controllers that existed before
-import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
-eagerLoadControllersFrom("controllers", application)
-
-// Explicitly register new controllers (workaround for importmap caching)
-import KeyhelpController from "controllers/keyhelp_controller"
-import SubscribeFormController from "controllers/subscribe_form_controller"
-import SubsReloadController from "controllers/subs_reload_controller"
-import ManageController from "controllers/manage_controller"
-import PinButtonController from "controllers/pin_button_controller"
-import MenuToggleController from "controllers/menu_toggle_controller"
-import ViewmodeToggleController from "controllers/viewmode_toggle_controller"
-import SortmodeToggleController from "controllers/sortmode_toggle_controller"
-import ShowAllController from "controllers/show_all_controller"
-import TipsController from "controllers/tips_controller"
-import ElementHideController from "controllers/element_hide_controller"
-import SubsItemController from "controllers/subs_item_controller"
-import FolderToggleTemplateController from "controllers/folder_toggle_template_controller"
-import RatePadController from "controllers/rate_pad_controller"
-import ItemPinToggleController from "controllers/item_pin_toggle_controller"
-import ItemCloseNextController from "controllers/item_close_next_controller"
-import ClipRateController from "controllers/clip_rate_controller"
-import ClipEscapeController from "controllers/clip_escape_controller"
-import PreventSubmitController from "controllers/prevent_submit_controller"
-
-application.register("keyhelp", KeyhelpController)
-application.register("subscribe-form", SubscribeFormController)
-application.register("subs-reload", SubsReloadController)
-application.register("manage", ManageController)
-application.register("pin-button", PinButtonController)
-application.register("menu-toggle", MenuToggleController)
-application.register("viewmode-toggle", ViewmodeToggleController)
-application.register("sortmode-toggle", SortmodeToggleController)
-application.register("show-all", ShowAllController)
-application.register("tips", TipsController)
-application.register("element-hide", ElementHideController)
-application.register("subs-item", SubsItemController)
-application.register("folder-toggle-template", FolderToggleTemplateController)
-application.register("rate-pad", RatePadController)
-application.register("item-pin-toggle", ItemPinToggleController)
-application.register("item-close-next", ItemCloseNextController)
-application.register("clip-rate", ClipRateController)
-application.register("clip-escape", ClipEscapeController)
-application.register("prevent-submit", PreventSubmitController)
+// Register controllers dynamically
+Promise.all([
+  import("controllers/checkbox_group_controller"),
+  import("controllers/clip_escape_controller"),
+  import("controllers/clip_rate_controller"),
+  import("controllers/clipboard_controller"),
+  import("controllers/discover_item_controller"),
+  import("controllers/element_hide_controller"),
+  import("controllers/feed_item_controller"),
+  import("controllers/feed_nav_controller"),
+  import("controllers/feed_rate_controller"),
+  import("controllers/flash_controller"),
+  import("controllers/folder_toggle_controller"),
+  import("controllers/folder_toggle_template_controller"),
+  import("controllers/form_validation_controller"),
+  import("controllers/hotkey_controller"),
+  import("controllers/item_close_controller"),
+  import("controllers/item_close_next_controller"),
+  import("controllers/item_pin_toggle_controller"),
+  import("controllers/keyboard_nav_controller"),
+  import("controllers/keyhelp_controller"),
+  import("controllers/manage_controller"),
+  import("controllers/mark_read_controller"),
+  import("controllers/menu_item_controller"),
+  import("controllers/menu_toggle_controller"),
+  import("controllers/password_match_controller"),
+  import("controllers/pin_button_controller"),
+  import("controllers/pin_controller"),
+  import("controllers/pin_item_controller"),
+  import("controllers/pin_remove_controller"),
+  import("controllers/prevent_submit_controller"),
+  import("controllers/rate_pad_controller"),
+  import("controllers/reader_controller"),
+  import("controllers/reader_pin_controller"),
+  import("controllers/share_controller"),
+  import("controllers/show_all_controller"),
+  import("controllers/sortmode_toggle_controller"),
+  import("controllers/subs_item_controller"),
+  import("controllers/subs_reload_controller"),
+  import("controllers/subscribe_form_controller"),
+  import("controllers/subscription_controller"),
+  import("controllers/subscription_item_controller"),
+  import("controllers/subscription_list_controller"),
+  import("controllers/tab_controller"),
+  import("controllers/tips_controller"),
+  import("controllers/viewmode_toggle_controller"),
+]).then(modules => {
+  const application = window.Stimulus
+  if (!application) {
+    console.error("Stimulus application not found on window.Stimulus")
+    return
+  }
+  const names = [
+    "checkbox-group",
+    "clip-escape",
+    "clip-rate",
+    "clipboard",
+    "discover-item",
+    "element-hide",
+    "feed-item",
+    "feed-nav",
+    "feed-rate",
+    "flash",
+    "folder-toggle",
+    "folder-toggle-template",
+    "form-validation",
+    "hotkey",
+    "item-close",
+    "item-close-next",
+    "item-pin-toggle",
+    "keyboard-nav",
+    "keyhelp",
+    "manage",
+    "mark-read",
+    "menu-item",
+    "menu-toggle",
+    "password-match",
+    "pin-button",
+    "pin",
+    "pin-item",
+    "pin-remove",
+    "prevent-submit",
+    "rate-pad",
+    "reader",
+    "reader-pin",
+    "share",
+    "show-all",
+    "sortmode-toggle",
+    "subs-item",
+    "subs-reload",
+    "subscribe-form",
+    "subscription",
+    "subscription-item",
+    "subscription-list",
+    "tab",
+    "tips",
+    "viewmode-toggle",
+  ]
+  modules.forEach((module, index) => {
+    application.register(names[index], module.default)
+  })
+  console.log("Stimulus controllers registered:", names.length)
+}).catch(error => {
+  console.error("Failed to load Stimulus controllers:", error)
+})

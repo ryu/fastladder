@@ -38,7 +38,7 @@
 
     updater("help_window", function(){
         if(app.state.help_show){
-            Element.show("help_window");
+            LDRElement.show("help_window");
             this.innerHTML = app.state.help_message;
             var el   = app.state.help_snap;
             var pos  = Position.cumulativeOffset(el);
@@ -46,12 +46,12 @@
             var top  = pos[1] - 8;
             DOM.move(this, left,top);
         } else {
-            Element.hide(this);
+            LDRElement.hide(this);
         }
     });
 
     updater("error_window",function(){
-        Element.show(this);
+        LDRElement.show(this);
         centering(this,0,50);
         if(!ld_check()){
             print_error("login");

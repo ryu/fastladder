@@ -1,9 +1,15 @@
 import { Application } from "@hotwired/stimulus"
 
-const application = Application.start()
+// This file is kept for backwards compatibility with controllers that import from it
+// The actual Application is started in controllers/index.js
 
-// Configure Stimulus development experience
-application.debug = false
-window.Stimulus   = application
+let application
+if (window.Stimulus) {
+  application = window.Stimulus
+} else {
+  application = Application.start()
+  application.debug = false
+  window.Stimulus = application
+}
 
 export { application }

@@ -644,7 +644,7 @@ function centering(element,x,y){
 updater("config_form", function(){
 	var active = TabManager["config_form"];
 	(active == "config_basic") ?
-		Element.hide("config_submit"):
-		Element.show("config_submit")
+		LDRElement.hide("config_submit"):
+		LDRElement.show("config_submit")
 })
 

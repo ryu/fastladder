@@ -510,12 +510,12 @@ var Control = {
 
     },
     show_keyhelp: function(){
-        Element.show("keyhelp");
+        LDRElement.show("keyhelp");
         update("keybind_table");
         app.state.keyhelp_visible = true;
     },
     hide_keyhelp: function(){
-        Element.hide("keyhelp");
+        LDRElement.hide("keyhelp");
         app.state.keyhelp_visible = false;
     },
     toggle_more_keyhelp: function(){
@@ -563,7 +563,7 @@ var Control = {
         f.blur();
     },
     show_subscribe_form: function(){
-        Element.show("subscribe_window");
+        LDRElement.show("subscribe_window");
         centering("subscribe_window",0,40);
         show_overlay();
         setTimeout(function(){
@@ -576,7 +576,7 @@ var Control = {
         },10);
     },
     hide_subscribe_form: function(){
-        Element.hide("subscribe_window");
+        LDRElement.hide("subscribe_window");
         DOM.remove("overlay");
     },
     unsubscribe: function(){
@@ -937,8 +937,8 @@ var Control = {
         } else {
             app.state.fullscreen++
         }
-        Element.hide(elements);
-        Element.show(fs[app.state.fullscreen]);
+        LDRElement.hide(elements);
+        LDRElement.show(fs[app.state.fullscreen]);
         fit_screen()
     },
     font: function(num){

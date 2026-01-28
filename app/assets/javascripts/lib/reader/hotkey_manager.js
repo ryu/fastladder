@@ -6,7 +6,7 @@
 
     function hide_error(){
         app.state.show_error = false;
-        Element.hide("error_window");
+        LDRElement.hide("error_window");
     }
 
     LDR.setup_hotkey = function(){

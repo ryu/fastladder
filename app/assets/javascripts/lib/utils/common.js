@@ -562,7 +562,10 @@ function getCookie(key){
 /* Array */
 Array.extend({
 	collect : alias("map"),
-	reduce : function(callback){
+	// Note: 'reduce' renamed to 'reduceToString' to avoid conflict with native Array.prototype.reduce
+	// which is used by modern JavaScript libraries like Stimulus.
+	// The original implementation just maps and joins, which is different from native reduce.
+	reduceToString : function(callback){
 		return this.map(callback).join("")
 	}
 });
@@ -936,7 +939,7 @@ var Position = {
       valueL += element.offsetLeft || 0;
       element = element.offsetParent;
       if (element) {
-        p = Element.getStyle(element, 'position');
+        p = LDRElement.getStyle(element, 'position');
         if (p == 'relative' || p == 'absolute') break;
       }
     } while (element);
@@ -948,7 +951,7 @@ var Position = {
     if (element == document.body) return element;
 
     while ((element = element.parentNode) && element != document.body)
-      if (Element.getStyle(element, 'position') != 'static')
+      if (LDRElement.getStyle(element, 'position') != 'static')
         return element;
 
     return document.body;
@@ -1013,7 +1016,7 @@ var Position = {
 
       // Safari fix
       if (element.offsetParent==document.body)
-        if (Element.getStyle(element,'position')=='absolute') break;
+        if (LDRElement.getStyle(element,'position')=='absolute') break;
 
     } while (element = element.offsetParent);
 
@@ -1046,7 +1049,7 @@ var Position = {
     var parent = null;
     // delta [0,0] will do fine with position: fixed elements,
     // position:absolute needs offsetParent deltas
-    if (Element.getStyle(target,'position') == 'absolute') {
+    if (LDRElement.getStyle(target,'position') == 'absolute') {
       parent = Position.offsetParent(target);
       delta = Position.page(parent);
     }
@@ -1113,7 +1116,7 @@ if (/Konqueror|Safari|KHTML/.test(navigator.userAgent)) {
       valueT += element.offsetTop  || 0;
       valueL += element.offsetLeft || 0;
       if (element.offsetParent == document.body)
-        if (Element.getStyle(element, 'position') == 'absolute') break;
+        if (LDRElement.getStyle(element, 'position') == 'absolute') break;
 
       element = element.offsetParent;
     } while (element);
@@ -1186,8 +1189,8 @@ function getStyle(o,s){
 	return "";
 }
 
-var Element = {};
-Element.getStyle = getStyle;
+// Note: LDRElement is defined further below with show/hide/toggle methods.
+// Keeping this placeholder comment for reference.
 /*
 */
 
@@ -1432,7 +1435,8 @@ function MakeUpdater(label){
 }
 MakeUpdater();
 
-var Element = {
+// Note: Using LDRElement to avoid conflict with native Element
+LDRElement = {
 	show: function(el){
 		if(el) el.style.display = "block"
 	}.forEachArgs(_$),

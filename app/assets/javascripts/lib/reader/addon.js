@@ -237,11 +237,11 @@ function custom_clip_change(e){
 		_$("config_form").custom_clip_url.value = this.value;
 	}
 	if(this.value == "off"){
-		Element.show("config_for_ldclip");
-		Element.hide("config_for_customclip");
+		LDRElement.show("config_for_ldclip");
+		LDRElement.hide("config_for_customclip");
 	} else {
-		Element.hide("config_for_ldclip");
-		Element.show("config_for_customclip");
+		LDRElement.hide("config_for_ldclip");
+		LDRElement.show("config_for_customclip");
 	}
 }
 LDR.register_hook("after_init_config", function(){
@@ -312,7 +312,7 @@ function register_command(name,func){
 
 LDR.register_hook("after_init", function(){
 	Keybind.add(":",function(){
-		Element.show("message_box");
+		LDRElement.show("message_box");
 		message("<input type='text' id='vi' onkeyup='vi_exec.call(this,event)'>");
 		setTimeout(function(){
 			var i = _$("vi");
@@ -326,7 +326,7 @@ LDR.register_hook("after_init", function(){
 });
 register_command("q|quit",function(){
 	message("");
-	Element.hide("message_box");
+	LDRElement.hide("message_box");
 });
 
 // set rate
@@ -680,7 +680,9 @@ var clip_overlay;
 
 
 // set data type for javascript
-function Set(a){
+// Note: Renamed from 'Set' to 'LDRSet' to avoid conflict with native JavaScript Set
+// which is used by modern libraries like Turbo.
+function LDRSet(a){
 	if(a.isSet) return a;
 	var self;
 	var index = {};
@@ -711,20 +713,20 @@ function Set(a){
 	// s >= t
 	self.issuperset = function(t){return t.every(self._has)};
 	// s | t
-	self.union = function(t){return new Set(self.concat(t))};
+	self.union = function(t){return new LDRSet(self.concat(t))};
 	// s & t
-	self.intersection = function(t){return new Set(self.filter(t._has))};
+	self.intersection = function(t){return new LDRSet(self.filter(t._has))};
 	// s - t
-	self.difference = function(t){return new Set(self.filter(invert(t._has)))};
+	self.difference = function(t){return new LDRSet(self.filter(invert(t._has)))};
 	// s ^ t
 	self.symmetric_difference = function(t){
-		//return new Set(self.union(t).difference(self.intersection(t)));
-		return new Set(self.concat(t).filter(function(v){return (!self._has(v) || !t._has(v))}));
+		//return new LDRSet(self.union(t).difference(self.intersection(t)));
+		return new LDRSet(self.concat(t).filter(function(v){return (!self._has(v) || !t._has(v))}));
 	};
 	// convert array to set object
 	var conv = function(f){
 		return function(t){
-			t = new Set(t);
+			t = new LDRSet(t);
 			return f(t)
 		}
 	};
@@ -734,7 +736,7 @@ function Set(a){
 	});
 
 	self.copy = function(){
-		return new Set(self.concat())
+		return new LDRSet(self.concat())
 	};
 	self.update = function(t){
 		t.forEach(self.add);

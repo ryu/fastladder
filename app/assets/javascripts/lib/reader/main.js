@@ -70,7 +70,7 @@ function TabClick(e){
 	};
 	var base   = get_target(tab)[0];
 	var target = get_target(tab)[1];
-	Element.show(target);
+	LDRElement.show(target);
 	TabManager[base] = target;
 	foreach(_$(base).getElementsByTagName("*"), function(el){
 		var cl = el.className;
@@ -79,7 +79,7 @@ function TabClick(e){
 			switchClass(el,"tab-active");
 		} else {
 			switchClass(el,"tab-inactive");
-			Element.hide(get_target(el)[1]);
+			LDRElement.hide(get_target(el)[1]);
 		}
 	});
 	update(base);
