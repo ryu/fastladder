@@ -95,15 +95,39 @@ bin/rails test:system              # システム/統合テスト
 - HAMLテンプレート（`.html.haml`）
 - JavaScriptは `app/assets/javascripts/` に配置
 
+## モダナイゼーション方針
+
+### 段階的にモダンなRails 8.1アプリケーションへと進化させます
+
+- Turbo・Hotwireの活用
+- レガシーなコードの削除または置き換え
+- デザインも2026年現在にふさわしいものに
+
+### 動作に影響のないように少しずつ進めます
+
+- 既存機能を壊さない
+- 各変更後にテストを実行
+- 小さなコミット単位で進める
+
 ## エージェントワークフロー
 
-大きな変更を行う際は、以下のエージェントワークフローを使用:
+大きな変更を行う際は以下の順序で進める:
 
-1. **@rails-architect** - 実装計画を作成
-2. **@plan-reviewer** - 計画を批判的にレビュー
-3. **@logic-implementer** - 変更を実装
-4. **@qa-engineer** - 実装を検証
-5. **@code-reviewer** - 最終コードレビュー
+```
+rails-architect（設計・計画）
+        ↓
+plan-reviewer（計画レビュー）
+        ↓
+db-engineer（DB変更が必要な場合）
+        ↓
+logic-implementer（実装）
+        ↓
+ui-specialist（UI/UXゲート）
+        ↓
+qa-engineer（テスト検証）
+        ↓
+code-reviewer（最終レビュー）
+```
 
 ## Gitワークフロー
 
