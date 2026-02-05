@@ -167,9 +167,7 @@ git tag <説明的な名前>  # 例: rails-8.0-final
 
 ## 既知の問題
 
-1. **Frozen String Literal警告**（Ruby 4.0）
-   - 場所: `test/models/feed_test.rb:66, :75`
-   - 状態: 低優先度、表示上の問題のみ
+なし（全て解決済み）
 
 ## 重要なファイル
 

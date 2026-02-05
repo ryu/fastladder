@@ -63,7 +63,7 @@ class FeedTest < ActiveSupport::TestCase
     stub_request(:get, feed.feedlink).to_return(body: "")
     stub_request(:any, /favicon/).to_return(headers: { "Content-Type" => "image/vnd.microsoft.icon" }, body: favicon)
     feed.fetch_favicon!
-    assert feed.favicon.image.start_with?("\x89PNG\r\n".force_encoding("ascii-8bit"))
+    assert feed.favicon.image.start_with?("\x89PNG\r\n".dup.force_encoding("ascii-8bit"))
   end
 
   test "handles gif favicon returning vnd.microsoft.icon" do
@@ -72,7 +72,7 @@ class FeedTest < ActiveSupport::TestCase
     stub_request(:any, /.*/).to_return(body: favicon, headers: { "Content-Type" => "image/vnd.microsoft.icon" })
     feed.stub :favicon_list, [Addressable::URI.parse("http://example.com/favicon?file=favicon.gif")] do
       feed.fetch_favicon!
-      assert feed.favicon.image.start_with?("\x89PNG\r\n".force_encoding("ascii-8bit"))
+      assert feed.favicon.image.start_with?("\x89PNG\r\n".dup.force_encoding("ascii-8bit"))
     end
   end
 
