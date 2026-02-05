@@ -117,7 +117,7 @@ bin/rails test:system              # システム/統合テスト
 rails-architect（設計・計画）
         ↓
 plan-reviewer（計画レビュー）
-        ↓
+        ↓ ※Must Fixがある場合はrails-architectに差し戻し
 db-engineer（DB変更が必要な場合）
         ↓
 logic-implementer（実装）
@@ -128,6 +128,8 @@ qa-engineer（テスト検証）
         ↓
 code-reviewer（最終レビュー）
 ```
+
+**注意**: plan-reviewerのレビューでMust Fixがあった場合は、レビューに基づいてrails-architectが計画を修正する。
 
 ## Gitワークフロー
 
