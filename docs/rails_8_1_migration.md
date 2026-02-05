@@ -1,8 +1,8 @@
-# Rails 8.1 Migration Guide
+# Rails 8.1 Migration & Modernization Guide
 
 ## Overview
 
-This document describes the migration from Rails 8.0 defaults to Rails 8.1 defaults for Fastladder.
+This document describes the migration from Rails 8.0 defaults to Rails 8.1 defaults for Fastladder, along with HTML5 modernization efforts.
 
 **Migration Date**: 2026-02-05
 **Commit**: 44824b7
@@ -149,7 +149,88 @@ The migration followed a staged approach:
 | qa-engineer | Verified implementation quality |
 | code-reviewer | Final code review before merge |
 
+---
+
+## HTML5 Modernization
+
+### Overview
+
+Migrated legacy HTML doctypes to HTML5 standard across all layout files.
+
+### Changes Made
+
+#### 1. reader/index.html.erb
+
+**Commit**: f3af2c4
+
+```html
+<!-- Before -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=8">
+
+<!-- After -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+```
+
+**Removed legacy meta tags**:
+- `http-equiv="content-type"` → `charset="utf-8"`
+- `http-equiv="X-UA-Compatible"` (IE8 compatibility mode)
+- `http-equiv="Content-Script-Type"` (removed in 8f380d2)
+- `http-equiv="Content-Style-Type"` (removed in 8f380d2)
+
+#### 2. application.html.haml
+
+**Commit**: aad60a1
+
+```haml
+# Before
+!!! 1.1
+%html{"xml:lang": "en", xmlns: "http://www.w3.org/1999/xhtml"}
+
+# After
+!!! 5
+%html{lang: "en"}
+```
+
+**Changes**:
+- XHTML 1.1 DOCTYPE → HTML5 DOCTYPE
+- Removed `xml:lang` and `xmlns` attributes
+- Added standard `lang` attribute
+
+### Verification
+
+| Check | Result |
+|-------|--------|
+| I18n configuration | `default_locale` is `:en` (default) |
+| I18n API usage | None (no `I18n.t` or `I18n.locale` calls) |
+| CSS xmlns selector dependency | None |
+| JS xmlns attribute reference | None |
+| Test suite | All 232 tests pass |
+| Layout consistency | Both files use `lang="en"` |
+
+### Impact
+
+- **Browser compatibility**: HTML5 is universally supported
+- **Standards compliance**: Modern HTML5 standard
+- **Accessibility**: Proper `lang` attribute for screen readers
+- **SEO**: Correct language declaration for search engines
+
+### Future Improvements (Out of Scope)
+
+- Dynamic `lang` attribute with I18n integration (`lang: I18n.locale`)
+- Add `<meta charset="utf-8">` to application.html.haml
+- Audit other HAML files for consistency
+
+---
+
 ## References
 
 - [Rails 8.1 Release Notes](https://guides.rubyonrails.org/8_1_release_notes.html)
 - [Upgrading Ruby on Rails Guide](https://guides.rubyonrails.org/upgrading_ruby_on_rails.html)
+- [HTML5 Specification](https://html.spec.whatwg.org/)

@@ -35,7 +35,7 @@ script/
 └── crawler               # バックグラウンドフィードクローラー
 
 docs/
-└── rails_8_1_migration.md  # Rails 8.1移行ドキュメント
+└── rails_8_1_migration.md  # Rails 8.1移行・モダナイゼーションドキュメント
 ```
 
 ## 開発コマンド
@@ -108,6 +108,22 @@ bin/rails test:system              # システム/統合テスト
 - 既存機能を壊さない
 - 各変更後にテストを実行
 - 小さなコミット単位で進める
+
+### 完了した作業
+
+| 作業 | コミット | 状態 |
+|------|---------|------|
+| Rails 8.1 framework defaults有効化 | 44824b7 | ✅ 完了 |
+| reader/index.html.erb HTML5移行 | f3af2c4 | ✅ 完了 |
+| application.html.haml HTML5移行 | aad60a1 | ✅ 完了 |
+| レガシーMETAタグ削除 | 8f380d2 | ✅ 完了 |
+
+### 今後の候補
+
+- I18n統合（動的`lang`属性）
+- Turbo/Hotwire導入
+- レガシーJS（Prototype.js）の置き換え
+- モバイルビューのHTML5化
 
 ## エージェントワークフロー
 
