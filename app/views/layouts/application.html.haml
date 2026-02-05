@@ -3,8 +3,6 @@
   %head
     %title
       Fastladder #{@title or [params[:controller].capitalize, (params[:action] if params[:action] != "index")].compact.join(": ")}
-    %meta{content: "text/javascript", "http-equiv": "Content-Script-Type"}
-    %meta{content: "text/css", "http-equiv": "Content-Style-Type"}
     = stylesheet_link_tag "common"
     = stylesheet_link_tag "style"
     = stylesheet_link_tag "main"
