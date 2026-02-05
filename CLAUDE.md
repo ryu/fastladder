@@ -117,6 +117,7 @@ bin/rails test:system              # システム/統合テスト
 | reader/index.html.erb HTML5移行 | f3af2c4 | ✅ 完了 |
 | application.html.haml HTML5移行 | aad60a1 | ✅ 完了 |
 | レガシーMETAタグ削除 | 8f380d2 | ✅ 完了 |
+| 未使用gem削除（jbuilder, ostruct） | eb5ef0c | ✅ 完了 |
 
 ### 今後の候補
 
@@ -153,6 +154,8 @@ code-reviewer（最終レビュー）
 - フィーチャーブランチ: 説明的な名前（例: `modernized`）
 - コミットメッセージ: 現在形、説明的に
 - 共著者: `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>`
+- **コミット前に必ずユーザーの承認を得ること**
+- **git pushも必ずユーザーの承認を得ること**
 
 ## ロールバックポイント
 
