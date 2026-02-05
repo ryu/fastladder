@@ -13,7 +13,6 @@ gem 'addressable', require: 'addressable/uri'
 gem 'feed_searcher', git: 'https://github.com/fastladder/feed_searcher'
 gem 'feedjira'
 gem 'haml'
-gem 'jbuilder', '~> 2.13'
 gem 'mini_magick'
 gem 'nokogiri'
 gem 'opml', git: 'https://github.com/ssig33/opml'
@@ -38,8 +37,6 @@ gem "nkf", "~> 0.2.0"
 gem "http", "~> 5.3"
 
 gem "propshaft", "~> 1.3.1"
-
-gem "ostruct", "~> 0.6.3"
 
 gem "stringio", "3.2.0"
 
