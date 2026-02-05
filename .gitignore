@@ -14,3 +14,12 @@ coverage
 db/*.sqlite3-*
 mysqldata
 .env*
+
+# IDE
+.idea/
+
+# Claude Code
+.claude/
+
+# Version managers
+mise.toml
