@@ -97,34 +97,13 @@ bin/rails test:system              # システム/統合テスト
 
 ## モダナイゼーション方針
 
-### 段階的にモダンなRails 8.1アプリケーションへと進化させます
-
-- Turbo・Hotwireの活用
-- レガシーなコードの削除または置き換え
-- デザインも2026年現在にふさわしいものに
-
-### 動作に影響のないように少しずつ進めます
+「小さく → 動く → 育てる」アプローチで段階的にモダン化:
 
 - 既存機能を壊さない
 - 各変更後にテストを実行
 - 小さなコミット単位で進める
 
-### 完了した作業
-
-| 作業 | コミット | 状態 |
-|------|---------|------|
-| Rails 8.1 framework defaults有効化 | 44824b7 | ✅ 完了 |
-| reader/index.html.erb HTML5移行 | f3af2c4 | ✅ 完了 |
-| application.html.haml HTML5移行 | aad60a1 | ✅ 完了 |
-| レガシーMETAタグ削除 | 8f380d2 | ✅ 完了 |
-| 未使用gem削除（jbuilder, ostruct） | eb5ef0c | ✅ 完了 |
-
-### 今後の候補
-
-- I18n統合（動的`lang`属性）
-- Turbo/Hotwire導入
-- レガシーJS（Prototype.js）の置き換え
-- モバイルビューのHTML5化
+**進捗管理**: [docs/rails_8_1_migration.md](docs/rails_8_1_migration.md) を参照
 
 ## エージェントワークフロー
 
@@ -164,10 +143,6 @@ code-reviewer（最終レビュー）
 ```bash
 git tag <説明的な名前>  # 例: rails-8.0-final
 ```
-
-## 既知の問題
-
-なし（全て解決済み）
 
 ## 重要なファイル
 

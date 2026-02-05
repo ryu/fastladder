@@ -119,14 +119,9 @@ bin/rails db:migrate
 
 ## Known Warnings
 
-The following warnings are unrelated to Rails 8.1 migration:
+~~Previously had frozen string literal warnings in `test/models/feed_test.rb:66, 75`~~
 
-```
-test/models/feed_test.rb:75: warning: literal string will be frozen in the future
-test/models/feed_test.rb:66: warning: literal string will be frozen in the future
-```
-
-These are Ruby 4.0 frozen string literal warnings and should be addressed separately.
+✅ **Resolved** in commit `da6181a` - Added `.dup` before `.force_encoding()` to fix Ruby 4.0 warnings.
 
 ## Migration Process
 
@@ -226,6 +221,35 @@ Migrated legacy HTML doctypes to HTML5 standard across all layout files.
 - Dynamic `lang` attribute with I18n integration (`lang: I18n.locale`)
 - Add `<meta charset="utf-8">` to application.html.haml
 - Audit other HAML files for consistency
+
+---
+
+## Modernization Progress
+
+### Completed Work
+
+| Task | Commit | Date |
+|------|--------|------|
+| Rails 8.1 framework defaults | 44824b7 | 2026-02-05 |
+| reader/index.html.erb HTML5 migration | f3af2c4 | 2026-02-05 |
+| application.html.haml HTML5 migration | aad60a1 | 2026-02-05 |
+| Legacy META tags removal | 8f380d2 | 2026-02-05 |
+| Unused gems removal (jbuilder, ostruct) | eb5ef0c | 2026-02-05 |
+| Frozen string literal warnings fix | da6181a | 2026-02-05 |
+
+### Future Candidates
+
+- [ ] Turbo/Hotwire integration
+- [ ] Legacy JS (Prototype.js) replacement
+- [ ] Mobile view HTML5 migration
+- [ ] I18n integration (dynamic `lang` attribute) - low priority
+
+### Modernization Policy
+
+**Incremental approach ("Small → Working → Grow")**:
+- Don't break existing functionality
+- Run tests after each change
+- Small commits
 
 ---
 
