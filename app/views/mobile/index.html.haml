@@ -1,6 +1,9 @@
-%title Fastladder Mobile
-<link href='https://unpkg.com/sakura.css/css/sakura.css' media='screen' rel='stylesheet' type='text/css'>
-<meta content='width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport'>
+- content_for :title do
+  Fastladder Mobile
+
+- content_for :head do
+  %link{href: "https://unpkg.com/sakura.css/css/sakura.css", media: "screen", rel: "stylesheet"}
+  %meta{name: "viewport", content: "width=320, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}
 
 %h1
   %img(src="/img/logo_small.gif" alt="Fastladder")

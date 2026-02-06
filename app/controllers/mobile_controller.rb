@@ -2,7 +2,6 @@
 
 class MobileController < ApplicationController # rubocop:todo Style/Documentation
   before_action :login_required
-  layout false
 
   def index
     @subscriptions = current_member.subscriptions.includes(:feed).has_unread.order('rate desc').with_unread_count.select do
