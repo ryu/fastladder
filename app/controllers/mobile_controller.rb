@@ -10,24 +10,43 @@ class MobileController < ApplicationController # rubocop:todo Style/Documentatio
   end
 
   def read_feed
-    @subscription = Subscription.find(params[:feed_id])
+    @subscription = current_member.subscriptions.find_by(id: params[:feed_id])
+    unless @subscription
+      render plain: "Not Found", status: :not_found
+      return
+    end
     @items = @subscription.feed.items.stored_since(@subscription.viewed_on).order('stored_on asc').limit(200)
   end
 
   def mark_as_read
-    @subscription = Subscription.find(params[:feed_id])
+    @subscription = current_member.subscriptions.find_by(id: params[:feed_id])
+    unless @subscription
+      render plain: "Not Found", status: :not_found
+      return
+    end
     @subscription.update!(has_unread: false, viewed_on: Time.at(params[:timestamp].to_i + 1))
 
     redirect_to '/mobile'
   end
 
   def pin
-    item = Item.find(params[:item_id])
+    item = Item.find_by(id: params[:item_id])
+    unless item
+      redirect_to '/mobile', alert: 'Item not found'
+      return
+    end
+
+    subscription = current_member.subscriptions.find_by(feed_id: item.feed_id)
+    unless subscription
+      redirect_to '/mobile', alert: 'Access denied'
+      return
+    end
+
     begin
       current_member.pins.create!(link: item.link, title: item.title)
     rescue ActiveRecord::RecordNotUnique
     end
 
-    redirect_to "/mobile/#{item.feed_id}#item-#{item.id}"
+    redirect_to "/mobile/#{subscription.id}#item-#{item.id}"
   end
 end
