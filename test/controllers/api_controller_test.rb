@@ -140,4 +140,155 @@ class ApiControllerTest < ActionController::TestCase
 
     assert response.body.blank?
   end
+
+  # IDOR vulnerability tests for touch and crawl
+
+  test "POST touch ignores other user's subscription ID" do
+    other_member = FactoryBot.create(:member, username: "other", password: "other", password_confirmation: "other")
+    other_subscription = FactoryBot.create(:subscription, member: other_member, has_unread: true, viewed_on: 1.hour.ago)
+
+    post :touch, params: {
+      timestamp: Time.now.to_i,
+      subscribe_id: other_subscription.id
+    }, session: { member_id: @member.id }
+
+    assert JSON.parse(response.body)["isSuccess"]
+    # Other user's subscription should not be modified (still has_unread and old viewed_on)
+    other_subscription.reload
+    assert other_subscription.has_unread
+    assert other_subscription.viewed_on < 30.minutes.ago
+  end
+
+  test "POST touch processes only own subscription IDs in mixed batch" do
+    other_member = FactoryBot.create(:member, username: "other", password: "other", password_confirmation: "other")
+    other_subscription = FactoryBot.create(:subscription, member: other_member, has_unread: true, viewed_on: 1.hour.ago)
+    own_subscription = FactoryBot.create(:subscription, member: @member, has_unread: true, viewed_on: 1.hour.ago)
+
+    timestamp = Time.now.to_i
+    post :touch, params: {
+      timestamp: "#{timestamp},#{timestamp}",
+      subscribe_id: "#{other_subscription.id},#{own_subscription.id}"
+    }, session: { member_id: @member.id }
+
+    assert JSON.parse(response.body)["isSuccess"]
+    # Other user's subscription should not be modified
+    other_subscription.reload
+    assert other_subscription.has_unread, "Other user's subscription should still have has_unread=true"
+    # Own subscription should be modified
+    own_subscription.reload
+    assert_equal false, own_subscription.has_unread, "Own subscription should have has_unread=false, but got #{own_subscription.has_unread}"
+  end
+
+  test "POST crawl ignores other user's subscription ID" do
+    other_member = FactoryBot.create(:member, username: "other", password: "other", password_confirmation: "other")
+    other_feed = FactoryBot.create(:feed, feedlink: "http://other.example.com/feed")
+    FactoryBot.create(:crawl_status, feed: other_feed)
+    other_subscription = FactoryBot.create(:subscription, member: other_member, feed: other_feed)
+
+    headers = {
+      "Accept" => "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5",
+      "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+      "User-Agent" => "Fastladder FeedFetcher/0.0.3 (http://fastladder.org/)",
+    }
+    stub_request(:get, other_feed.feedlink).with { |request|
+      request.headers = headers
+    }.to_return(status: 200, body: "", headers: {})
+
+    post :crawl, params: {
+      subscribe_id: other_subscription.id
+    }, session: { member_id: @member.id }
+
+    parsed = JSON.parse(response.body)
+    assert_equal false, parsed["a"]
+  end
+
+  test "POST crawl processes only own subscription IDs in mixed batch" do
+    other_member = FactoryBot.create(:member, username: "other", password: "other", password_confirmation: "other")
+    other_feed = FactoryBot.create(:feed, feedlink: "http://other.example.com/feed")
+    FactoryBot.create(:crawl_status, feed: other_feed)
+    other_subscription = FactoryBot.create(:subscription, member: other_member, feed: other_feed)
+
+    own_feed = FactoryBot.create(:feed, feedlink: "http://own.example.com/feed")
+    FactoryBot.create(:crawl_status, feed: own_feed)
+    own_subscription = FactoryBot.create(:subscription, member: @member, feed: own_feed)
+
+    headers = {
+      "Accept" => "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5",
+      "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+      "User-Agent" => "Fastladder FeedFetcher/0.0.3 (http://fastladder.org/)",
+    }
+    stub_request(:get, own_feed.feedlink).with { |request|
+      request.headers = headers
+    }.to_return(status: 200, body: "", headers: {})
+
+    post :crawl, params: {
+      subscribe_id: "#{other_subscription.id},#{own_subscription.id}"
+    }, session: { member_id: @member.id }
+
+    parsed = JSON.parse(response.body)
+    # Should process own subscription and return success
+    assert parsed["a"]
+  end
+
+  test "POST touch handles single non-existent ID" do
+    post :touch, params: {
+      timestamp: Time.now.to_i.to_s,
+      subscribe_id: "999999"
+    }, session: { member_id: @member.id }
+
+    assert JSON.parse(response.body)["isSuccess"]
+  end
+
+  test "POST crawl handles single non-existent ID" do
+    post :crawl, params: {
+      subscribe_id: "999999"
+    }, session: { member_id: @member.id }
+
+    parsed = JSON.parse(response.body)
+    assert_equal false, parsed["a"]
+  end
+
+  test "POST touch handles mismatched ID and timestamp counts" do
+    post :touch, params: {
+      timestamp: Time.now.to_i.to_s,
+      subscribe_id: "#{@subscription.id},999999"
+    }, session: { member_id: @member.id }
+
+    assert JSON.parse(response.body)["isSuccess"]
+  end
+
+  test "POST crawl handles all invalid IDs" do
+    post :crawl, params: {
+      subscribe_id: "999999,999998"
+    }, session: { member_id: @member.id }
+
+    parsed = JSON.parse(response.body)
+    assert_equal false, parsed["a"]
+  end
+
+  test "POST crawl returns last valid result with multiple valid IDs" do
+    feed1 = FactoryBot.create(:feed, feedlink: "http://feed1.example.com/feed")
+    FactoryBot.create(:crawl_status, feed: feed1)
+    subscription1 = FactoryBot.create(:subscription, member: @member, feed: feed1)
+
+    feed2 = FactoryBot.create(:feed, feedlink: "http://feed2.example.com/feed")
+    FactoryBot.create(:crawl_status, feed: feed2)
+    subscription2 = FactoryBot.create(:subscription, member: @member, feed: feed2)
+
+    headers = {
+      "Accept" => "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5",
+      "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+      "User-Agent" => "Fastladder FeedFetcher/0.0.3 (http://fastladder.org/)",
+    }
+    stub_request(:get, feed1.feedlink).to_return(status: 200, body: "", headers: {})
+    stub_request(:get, feed2.feedlink).to_return(status: 200, body: "", headers: {})
+
+    post :crawl, params: {
+      subscribe_id: "#{subscription1.id},#{subscription2.id}"
+    }, session: { member_id: @member.id }
+
+    parsed = JSON.parse(response.body)
+    # Should return the result of the last valid crawl
+    assert parsed.key?("a")
+  end
 end

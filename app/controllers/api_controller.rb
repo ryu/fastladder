@@ -50,10 +50,16 @@ class ApiController < ApplicationController
   end
 
   def touch
-    timestamps = params[:timestamp].split(/\s*, \s*/).map { |t| t.to_i }
-    params[:subscribe_id].split(/\s*,\s*/).each_with_index do |id, i|
-      if sub = Subscription.find(id) and sub.member_id == @member.id and timestamps[i]
-        sub.update(has_unread: false, viewed_on: Time.at(timestamps[i] + 1))
+    subscribe_ids = params[:subscribe_id].split(/\s*,\s*/).map(&:to_i)
+    timestamps = params[:timestamp].split(/\s*,\s*/).map { |t| t.to_i }
+
+    # Fetch only subscriptions belonging to the current member
+    valid_subscriptions = @member.subscriptions.where(id: subscribe_ids).index_by(&:id)
+
+    subscribe_ids.each_with_index do |id, i|
+      subscription = valid_subscriptions[id]
+      if subscription && timestamps[i]
+        subscription.update(has_unread: false, viewed_on: Time.at(timestamps[i] + 1))
       end
     end
     render_json_status(true)
@@ -148,15 +154,18 @@ class ApiController < ApplicationController
   end
 
   def crawl
-    success = false
-    params[:subscribe_id].to_s.split(/\s*,\s*/).each_with_index do |id, i|
-      if sub = Subscription.find(id) and sub.member_id == @member.id
-        success = sub.feed.crawl
-      end
-    end
-    render json: {a: (success ? true : false) }.to_json
-    # render_json_status(success ? true : false)
-    # return render_json_status(success ? true : false)
+    subscribe_ids = params[:subscribe_id].to_s.split(/\s*,\s*/).map(&:to_i)
+
+    # Fetch only subscriptions belonging to the current member
+    valid_subscriptions = @member.subscriptions.where(id: subscribe_ids).index_by(&:id)
+
+    # Process each ID and collect results
+    result = subscribe_ids.map { |id|
+      subscription = valid_subscriptions[id]
+      subscription&.feed&.crawl
+    }.compact.last
+
+    render json: {a: (result ? true : false) }.to_json
   end
 
   protected
