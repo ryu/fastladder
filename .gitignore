@@ -4,7 +4,6 @@ tmp
 config/secret.txt
 config/database.yml
 config/secrets.yml
-db/schema.rb
 lib/*.dylib
 db/*.sqlite3
 public/assets
