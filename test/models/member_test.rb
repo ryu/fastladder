@@ -44,4 +44,24 @@ class MemberTest < ActiveSupport::TestCase
     sub_4 = FactoryBot.create(:subscription, member: member, feed: FactoryBot.create(:feed), created_on: 4.day.ago)
     assert_equal [sub_1, sub_3, sub_2], member.recent_subs(3)
   end
+
+  test "validates uniqueness of auth_key" do
+    member1 = FactoryBot.create(:member, username: "user1", password: "password123", password_confirmation: "password123")
+    member1.set_auth_key
+
+    member2 = FactoryBot.create(:member, username: "user2", password: "password123", password_confirmation: "password123")
+    member2.auth_key = member1.auth_key
+
+    assert_not member2.valid?
+  end
+
+  test "allows multiple members with NULL auth_key" do
+    member1 = FactoryBot.create(:member, username: "user3", password: "password123", password_confirmation: "password123")
+    member2 = FactoryBot.create(:member, username: "user4", password: "password123", password_confirmation: "password123")
+
+    assert_nil member1.auth_key
+    assert_nil member2.auth_key
+    assert member1.valid?
+    assert member2.valid?
+  end
 end
