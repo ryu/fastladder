@@ -17,14 +17,13 @@
 
     %div!= remove_style_attr_of_all_tags(item.body)
     %div
-      %p.smallgrey 
-        %a.pin{href: "/mobile/#{item.id}/pin"} Pin
-        Created: #{item.created_on.localtime} 
+      %p.smallgrey
+        = button_to "Pin", "/mobile/#{item.id}/pin", class: "pin", method: :post, form: { data: { turbo: false } }
+        Created: #{item.created_on.localtime}
     %hr
 
 %div
-  %a#next{href: "/mobile/#{@subscription.id}/read?timestamp=#{@items.last.updated_on.to_i}"}
-    %button{style: "font-size: 1.5em;"} Mark as read
+  = button_to "Mark as read", "/mobile/#{@subscription.id}/read?timestamp=#{@items.last.updated_on.to_i}", id: "next", style: "font-size: 1.5em;", method: :post, form: { data: { turbo: false } }
 
 %div(style="height:2000px")
 :css
@@ -35,6 +34,10 @@
 
 :javascript
   var current = "item-#{params[:item_id]}";
+
+  // Submission guard
+  const isFormSubmitted = (form) => form.dataset.submitted === 'true';
+  const markAsSubmitted = (form) => form.dataset.submitted = 'true';
 
   const scroll = (id)=>{
     document.querySelectorAll('.item').forEach((e)=> e.style.backgroundColor = '#f9f9f9');
@@ -65,8 +68,11 @@
   window.addEventListener('keyup', (e)=> {
     // pin
     if(e.key === 'p') {
-      const link = document.getElementById(current).querySelector('a.pin');
-      if(link) link.click();
+      const form = document.getElementById(current).querySelector('form.button_to');
+      if(form && !isFormSubmitted(form)) {
+        markAsSubmitted(form);
+        form.querySelector('button').click();
+      }
     }
 
     // read
@@ -77,7 +83,11 @@
 
     // next
     if(e.key === 's') {
-      document.getElementById('next').click();
+      const button = document.getElementById('next');
+      if(button && !isFormSubmitted(button.closest('form'))) {
+        markAsSubmitted(button.closest('form'));
+        button.click();
+      }
     }
   });
 

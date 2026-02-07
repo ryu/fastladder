@@ -24,7 +24,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     @subscription.update!(has_unread: true)
     original_viewed_on = @subscription.viewed_on
 
-    get "/mobile/#{@subscription.id}/read", params: { timestamp: Time.now.to_i }
+    post "/mobile/#{@subscription.id}/read", params: { timestamp: Time.now.to_i }
 
     assert_response :not_found
     # Verify subscription was not modified
@@ -42,7 +42,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     login_as(@other_member)
     initial_pins_count = @other_member.pins.count
 
-    get "/mobile/#{unsubscribed_item.id}/pin"
+    post "/mobile/#{unsubscribed_item.id}/pin"
 
     assert_redirected_to '/mobile'
     assert_equal 'Access denied', flash[:alert]
@@ -64,7 +64,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     login_as(@member)
     @subscription.update!(has_unread: true)
 
-    get "/mobile/#{@subscription.id}/read", params: { timestamp: Time.now.to_i }
+    post "/mobile/#{@subscription.id}/read", params: { timestamp: Time.now.to_i }
 
     assert_redirected_to '/mobile'
     @subscription.reload
@@ -75,7 +75,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     login_as(@member)
     initial_pins_count = @member.pins.count
 
-    get "/mobile/#{@item.id}/pin"
+    post "/mobile/#{@item.id}/pin"
 
     assert_redirected_to "/mobile/#{@subscription.id}#item-#{@item.id}"
     assert_equal initial_pins_count + 1, @member.pins.reload.count
