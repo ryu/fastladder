@@ -150,7 +150,7 @@ class Member < ActiveRecord::Base
   end
 
   def set_auth_key
-    self.auth_key = rand(256**16).to_s(16)
+    self.auth_key = rand(256**16).to_s(16).rjust(32, '0')
     self.save
   end
 

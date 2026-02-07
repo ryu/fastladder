@@ -64,4 +64,11 @@ class MemberTest < ActiveSupport::TestCase
     assert member1.valid?
     assert member2.valid?
   end
+
+  test "set_auth_key generates 32-character hexadecimal auth_key" do
+    member = FactoryBot.create(:member, password: "password123", password_confirmation: "password123")
+    member.set_auth_key
+    assert_equal 32, member.auth_key.length
+    assert_match(/\A[0-9a-f]{32}\z/, member.auth_key)
+  end
 end
