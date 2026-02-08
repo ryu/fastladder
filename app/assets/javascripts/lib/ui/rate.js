@@ -2,12 +2,13 @@
  rate
 */
 (function(){
-    var Rate = LDR.Rate = Class.create().extend({
-        initialize: function(callback){
+    class Rate {
+        constructor(callback) {
             Object.extend(this, Rate);
             this.click = callback;
         }
-    });
+    }
+    LDR.Rate = Rate;
 
     Rate.image_path = "/img/rate/";
     Rate.image_path_p = "/img/rate/pad/";

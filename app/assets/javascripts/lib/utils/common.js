@@ -479,9 +479,8 @@ Accessor.prototype.setter = function(value){ return value };
 /*
  Cookie
 */
-var Cookie = Class.create();
-Cookie.extend({
-	initialize: function(opt){
+class Cookie {
+	constructor(opt) {
 		this._options = "name,value,expires,path,domain,secure".split(",");
 		this._mk_accessors(this._options);
 		this.expires.setter = function(value){
@@ -493,20 +492,20 @@ Cookie.extend({
 			return value
 		}
 		if(opt) this._set_options(opt);
-	},
-	_set_options : function(opt){
+	}
+	_set_options(opt) {
 		var self = this;
 		this._options.forEach(function(key){
 			opt.hasOwnProperty(key) && self[key](opt[key])
 		})
-	},
-	_mk_accessors: function(args){
+	}
+	_mk_accessors(args) {
 		for(var i=0;i<args.length;i++){
 			var name = args[i];
 			this[name] = new Accessor()
 		}
-	},
-	parse: function(str){
+	}
+	parse(str) {
 		var hash = {};
 		var ck = str || document.cookie;
 		var pairs = ck.split(/\s*;\s*/);
@@ -515,11 +514,11 @@ Cookie.extend({
 			hash[tmp[0]] = tmp[1];
 		})
 		return hash;
-	},
-	bake: function(){
+	}
+	bake() {
 		document.cookie = this.as_string();
-	},
-	as_string: function(){
+	}
+	as_string() {
 		var e,p,d,s;
 		e = this.expires();
 		p = this.path();
@@ -534,7 +533,7 @@ Cookie.extend({
 		var cookie = [this.name(),"=",this.value(),options].join("");
 		return cookie;
 	}
-});
+}
 Cookie.default_expire = 60*60*24*365*1000;
 function setCookie(name,value,expires,path,domain,secure){
 	if(isDate(expires)){
