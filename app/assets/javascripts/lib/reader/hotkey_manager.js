@@ -16,7 +16,8 @@
             if(app.state.show_error) hide_error();
         };
         var keyconfig = [];
-        each(LDR.KeyConfig, function(value,key){
+        Object.entries(LDR.KeyConfig).forEach(function(entry){
+            var key = entry[0], value = entry[1];
             keyconfig.push([
                 value, Control[key]
             ])

@@ -39,7 +39,7 @@
             var that = this;
             (function(tag, props){
                 var arg = arguments;
-                if(isString(tag) && isArray(props)){
+                if(typeof tag === "string" && Array.isArray(props)){
                     props.forEach(function(v){
                         that.addRule(tag,v);
                     });

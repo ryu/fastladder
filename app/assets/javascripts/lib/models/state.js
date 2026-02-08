@@ -32,7 +32,7 @@
             this.mousemove = function(e){
                 var pos = [e.clientX,e.clientY];
                 message(pos);
-                isFunction(callback) && callback(pos)
+                typeof callback === "function" && callback(pos)
             };
             State.stop_mousemove = Event.observe(document.body, "mousemove", State.mousemove);
         };

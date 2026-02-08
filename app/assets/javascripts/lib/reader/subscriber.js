@@ -59,7 +59,7 @@ class SubscribeModel {
         }
     }
     generate_cache(){
-        this.folder_names = keys(this.folder_count);
+        this.folder_names = Object.keys(this.folder_count);
         this.make_subscribers_names();
         return;
     }
@@ -73,7 +73,7 @@ class SubscribeModel {
             }
         }
         var self = this;
-        foreach(list, function(v){
+        list.forEach(function(v){
             subs_item(v.subscribe_id, v);
             self.id2subs[v.subscribe_id] = v;
             push(self.rate2subs, v.rate, v);
@@ -99,7 +99,7 @@ class SubscribeModel {
         var domain_count = {};
         var domain_names = {};
         var domain2subs = {};
-        foreach(this.list, function(v){
+        this.list.forEach(function(v){
             var d = v.raw_domain;
             var c = d.split(".");
             var l = c.length - 1;
@@ -113,7 +113,7 @@ class SubscribeModel {
                 }
             }
         });
-        foreach(this.list, function(v){
+        this.list.forEach(function(v){
             if(v.feedlink){
                 var d = get_domain(v.feedlink);
                 v.raw_domain = d;
@@ -125,7 +125,7 @@ class SubscribeModel {
                 })
             }
         });
-        this.domain_names = keys(domain_names);
+        this.domain_names = Object.keys(domain_names);
         this.domain_count = domain_names;
         this.domain2subs  = domain2subs;
     }

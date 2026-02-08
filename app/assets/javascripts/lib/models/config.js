@@ -2,7 +2,7 @@
 
     LDR.Config = (function(){
         function Config(){
-            Object.extend(this, LDR.DefaultConfig);
+            Object.assign(this, LDR.DefaultConfig);
             this.onConfigChange = {};
         }
         var fn = Config.prototype;
@@ -31,8 +31,9 @@
             var api = new LDR.API("/api/config/load");
             api.post({timestamp:new Date - 0},function(data){
                 data = typecast_config(data);
-                each(data,function(value,key){
-                    if(!isFunction(that[key]))
+                Object.entries(data).forEach(function(entry){
+                    var key = entry[0], value = entry[1];
+                    if(typeof that[key] !== "function")
                         that[key] = value
                 });
                 todo();

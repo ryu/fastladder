@@ -31,7 +31,7 @@ function touch_all(id){
 /* 購読停止 */
 function unsubscribe(sid,callback){
     var api = new LDR.API("/api/feed/unsubscribe");
-    callback = callback || Function.empty;
+    callback = callback || function(){};
     var info = subs_item(sid);
     var tmpl = "Are you sure to remove [[title]] from your subscription?";  // 'Are you sure to remove [[title]] from your subscription?'
     var tmpl2 = "Are you sure to unsubscribe this feed?"; // 'Are you sure to unsubscribe this feed?'
@@ -182,7 +182,7 @@ function get_active_item(detail){
             item_id : item_id,
             element : element
         };
-        Object.extend(info, get_item_info(item_id));
+        Object.assign(info, get_item_info(item_id));
         return info;
     } else {
         return offset;
@@ -383,7 +383,7 @@ var Control = {
         var tmpl = Template.get("menu_item").compile();
         var write_menu = function(){
             menu.clear();
-            foreach(menus,function(v,i){
+            menus.forEach(function(v,i){
                 v == '-----'
                     ? menu.add(sep)
                     : menu.add(tmpl(v));
@@ -439,7 +439,7 @@ var Control = {
                 ' rel="Control:pin_list();FlatMenu.hide()">',
                 'List view', ' (', app.pin.pins.length, ' items', ')</span>'
             ].join(""));
-            foreach(app.pin.pins,function(v,i){
+            app.pin.pins.forEach(function(v,i){
                 if(i > view_num){
                     return;
                 }
@@ -473,7 +473,7 @@ var Control = {
     compact: function(){
         var o = get_active_item();
         toggleClass("right_body", "compact");
-        if(contain(_$("right_body").className, "compact")){
+        if(_$("right_body").className.includes("compact")){
             message("expanded items / press c to collapse")
         } else {
             message("collapsed items / press c to expand")
@@ -602,7 +602,7 @@ var Control = {
                 folder_name : 'Uncategolized',
                 move_to : ""
             }));
-            foreach(folder.names,function(v){
+            folder.names.forEach(function(v){
                 var checked = subs_item(app.state.now_reading).folder == v ? "checked" : "";
                 var item = tmpl({folder_name : (""+v).ry(8,"..."),  move_to : v, checked : checked});
                 menu.add(item);
@@ -627,7 +627,7 @@ var Control = {
         var menu = FlatMenu.create_on(this);
         var tmpl = Template.get("viewmode_item").compile();
         var modes  = LDR.VARS.ViewModes;
-        foreach(modes,function(v,i){
+        modes.forEach(function(v,i){
             var item = tmpl({
                 label : GLOBAL.viewModes[v],
                 mode  : v,
@@ -652,7 +652,7 @@ var Control = {
             "subscribers_count",
             "subscribers_count:reverse"
         ];
-        foreach(modes,function(v,i){
+        modes.forEach(function(v,i){
             var item = tmpl({
                 label : GLOBAL.sortModes[v],
                 mode  : v,
@@ -1030,7 +1030,7 @@ function feed_discover(url){
 }
 function feed_subscribe(feedlink,callback){
     var api = new LDR.API("/api/feed/subscribe");
-    callback = callback || Function.empty;
+    callback = callback || function(){};
     api.post({feedlink:feedlink},function(res){
         message("Subscription completed");
         callback(res);
@@ -1041,7 +1041,7 @@ function feed_subscribe(feedlink,callback){
 }
 function feed_unsubscribe(sid, callback){
     var api = new LDR.API("/api/feed/unsubscribe");
-    callback = callback || Function.empty;
+    callback = callback || function(){};
     api.post({subscribe_id:sid},function(res){
         message("購読停止しました");
         callback(res);

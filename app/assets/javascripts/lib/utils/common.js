@@ -84,16 +84,16 @@ _$.cacheable = {};
 var _ = {};
 $N = function (name, attr, childs) {
 	var ret = document.createElement(name);
-	for (k in attr) {
+	for (var k in attr) {
 		if (!attr.hasOwnProperty(k)) continue;
-		v = attr[k];
+		var v = attr[k];
 		(k == "class") ? (ret.className = v) :
 		(k == "style") ? setStyle(ret,v) : ret.setAttribute(k, v);
 	}
 	var t = typeof clilds;
-	(isString(childs))? ret.appendChild(document.createTextNode(childs)) :
-	(isArray(childs)) ? foreach(childs,function(child){
-		isString(child)
+	(typeof childs === "string")? ret.appendChild(document.createTextNode(childs)) :
+	(Array.isArray(childs)) ? childs.forEach(function(child){
+		typeof child === "string"
 			? ret.appendChild(document.createTextNode(child))
 			: ret.appendChild(child);
 		})
@@ -102,20 +102,9 @@ $N = function (name, attr, childs) {
 };
 function $DF(){
 	var df = document.createDocumentFragment();
-		foreach(arguments,function(f){ df.appendChild(f) });
+		Array.from(arguments).forEach(function(f){ df.appendChild(f) });
 	return df;
 }
-function reserveName(name){
-	var root = this;
-	var ns = name.split(".");
-	for(var i=0;i<ns.length;i++){
-		var current = ns[i];
-		if(!root[current]) root[current] = {};
-		root = root[current]
-	}
-}
-function True(){return true}
-function False(){return false}
 
 function BrowserDetect(){
 	var ua = navigator.userAgent;
@@ -133,78 +122,11 @@ function BrowserDetect(){
 }
 
 
-Function.prototype.cut = function() {
-	var func = this;
-	var template = Array.from(arguments);
-	return function() {
-		var args = Array.from(arguments);
-		return func.apply(null, template.map(function(arg) {
-			return arg == _ ? args.shift() : arg;
-		}));
-	}
-};
-Function.prototype.o = function(a) {
-	var f = this;
-	return function() {
-		return f(a.apply(null, arguments));
-	}
-};
 
 
-function extend(self,other){
-	for(var i in other){
-		self[i] = other[i]
-	}
-	return self;
-}
-function base(obj){
-	function f(){return this};
-	f.prototype = obj;
-	return new f;
-}
 function clone(obj){
-	var o = {};
-	for(var i in obj){
-		o[i] = obj[i]
-	};
-	return o
+	return Object.assign({}, obj);
 }
-function keys(hash){
-	var tmp = [];
-	for(var key in hash){
-		tmp.push(key)
-	}
-	return tmp;
-}
-function each(obj,callback){
-	for(var i in obj){
-		callback(obj[i],i)
-	}
-}
-
-function foreach(a,f){
-	var c = 0;
-	var len = a.length;
-	var i = len % 8;
-	if (i>0) do {
-		f(a[c],c++,a);
-	} while (--i);
-	i = parseInt(len >> 3);
-	if (i>0) do {
-		f(a[c],c++,a);f(a[c],c++,a);
-		f(a[c],c++,a);f(a[c],c++,a);
-		f(a[c],c++,a);f(a[c],c++,a);
-		f(a[c],c++,a);f(a[c],c++,a);
-	} while (--i);
-};
-/*
-function foreach(array,callback){
-	var len = array.length;
-	for(var i=0;i<len;i++){
-		callback(array[i],i,array)
-	}
-}
-*/
 /* Perlのjoin、中の配列も含めて同じルールでjoinする  */
 function join(){
 	var args = Array.from(arguments);
@@ -218,61 +140,20 @@ function join(){
 
 /*  */
 
-function Arg(n){
-	return function(){ return arguments[n] }
-}
-function This(){
-	return function(){ return this }
-}
-// 関数の結果に対してsend
-Function.prototype.send = function(method,args){
-	var self = this;
-	return function(){
-		return send(self.apply(this,arguments),method,args)
-	}
-};
 function send(self,method,args){
-	if(isFunction(self[method]))
+	if(typeof self[method] === "function")
 		return self[method].apply(self,args);
-	else if(isFunction(self.method_missing))
+	else if(typeof self.method_missing === "function")
 		return self.method_missing(method,args)
 	else
 		return null
 }
-// methodに別名を付ける
-function alias(method){
-	return function(){
-		return this[method].apply(this,arguments)
-	}
-}
 
-/*
- transform functions
-*/
 function sender(method){
 	var args = Array.from(arguments).slice(1);
 	return function(self){
 		var ex_args = Array.from(arguments);
 		return send(self,method,args.concat(ex_args))
-	}
-}
-// thisに対してmethodを呼び出す関数を生成する
-// methodは文字列もしくは関数
-/*
- invoker(arg(1),)
-*/
-function invoker(method){
-	var args = Array.from(arguments).slice(1);
-	if(isFunction(method)){
-		return function(){
-			var ex_args = Array.from(arguments);
-			return method.apply(this,args.concat(ex_args))
-		}
-	} else {
-		return function(){
-			var ex_args = Array.from(arguments);
-			return send(this,method,args.concat(ex_args))
-		}
 	}
 }
 /*
@@ -293,58 +174,17 @@ function getter(attr){
 /*
  extend buildin object
 */
-foreach("String,Number,Array,Function".split(","),function(c){
+"String,Number,Array".split(",").forEach(function(c){
 	var klass = GLOBAL[c];
-	klass.isClass = true;
 	klass.extend = function(other){
-		return extend(klass.prototype,other);
+		return Object.assign(klass.prototype, other);
 	}
-	klass.prototype["is"+c] = true
 })
-Object.extend = extend;
 /*
   and more extra methods
 */
 
-Array.prototype.min = function(cmp){return (cmp?this.sort(cmp):this.sort()).first()}
-Array.prototype.max = function(cmp){return (cmp?this.sort(cmp):this.sort()).last()}
-Array.prototype.compact = function(){
-	return this.remove("");
-}
-
 Array.extend({
-	isArray : true,
-	clone : function(){ return this.concat() },
-	clear : function(){ this.length = 0; return this },
-	delete_at : function(pos){
-		return this.splice(pos,1);
-	},
-	first : function(size){
-		return (size == undefined) ? this[0] : this.slice(0,size)
-	},
-	last : function(size){
-		return (size == undefined) ? this[this.length-1] : this.slice(this.length-size)
-	},
-	select : alias("filter"),
-	remove : function(to_remove){
-		return this.select(function(val){return val != to_remove ? true : false});
-	},
-	compact : invoke("remove",""),
-	// 重複をなくす、破壊的
-	uniq : function(){
-		var tmp = {};
-		var len = this.length;
-		for(var i=0;i<this.length;i++){
-			if(tmp.hasOwnProperty(this[i])){
-				this.splice(i,1);
-				if(this.length == i){break}
-				i--;
-			}else{
-				tmp[this[i]] = true;
-			}
-		}
-		return this;
-	},
 	// 各要素にメソッドを送る
 	invoke : function(){
 		var args = Array.from(arguments);
@@ -363,32 +203,6 @@ Array.extend({
 		return [trues, falses];
 	}
 });
-
-/*
- detect
-*/
-function isString(obj){
-	return (typeof obj == "string" || obj instanceof String) ? true : false
-}
-function isNumber(obj){
-	return (typeof obj == "number" || obj instanceof Number) ? true : false;
-}
-function isElement(obj){
-	return obj.nodeType ? true : false;
-}
-function isFunction(obj){
-	return typeof obj == "function";
-}
-function isArray(obj){
-	return obj instanceof Array;
-}
-function isRegExp(obj){
-	return obj instanceof RegExp
-}
-function isDate(obj){
-	return obj instanceof Date
-}
-
 
 /* Accessor */
 function Accessor(){
@@ -419,9 +233,9 @@ class Cookie {
 		this._options = "name,value,expires,path,domain,secure".split(",");
 		this._mk_accessors(this._options);
 		this.expires.setter = function(value){
-			if(isDate(value)){
+			if(value instanceof Date){
 				value = this.expires.toString();
-			} else if(isNumber(value)){
+			} else if(typeof value === "number"){
 				value = new Date(new Date() - 0 + value).toString();
 			}
 			return value
@@ -471,9 +285,9 @@ class Cookie {
 }
 Cookie.default_expire = 60*60*24*365*1000;
 function setCookie(name,value,expires,path,domain,secure){
-	if(isDate(expires)){
+	if(expires instanceof Date){
 		expire_str = "expires="+expires.toString();
-	} else if(isNumber(expires)){
+	} else if(typeof expires === "number"){
 		expire_str = "expires="+new Date(new Date() - 0 + expire).toString();
 	} else {
 		expire_str = "expires="+new Date(new Date() - 0 + Cookie.default_expire).toString();
@@ -493,13 +307,6 @@ function getCookie(key){
 }
 
 
-/* Array */
-Array.extend({
-	collect : alias("map"),
-	reduce : function(callback){
-		return this.map(callback).join("")
-	}
-});
 /* Number */
 Number.extend({
 	zerofill : function(len){
@@ -509,57 +316,6 @@ Number.extend({
 		return n;
 	}
 });
-/* Function */
-Function.extend({
-	applied : function(thisObj,args){
-		var self = this;
-		return function(){
-			return self.apply(thisObj,args)
-		}
-	},
-	bindThis : function(thisObj){
-		var self = this;
-		return function(){
-			return self.apply(thisObj,arguments)
-		}
-	},
-	bind : alias("bindThis"),
-	// 引数をsliceする
-	slicer : function(to,end){
-		var self = this;
-		return function(){
-			var sliced = Array.from(arguments).slice(to,end);
-			return self.apply(this,sliced);
-		}
-	}
-});
-
-
-function loadRaw(url){
-	var req = new XMLHttpRequest;
-	var res;
-	req.open("GET",url,false);
-	req.onload = function(){
-		res = req.responseText;
-	};
-	req.send(null);
-	return res;
-}
-function loadJson(url,callback){
-	if(dev){
-		if(!dummy[url]){return}
-		var json = dummy[url].isString ? eval("("+dummy[url]+")") : dummy[url];
-		callback(json);
-		return;
-	}
-	var req = new XMLHttpRequest;
-	req.open("GET",url,true);
-	req.onload = function(){
-		eval("var json ="+req.responseText);
-		callback(json)
-	};
-	req.send(null)
-}
 
 /*
  className
@@ -588,15 +344,6 @@ function toggleClass(element, classname){
 	element = _$(element);
 	element.classList.toggle(classname);
 }
-/* 文字列が含まれているかの判別 */
-function contain(self,other){
-	if(isString(self) && isString(other)){
-		return self.indexOf(other) != -1
-	}
-	if(isRegExp(other)){
-		return other.test(self)
-	}
-}
 
 
 /* Form */
@@ -605,7 +352,7 @@ var Form = {};
 Form.toJson = function(form){
 	var json = {};
 	var len = form.elements.length;
-	foreach(form.elements, function(el){
+	Array.from(form.elements).forEach(function(el){
 		if(!el.name) return;
 		var value = Form.getValue(el);
 		if(value != null){
@@ -626,7 +373,7 @@ Form.getValue = function(el){
 // formを埋める
 Form.fill = function(form,json){
 	form = _$(form);
-	foreach(form.elements, function(el){
+	Array.from(form.elements).forEach(function(el){
 		var name = el.name;
 		var value = json[name];
 		if(!name || value == null) return;
@@ -643,7 +390,7 @@ Form.setValue = function(el, value){
 
 }
 
-Object.extend(Form,{
+Object.assign(Form,{
 	disable: function(el){
 		_$(el).disabled = "disabled";
 	},
@@ -654,13 +401,13 @@ Object.extend(Form,{
 		el = _$(el);
 		Form.disable(el);
 		var child = el.getElementsByTagName("*");
-		foreach(child, Form.disable);
+		Array.from(child).forEach(Form.disable);
 	},
 	enable_all: function(el){
 		el = _$(el);
 		Form.enable(el);
 		var child = el.getElementsByTagName("*");
-		foreach(child, Form.enable);
+		Array.from(child).forEach(Form.enable);
 	}
 });
 
@@ -746,50 +493,31 @@ String.unescapeRules = [
 	[/&amp;/g, "&"]
 ];
 String.extend({
-	repeat : function(num){
-		var buf = [];
-		for(var i=0;i<num;buf[i++]=this);
-		return buf.join("");
-	},
 	mreplace : function(rule){
 		var tmp = ""+this;
-		foreach(rule,function(v){
+		rule.forEach(function(v){
 			tmp = tmp.replace(v[0],v[1])
 		});
 		return tmp;
 	},
-	escapeHTML : invoker("mreplace",String.escapeRules),
-	unescapeHTML : invoker("mreplace",String.unescapeRules),
+	escapeHTML : function(){ return this.mreplace(String.escapeRules) },
+	unescapeHTML : function(){ return this.mreplace(String.unescapeRules) },
 	ry : function(max,str){
 		if(this.length <= max) return this;
 		var tmp = this.split("");
 		return [].concat(this.slice(0,max/2),str,this.slice(-max/2)).join("")
 	},
-	camelize : invoker("replace",/-([a-z])/g, Arg(1).send("toUpperCase"))
+	camelize : function(){ return this.replace(/-([a-z])/g, function(m, c){ return c.toUpperCase() }) }
 });
 
-/* Math */
-Math.rand = function(num){return Math.random() * num};
 
-
-
-function inspect(obj){
-	return keys(obj).map(function(key){
-		return key +" = "+obj[key] + "\n";
-	})
-}
-Object.hasMethod = function(object,method){
-	if(object && typeof object[method] == "function")
-		return  true;
-	else
-		return false;
-};
 
 Object.toQuery = function(self){
 	var buf = [];
 	for(var key in self){
+		if(!self.hasOwnProperty(key)) continue;
 		var value = self[key];
-		if(isFunction(value)) continue;
+		if(typeof value === "function") continue;
 		buf.push(
 			encodeURIComponent(key)+"="+
 			encodeURIComponent(value)
@@ -938,7 +666,7 @@ var Position = {
   },
 
   clone: function(source, target) {
-    var options = Object.extend({
+    var options = Object.assign({
       setLeft:    true,
       setTop:     true,
       setWidth:   true,
@@ -1058,11 +786,12 @@ function parseCSS(text){
 function setStyle(element,style){
 	element = _$(element);
 	var es = element.style;
-	if(isString(style)){
+	if(typeof style === "string"){
 		es.cssText ? (es.cssText = style) : setStyle(element,parseCSS(style));
 	} else {
 		// objectの場合
-		each(style,function(value,key){
+		Object.entries(style).forEach(function(entry){
+			var key = entry[0], value = entry[1];
 			if(setStyle.hack.hasOwnProperty(key)){
 				var tmp = setStyle.hack[key](key,value);
 				key = tmp[0],value = tmp[1]
@@ -1110,94 +839,6 @@ function getStyle(o,s){
 */
 
 
-Object.extend(Function.prototype,{
-	/* TIMERS */
-	_timeouts : [],
-	_interals : [],
-	do_later  : function(ms){
-		this._intervals.push(setTimeout(this,ms));
-		return this;
-	},
-	bg : function(ms){
-		this._intervals.push(setInterval(this,ms));
-		return this;
-	},
-	kill : function(){
-		this._timeouts.forEach(function(pid){
-			clearTimeout(pid)
-		});
-		this._intervals.forEach(function(pid){
-			clearInterval(pid)
-		})
-	},
-	/* TASK */
-	observers : [],
-	complete  : function(result){
-		this.result_code = result;
-		this.observers.invoke("update", this)
-	},
-	_changed  : false,
-	changed   : function(state){
-		return arguments.length ? (this._changed = state) : this._changed;
-	},
-	add_observer : function(observer){
-		this.observers.push(observer)
-		return this;
-	}
-})
-function loadConfig(){
-	var task = arguments.callee;
-	var api = new LDR.API("/api/config/load");
-	return api.post({},function(res){
-		extend(app.config,res);
-		task.complete();
-	});
-}
-function Task(tasks,callback){
-	var self = this;
-	this.tasks = tasks;
-	tasks.map(function(v){
-		return isFunction(v) ? v : send(v,"toTask")
-	}).invoke("add_observer", this);
-	if(callback){
-		this.oncomplete = callback;
-		this.exec();
-	}
-	return this;
-}
-Task.prototype = {
-	isTask : true,
-	exec : function(){
-		this.tasks.invoke("call",null);
-	},
-	update : function(f){
-		send(this,"onprogress");
-
-	}
-}
-
-Array.prototype.toTask = function(){
-	return new Task(this);
-}
-
-/*
- super
-*/
-/*
- parent
-  this.parent.update();
-  this.parent.parent.update();
-   -> parent(this,"update")
-*/
-/*
-function parent(obj, method, args){
-	var p = obj.parent;
-	while(p){
-		send(p,method,args);
-		p = obj.parent;
-	}
-}
-*/
 
 /*
  invoke 別のクラスに処理を伝播させる
@@ -1211,52 +852,6 @@ function invoke(obj, method, args){
 		}
 	}
 	return false;
-}
-/*
- next たらいまわしにする。
-  this.parent.childs
-   next(this, "initialize");
-
-*/
-function next(obj, method, args){
-	obj.parent.childs.invoke(method,args)
-}
-
-function childOf(element, ancestor){
-	element = _$(element), ancestor = _$(ancestor);
-    while (element = element.parentNode)
-      if (element == ancestor) return true;
-    return false;
-}
-function _$ref(element){
-}
-String.prototype.op = function(){
-	return new Function("a,b","return a"+this+"b");
-}
-
-
-// regexp merger
-// 正規表現を複数行にわたって記述できるようにします。
-
-RegExp.prototype.get_body = function(){
-	var str = this.toString();
-	return str.slice(1,str.lastIndexOf("/"));
-};
-RegExp.prototype.get_flags = function(){
-		return [
-			this.ignoreCase ? "i":"",
-			this.global     ? "g":"",
-			this.multiline  ? "m":""
-		].join("");
-};
-RegExp.concat = function(){
-	var args = Array.from(arguments);
-	var buf = [];
-	args.forEach(function(reg){
-		buf.push(reg.get_body());
-	});
-	var flag = args[args.length-1].get_flags();
-	return new RegExp(buf.join(""), flag);
 }
 
 Function.prototype.forEachArgs = function(callback){
@@ -1293,14 +888,14 @@ function MakeUpdater(label){
 	var update  = (label?label+"_":"") + "update";
 	function get_func(label){
 		return(
-			isFunction(hash["_"+label])
+			typeof hash["_"+label] === "function"
 			 ? hash["_" + label]
 			 : function(){}
 		);
 	}
 	var u = GLOBAL[update] = function(label){
-		if(isRegExp(label)){
-			keys(hash).filter(function(l){
+		if(label instanceof RegExp){
+			Object.keys(hash).filter(function(l){
 				l = l.slice(1);
 				return label.test(l)
 			}).forEach(function(label){

@@ -14,7 +14,7 @@
         exec(){
             var args = arguments;
             this.callbacks.forEach(function(f){
-                isFunction(f) && f.apply(null,args)
+                typeof f === "function" && f.apply(null,args)
             })
         }
         clear(){

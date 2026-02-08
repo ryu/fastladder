@@ -10,10 +10,10 @@ class API {
 		var onload = onload || this.onload;
 		var oncomplete = this.onComplete;
 		if(typeof onload != "function"){
-			onload = Function.empty;
+			onload = function(){};
 		}
 		var req = this.req;
-		Object.extend(param, LDR.API.StickyQuery);
+		Object.assign(param, LDR.API.StickyQuery);
 		var postdata = Object.toQuery(param);
 		this.req.open("POST",this.ap,true);
 		this.req.setRequestHeader(
@@ -50,10 +50,10 @@ class API {
 		var onload = onload || this.onload;
 		var oncomplete = this.onComplete;
 		if(typeof onload != "function"){
-			onload = Function.empty;
+			onload = function(){};
 		}
 		var req = this.req;
-		Object.extend(param, LDR.API.StickyQuery);
+		Object.assign(param, LDR.API.StickyQuery);
 		var postdata = Object.toQuery(param);
 		this.req.open("GET",this.ap + "?" + postdata,true);
 		this.req.onload = function(){
@@ -84,7 +84,8 @@ class API {
 LDR.API = API;
 LDR.API.last_response = "";
 LDR.API.registerCallback = function(options){
-	each(options,function(value,key){
+	Object.entries(options).forEach(function(entry){
+		var key = entry[0], value = entry[1];
 		LDR.API.prototype["on"+key] = value;
 	})
 };
@@ -107,8 +108,8 @@ ScriptLoader.prototype = {
 		};
 		ScriptLoader.connection_count++;
 		var p = {};
-		Object.extend(p, this.pre_params);
-		Object.extend(p, param);
+		Object.assign(p, this.pre_params);
+		Object.assign(p, param);
 		if(!p.callback){
 			p["callback"] = "ScriptLoader.callback._" + this.count;
 		}
@@ -123,7 +124,7 @@ ScriptLoader.prototype = {
 		var buf = [];
 		for(var key in self){
 			var value = self[key];
-			if(isFunction(value)) continue;
+			if(typeof value === "function") continue;
 			buf.push(
 				encodeURIComponent(key)+"="+
 				encodeURIComponent(value)

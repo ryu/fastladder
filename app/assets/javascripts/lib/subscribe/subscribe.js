@@ -424,7 +424,7 @@ function round_corner(el){
 			width:"5px",height:"5px",fontSize:"1px",
 			backgroundRepeat:"no-repeat"
 		};
-		return Object.extend(base, o);
+		return Object.assign(base, o);
 	}
 	function create_corner(style){
 		return $N("SPAN", {style:dot_style(style)});
@@ -467,7 +467,7 @@ function Pipe(label){
 	Pipe["_" + label] = q;
 	var f = function(arg){
 		var result = arg;
-		foreach(q,function(v,i){
+		q.forEach(function(v,i){
 			result = v(result)
 		})
 		return result;
@@ -484,12 +484,12 @@ function ajaxize(element, callback){
 	var method = element.method;
 	var action = element.getAttribute("action");
 	// ひとつの場合は完了時処理
-	if(isFunction(callback)){
+	if(typeof callback === "function"){
 		var before = True;
 		var after  = callback
 	} else {
 		var before = callback.before || True;
-		var after  = callback.after  || Function.empty;
+		var after  = callback.after  || function(){};
 	}
 	var onsubmit = function(e){
 		if(e) Event.stop(e);

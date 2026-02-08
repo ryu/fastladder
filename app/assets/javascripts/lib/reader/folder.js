@@ -41,7 +41,7 @@ class TreeView {
         }
         this.state = 0;
         this.printed = 0;
-        this.generator = value.isFunction ? value: function(){return value};
+        this.generator = typeof value === "function" ? value: function(){return value};
         this.label_text = name;
 
         this.element = $N("div",{

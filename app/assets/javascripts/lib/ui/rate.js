@@ -4,7 +4,7 @@
 (function(){
     class Rate {
         constructor(callback) {
-            Object.extend(this, Rate);
+            Object.assign(this, Rate);
             this.click = callback;
         }
     }

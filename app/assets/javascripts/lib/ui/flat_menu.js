@@ -56,7 +56,8 @@
         }
         setEvent(obj) {
             var el = this.element;
-            each(obj,function(fn,type){
+            Object.entries(obj).forEach(function(entry){
+                var type = entry[0], fn = entry[1];
                 Event.observe(el, type, fn)
             })
         }
@@ -75,7 +76,7 @@
                 DOM.remove(this.element);
                 this.visible = false;
             }
-            if(isFunction(this.onhide)){
+            if(typeof this.onhide === "function"){
                 var onhide = this.onhide;
                 this.onhide = null;
                 onhide();
@@ -96,8 +97,8 @@
     class Slider {
         constructor(id,config) {
             var self = this;
-            var op = extend({},Slider.default_config);
-            this.config = extend(op,config);
+            var op = Object.assign({},Slider.default_config);
+            this.config = Object.assign(op,config);
             this.observers = [];
             this.base   = _$(id);
             this.bar    = $N("DIV",{"class":"slider-bar"});

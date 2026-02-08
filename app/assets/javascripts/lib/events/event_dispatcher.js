@@ -111,7 +111,7 @@ class Trigger {
 	destroy(){}
 	add(trigger, callback){
 		var expression;
-		if(isString(trigger)){
+		if(typeof trigger === "string"){
 			expression = cssTester(trigger);
 		} else {
 			expression = trigger;
@@ -122,8 +122,8 @@ class Trigger {
 		return this
 	}
 	remove(trigger){
-		this.event_list = this.event_list.reject(function(pair){
-			return pair[0] == trigger;
+		this.event_list = this.event_list.filter(function(pair){
+			return pair[0] != trigger;
 		});
 		return this;
 	}

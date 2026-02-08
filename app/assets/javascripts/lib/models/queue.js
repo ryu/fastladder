@@ -19,7 +19,7 @@
 				var count = 0;
 				while(count < step){
 					var f = queue.shift();
-					isFunction(f) && f();
+					typeof f === "function" && f();
 					count++;
 				}
 				if(queue.length){

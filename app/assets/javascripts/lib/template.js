@@ -32,12 +32,12 @@ Template.prototype = {
 	},
 	add_filter: function(expr,filter){
 		this.use_filter = true;
-		if(expr.isString){
+		if(typeof expr === "string"){
 			var f = this.filter_for_param;
 			f[expr] ? f[expr].push(filter) : (f[expr] = [filter]);
 			return;
 		}
-		if(expr.isFunction){
+		if(typeof expr === "function"){
 			var f = function(value){return filter(value)};
 			f.gate = expr;
 			this.filters.push(f)
@@ -45,7 +45,8 @@ Template.prototype = {
 	},
 	add_filters : function(o){
 		var self = this;
-		each(o,function(value,key){
+		Object.entries(o).forEach(function(entry){
+			var key = entry[0], value = entry[1];
 			self.add_filter(key,value)
 		});
 	},
@@ -84,7 +85,7 @@ Template.prototype = {
 			var args = Array.from(arguments);
 			self.stash.params = {};
 			args.forEach(function(p){
-				extend(self.stash.params,p)
+				Object.assign(self.stash.params,p)
 			});
 			return buf.join("")
 		};
@@ -117,7 +118,7 @@ Template.prototype = {
 				n.toString = function(){
 					var expr = stash.params[key];
 					var res = (expr != null) ?
-						(expr.isFunction)
+						(typeof expr === "function")
 							? "" + expr()
 							: "" + self.filtered(key)
 							: "";

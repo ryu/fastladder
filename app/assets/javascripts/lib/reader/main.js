@@ -33,7 +33,8 @@ var browser = new BrowserDetect;
 // 記事を読み込む順番
 
 function typecast_config(obj){
-	each(obj, function(value,key){
+	Object.entries(obj).forEach(function(entry){
+		var key = entry[0], value = entry[1];
 		if(!LDR.TypeofConfig[key]) return;
 		// "0" を falseに。
 		switch(LDR.TypeofConfig[key]){
@@ -72,9 +73,9 @@ function TabClick(e){
 	var target = get_target(tab)[1];
 	Element.show(target);
 	TabManager[base] = target;
-	foreach(_$(base).getElementsByTagName("*"), function(el){
+	Array.from(_$(base).getElementsByTagName("*")).forEach(function(el){
 		var cl = el.className;
-		if(!contain(cl,"tab") || !el.getAttribute("rel")) return;
+		if(!cl.includes("tab") || !el.getAttribute("rel")) return;
 		if(el == tab){
 			switchClass(el,"tab-active");
 		} else {
@@ -488,7 +489,7 @@ class SubscribeView {
 		this.element = _$(element);
 	}
 	print(v){
-		isElement(v)
+		v.nodeType
 			?  this.element.appendChild(v)
 			: (this.element.innerHTML = v)
 	}
@@ -628,7 +629,7 @@ class SubscribeController {
 	}
 	add_filter(q){
 		var filter = function(item){
-			return contain(item.title,q)
+			return item.title.includes(q)
 		};
 		this.filter = function(model){
 			return model.filter(filter)
@@ -670,7 +671,7 @@ class SubscribeController {
 		}
 		var domlist = this.view.element.getElementsByTagName("span");
 		Ordered.list = [];
-		foreach(domlist,function(el){
+		Array.from(domlist).forEach(function(el){
 			var sid = el.getAttribute("subscribe_id");
 			sid && Ordered.list.push(sid)
 		});
@@ -814,7 +815,7 @@ var LoadEffect = {
 		var L = LoadEffect;
 		var path = L.ICON_PATH;
 		if(L.LOADICON_NUM > 1){
-			var n = 1 + Math.floor(Math.rand(L.LOADICON_NUM));
+			var n = 1 + Math.floor(Math.random() * L.LOADICON_NUM);
 			path += "loading" + n + ".gif";
 		} else {
 			path += "loading.gif";
@@ -826,7 +827,7 @@ var LoadEffect = {
 		var L = LoadEffect;
 		var path = L.ICON_PATH;
 		if(L.RESTICON_NUM > 1){
-			var n = 1 + Math.floor(Math.rand(L.RESTICON_NUM));
+			var n = 1 + Math.floor(Math.random() * L.RESTICON_NUM);
 			path += "rest" + n + ".gif";
 		} else {
 			path += "rest.gif";
@@ -864,7 +865,7 @@ function init_config(){
 			after: function(res,req){
 				message("Your settings have been saved");
 				typecast_config(req);
-				Object.extend(app.config, req);
+				Object.assign(app.config, req);
 			}
 		});
 		TabClick.call(_$("tab_config_basic"));
@@ -1041,7 +1042,7 @@ function set_focus(id){
 function QueryCSS(){}
 QueryCSS.findParent = function(rule,element){
 	elememt = _$(element);
-	if(!isFunction(rule)){
+	if(typeof rule !== "function"){
 		rule = rule.isQueryCSS ? rule : new QueryCSS(rule).match;
 	}
 	var current = element;
@@ -1151,8 +1152,8 @@ class LDRWidgets {
 		})
 	}
 	remove(name){
-		this.widgets = this.widgets.reject(function(v){
-			return v.name == name
+		this.widgets = this.widgets.filter(function(v){
+			return v.name != name
 		})
 	}
 	process(){
@@ -1174,7 +1175,7 @@ var channel_widgets = new LDRWidgets;
 
 function fix_linktarget(el){
 	el = el || _$(print_feed.target);
-	foreach(el.getElementsByTagName("a"),
+	Array.from(el.getElementsByTagName("a")).forEach(
 		function(a){
 			a.target != "_self" && (a.target = base_target)
 		}

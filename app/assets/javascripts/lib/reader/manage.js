@@ -54,7 +54,7 @@ updater("manage_select",function(){
 class Selector {
 	constructor(){
 		var self = this;
-		Object.extend(this,{
+		Object.assign(this,{
 			mousedown : function(event){self.onmousedown.call(self,this,event)},
 			mouseover : function(event){self.onmouseover.call(self,this,event)},
 			mouseout : function(event){self.onmouseout.call(self,this,event)}
@@ -105,8 +105,8 @@ class Cart {
 		if(!this.has(key)) return false;
 		delete this.hash["item_" + key];
 		var idx = this.keys.indexOf(key);
-		this.keys.delete_at(idx);
-		this.values.delete_at(idx);
+		this.keys.splice(idx, 1);
+		this.values.splice(idx, 1);
 		return this;
 	}
 	get(key){
@@ -193,7 +193,7 @@ Manage.Item = {
 			return;
 		}
 		MI.filtered = MI.data.filter(function(item){
-			return contain(item.title,q)
+			return item.title.includes(q)
 		});
 		MI.update()
 	},
@@ -221,7 +221,7 @@ Manage.Item = {
 	select_all: function(){
 		var data = this.get_items();
 		var cart = TRSelector.cart;
-		foreach(data.list, function(item){
+		data.list.forEach(function(item){
 			var sid = item.subscribe_id;
 			cart.add(sid)
 		});
@@ -243,7 +243,7 @@ Manage.Item = {
 	reverse_select : function(){
 		var data = this.get_items();
 		var cart = TRSelector.cart;
-		foreach(data.list,function(item){
+		data.list.forEach(function(item){
 			var sid = item.subscribe_id;
 			if(cart.has(sid)){
 				cart.remove(sid)
@@ -281,7 +281,7 @@ Manage.Item = {
 		var to  = Form.getValue(sel);
 		var ids = TRSelector.get_selected();
 		move_to(ids.join(","),to);
-		foreach(ids,function(sid){
+		ids.forEach(function(sid){
 			var item = subs_item(sid);
 			if(item) item.folder = to;
 		});
@@ -293,7 +293,7 @@ Manage.Item = {
 		if(!ids.length) return;
 		var turn = 0;
 		var sids = [];
-		foreach(ids,function(sid,n){
+		ids.forEach(function(sid,n){
 			var item =  subs_item(sid);
 			if(!item) return;
 			if(n==0){turn = item.ignore_notify ? 0 : 1}
@@ -318,7 +318,7 @@ Manage.Item = {
 		var c = confirm(tmpl_confirm.fill({count: l}));
 		if(!c) return;
 		TRSelector.clear();
-		foreach(ids,function(sid,n){
+		ids.forEach(function(sid,n){
 			var api = new LDR.API("/api/feed/unsubscribe");
 			api.post({subscribe_id:sid},function(){
 				l--;
@@ -335,7 +335,7 @@ Manage.Item = {
 
 	touch: function(){
 		var ids = TRSelector.get_selected();
-		foreach(ids,function(sid){
+		ids.forEach(function(sid){
 			var item = subs_item(sid);
 			if(!item) return;
 			if(item.unread_count > 0){

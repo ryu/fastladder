@@ -25,7 +25,7 @@ var round_corner_init;
 				border: "0px solid #000",
 				backgroundRepeat:"no-repeat"
 			};
-			return Object.extend(base, o);
+			return Object.assign(base, o);
 		}
 		function create_corner(style){
 			return $N("SPAN", {style:dot_style(style)});

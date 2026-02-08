@@ -36,7 +36,7 @@ class Pin {
     remove(url){
         if(!this.has(url)) return;
         this.hash[url] = false;
-        this.pins = this.pins.select(function(v){
+        this.pins = this.pins.filter(function(v){
             return v.url != url
         })
         this.update_view();
@@ -88,8 +88,8 @@ class Pin {
         var self = this;
         var count = 0;
         var max_pin = app.config.max_pin;
-        if(!isNumber(max_pin)) max_pin = LDR.DefaultConfig.max_pin;
-        foreach(this.pins, function(p){
+        if(typeof max_pin !== "number") max_pin = LDR.DefaultConfig.max_pin;
+        this.pins.forEach(function(p){
             if(max_pin > count){
                 queue.push(function(){
                     can_popup = (window.open(p.url.unescapeHTML())) ? true : false;

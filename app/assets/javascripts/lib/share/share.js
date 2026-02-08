@@ -78,7 +78,7 @@ function setup_event(){
 }
 
 function set_query(param){
-	keys(param).forEach(function(v){
+	Object.keys(param).forEach(function(v){
 		_$("filter_" + v).value = param[v];
 	});
 	do_search();
@@ -200,7 +200,7 @@ function make_filter(){
 				});
 				var tmp = p.join("");
 				add_filter(function(s){
-					return contain(tmp, "" + s.rate)
+					return tmp.includes("" + s.rate)
 				});
 			})();
 		}
@@ -224,7 +224,7 @@ function make_filter(){
 		var str = _$("filter_string").value;
 		add_filter(function(sub){
 			var lc = str.toLowerCase();
-			return (contain(sub.title_lc, lc) || contain(sub.link_lc, lc))
+			return (sub.title_lc.includes(lc) || sub.link_lc.includes(lc))
 		});
 	}
 	return function(s){
@@ -294,7 +294,7 @@ function setup_mspace(){
 	buf.push("</select>");
 	rate_cell.innerHTML = buf.join("");
 	buf = ["<select id='filter_folder' multiple style='height:120px;width:100%' onchange='do_search()'>"];
-	var folder_names = keys(folder_count).sort(function(a,b){
+	var folder_names = Object.keys(folder_count).sort(function(a,b){
 		return folder_count[b] - folder_count[a]
 	});
 	folder_names.unshift("");

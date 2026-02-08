@@ -130,7 +130,7 @@ function extract_keyword(str){
 		"g"
 	);
 	str.replace(reg, keyword_count);
-	return keys(seen);
+	return Object.keys(seen);
 }
 
 function not_clip_user(){
@@ -297,7 +297,7 @@ function vi_exec(e){
 	var value = this.value.slice(1);
 	var args = value.split(/\s+/);
 	var cmd  = args.shift();
-	isFunction(vi[cmd]) && vi[cmd].apply(this, args);
+	typeof vi[cmd] === "function" && vi[cmd].apply(this, args);
 }
 function register_command(name,func){
 	// 短縮形
@@ -741,17 +741,17 @@ function Set(a){
 		return self;
 	};
 	self.intersection_update = function(t){
-		self.clear();
+		self.length = 0;
 		self.update(self.intersection(t))
 		return self;
 	};
 	self.difference_update = function(t){
-		self.clear();
+		self.length = 0;
 		self.update(self.difference());
 		return self;
 	}
 	self.symmetric_difference_update = function(){
-		self.clear();
+		self.length = 0;
 		self.update(self.symmetric_difference());
 		return self;
 	}

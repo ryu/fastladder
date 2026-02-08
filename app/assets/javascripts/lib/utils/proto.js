@@ -1,8 +1,6 @@
 /*
  Prototype拡張
 */
-Function.empty = function(){};
-
 /*
  String.prototype
 */
@@ -10,24 +8,11 @@ String.prototype.aroundTag = function(tag){
 	return ["<",tag,">",this,"</",tag,">"].join("")
 };
 
-/*
-String.prototype.escapeHTML = function() {
-	var div = document.createElement('div');
-	var text = document.createTextNode(this);
-	div.appendChild(text);
-	return div.innerHTML;
-};
-String.prototype.unescapeHTML = function() {
-	var div = document.createElement('div');
-	div.innerHTML = this.stripTags();
-	return div.childNodes[0] ? div.childNodes[0].nodeValue : '';
-};
-*/
 // 簡易テンプレート
 String.prototype.fill  = function(){
 	var param = {};
 	Array.from(arguments).forEach(function(o){
-		extend(param,o)
+		Object.assign(param,o)
 	})
 	return this.replace(/\[\[(.*?)\]\]/g,function($0,$1){
 		var key = $1.trim();
@@ -58,9 +43,6 @@ Number.prototype.toRelativeDate = function(){
 	return (isNaN(k)) ? "nan" : k+v+vec;
 }
 
-Array.prototype.reject = function(callback, thisObj){
-	return this.filter(callback.invert(), thisObj);
-}
 
 Array.prototype.filter_by = function(attr,value){
 	return this.filter(function(v){
@@ -81,7 +63,7 @@ Array.prototype.sum_of = function(name){
 Array.prototype.toDF = function(){
 	var nodelist = this;
 	var df = document.createDocumentFragment();
-	foreach(nodelist,function(node){
+	nodelist.forEach(function(node){
 		df.appendChild(node)
 	});
 	return df;
@@ -111,7 +93,7 @@ Array.prototype.mode = function(){
 	this.forEach(function(v,i){
 		hash[v] = hash[v] ? hash[v]+1 : 1;
 	});
-	var mode = keys(hash).sort(function(a,b){
+	var mode = Object.keys(hash).sort(function(a,b){
 		return  hash[b] - hash[a];
 	});
 	return mode[0];
@@ -172,17 +154,10 @@ Function.prototype.later = function(ms){
 	};
 };
 
-Function.prototype.invert = function(){
-	var self = this;
-	return function(){
-		var res = self.apply(this, arguments);
-		return res ? false : true;
-	}
-}
 
 Function.prototype.next = function(fn){
 	var self = this;
-	fn = isFunction(fn) ? fn : Function.empty;
+	fn = typeof fn === "function" ? fn : function(){};
 	return function(){
 		var res = self.apply(this,arguments);
 		fn();

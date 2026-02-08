@@ -20,12 +20,12 @@ function ajaxize(element, callback){
     var method = element.method;
     var action = element.getAttribute("action");
     // ひとつの場合は完了時処理
-    if(isFunction(callback)){
+    if(typeof callback === "function"){
         var before = True;
         var after  = callback
     } else {
         var before = callback.before || True;
-        var after  = callback.after  || Function.empty;
+        var after  = callback.after  || function(){};
     }
     var onsubmit = function(e){
         if(e) Event.stop(e);
@@ -46,7 +46,7 @@ ajax.filter = new Pipe;
 
 function ahah(url,el,onload){
     var uniq = new Date - 0;
-    onload = onload || Function.empty;
+    onload = onload || function(){};
     ajax(url+"?"+uniq,function(txt){
         el = _$(el);
         txt = ahah.filter(txt);
@@ -82,7 +82,7 @@ function Pipe(label){
     Pipe["_" + label] = q;
     var f = function(arg){
         var result = arg;
-        foreach(q,function(v,i){
+        q.forEach(function(v,i){
             result = v(result)
         })
         return result;
