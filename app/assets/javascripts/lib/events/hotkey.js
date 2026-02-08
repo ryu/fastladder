@@ -203,7 +203,7 @@ HotKey.prototype.invoke = function(input){
 };
 
 HotKey.prototype.get_input = function(e){
-	var el  = (e.target || e.srcElement);
+	var el  = e.target;
 	var tag = el.tagName;
 	var id  = el.id;
 	if(!this.allow.test(id) && this.ignore.test(tag)) return;

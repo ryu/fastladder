@@ -27,12 +27,10 @@ Event.stopEvent = function(e){
 	e.stopPropagation();
 };
 Event.pointerX = function(event) {
-	return event.pageX || (event.clientX +
-		(document.documentElement.scrollLeft || document.body.scrollLeft));
+	return event.pageX;
 };
 Event.pointerY = function(event){
-	return event.pageY || (event.clientY +
-		(document.documentElement.scrollTop || document.body.scrollTop));
+	return event.pageY;
 };
 Event.cancelFlag = {};
 Event.cancelNext = function(type){
@@ -92,8 +90,7 @@ Trigger.extend({
 			target = _$(target)
 		}
 		addEvent(target, this.type, function(e){
-			var e = e || window.event;
-			var element = e.target || e.srcElement;
+			var element = e.target;
 			var args = Array.prototype.slice(arguments);
 			args[0] = e;
 			if(Event.cancelFlag[e.type] == true){

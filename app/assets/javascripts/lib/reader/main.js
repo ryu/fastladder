@@ -757,7 +757,7 @@ var has_subscribe_id = has_attr("subscribe_id");
 // input要素にキーバインドを効かせる。
 // printableな場合は実行しない
 function hotkey_filter(e){
-	var el  = (e.target || e.srcElement);
+	var el  = e.target;
 	var tag = el.tagName;
 	var id  = el.id;
 	if(id == "finder"){

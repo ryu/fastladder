@@ -638,41 +638,27 @@ function loadJson(url,callback){
 */
 function hasClass(element,classname){
 	element = _$(element);
-	var cl = element.className;
-	var cls = cl.split(/\s+/);
-	return cls.indexOf(classname) != -1;
+	return element.classList.contains(classname);
 }
 function addClass(element,classname){
 	element = _$(element);
-	var cl = element.className;
-	if(!contain(cl,classname)){
-		element.className += " " + classname;
-	}
+	element.classList.add(classname);
 }
 function removeClass(element,classname){
 	element = _$(element);
-	var cl = element.className;
-	var cls = cl.split(/\s+/);
-	element.className = cls.remove(classname).join(" ");
+	element.classList.remove(classname);
 }
 function switchClass(element, classname){
 	element = _$(element);
-	var cl = element.className;
-	var tmp = classname.split("-");
-	var ns = tmp[0];
-	var cls = cl.split(/\s+/);
-	var buf = [];
-	cls.forEach(function(v){
-		if(v.indexOf(ns+"-") != 0) buf.push(v)}
-	);
-	buf.push(classname);
-	element.className = buf.join(" ");
+	var ns = classname.split("-")[0] + "-";
+	Array.from(element.classList).forEach(function(cls){
+		if(cls.indexOf(ns) === 0) element.classList.remove(cls);
+	});
+	element.classList.add(classname);
 }
 function toggleClass(element, classname){
 	element = _$(element);
-	hasClass(element, classname) ?
-		removeClass(element, classname):
-		addClass(element, classname);
+	element.classList.toggle(classname);
 }
 /* 文字列が含まれているかの判別 */
 function contain(self,other){
@@ -1174,8 +1160,6 @@ function getStyle(o,s){
 	return "";
 }
 
-var Element = {};
-Element.getStyle = getStyle;
 /*
 */
 
