@@ -5,7 +5,7 @@
 */
 
 function ajax(url, onload){
-    var x = new _XMLHttpRequest;
+    var x = new XMLHttpRequest;
     x.onload = function(){
         var res = ajax.filter(x.responseText)
         onload(res)
@@ -43,13 +43,6 @@ function ajaxize(element, callback){
 }
 
 ajax.filter = new Pipe;
-var browser = new BrowserDetect;
-if(browser.isKHTML){
-    ajax.filter.add(function(t){
-        var esc = escape(t);
-        return(esc.indexOf("%u") < 0 && esc.indexOf("%") > -1) ? decodeURIComponent(esc) : t
-    })
-}
 
 function ahah(url,el,onload){
     var uniq = new Date - 0;

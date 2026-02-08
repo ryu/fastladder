@@ -1161,25 +1161,14 @@ function setStyle(element,style){
 }
 setStyle.hack = {
 	opacity : function(key,value){
-		return (
-			(/MSIE/.test(navigator.userAgent))
-				? ["filter" , 'alpha(opacity='+value*100+')']
-				: [ key , value]
-		)
+		return [ key , value]
 	}
 }
 
 function getStyle(o,s){
 	var res;
 	try{
-		if (document.defaultView && document.defaultView.getComputedStyle){
-			res = document.defaultView.getComputedStyle(o, null).getPropertyValue(s);
-		} else {
-			if (o.currentStyle){
-				var camelized = s.replace(/-([^-])/g, function(a,b){return b.toUpperCase()});
-				res = o.currentStyle[camelized];
-			}
-		}
+		res = getComputedStyle(o, null).getPropertyValue(s);
 		return res;
 	} catch(e){}
 	return "";

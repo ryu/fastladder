@@ -53,10 +53,7 @@ function init(){
 }
 
 function setup_style(){
-	var browser = new BrowserDetect();
-	if(!browser.isIE){
-		_$("result").style.width = "100%";
-	}
+	_$("result").style.width = "100%";
 }
 
 function setup_event(){

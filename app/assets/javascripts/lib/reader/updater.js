@@ -55,7 +55,7 @@
         centering(this,0,50);
         if(!ld_check()){
             print_error("login");
-        } else if(typeof _XMLHttpRequest == "undefined"){
+        } else if(typeof XMLHttpRequest == "undefined"){
             print_error("xmlhttp");
         } else {
             print_error("busy");

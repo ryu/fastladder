@@ -21,10 +21,10 @@ Event.stop = function(e){
 	Event.stopEvent(e);
 };
 Event.stopAction = function(e){
-	e.preventDefault ? e.preventDefault() : (e.returnValue = false)
+	e.preventDefault();
 };
 Event.stopEvent = function(e){
-	e.stopPropagation ? e.stopPropagation() : (e.cancelBubble = true)
+	e.stopPropagation();
 };
 Event.pointerX = function(event) {
 	return event.pageX || (event.clientX +
@@ -42,25 +42,19 @@ Event.cancelNext = function(type){
 Event.userDefined = {
 	wheeldown: function(obj, evType, fn, useCapture){
 		var callback = function(e){
-			var count  = e.wheelDelta ? e.wheelDelta / -120 : e.detail / 3;
-			if(count > 0){
-				fn(e, count);
+			if(e.deltaY > 0){
+				fn(e, 1);
 			}
 		};
-		obj.attachEvent ?
-			addEvent(obj, 'mousewheel', callback, useCapture) : // IE
-			addEvent(obj, 'DOMMouseScroll', callback, useCapture); // firefox
+		addEvent(obj, 'wheel', callback, useCapture);
 	},
 	wheelup: function(obj, evType, fn, useCapture){
 		var callback = function(e){
-			var count  = e.wheelDelta ? e.wheelDelta / -120 : e.detail / 3;
-			if(count < 0){
-				fn(e, count);
+			if(e.deltaY < 0){
+				fn(e, -1);
 			}
 		};
-		obj.attachEvent ?
-			addEvent(obj, 'mousewheel', callback, useCapture) : // IE
-			addEvent(obj, 'DOMMouseScroll', callback, useCapture); // firefox
+		addEvent(obj, 'wheel', callback, useCapture);
 	}
 };
 
@@ -70,23 +64,15 @@ function addEvent(obj, evType, fn, useCapture){
 		return Event.userDefined[evType].apply(null, arguments);
 	}
 	Event.list.push(arguments);
-	if(obj.addEventListener){
-		obj.addEventListener(evType, fn, useCapture);
-	}else if (obj.attachEvent){
-		obj.attachEvent("on"+evType, fn);
-	}
+	obj.addEventListener(evType, fn, useCapture);
 	var args = arguments;
 	return function(){
 		removeEvent.apply(this,args);
 	}
 }
 function removeEvent(obj, evType, fn, useCapture){
-	if (obj.addEventListener){
-		obj.removeEventListener(evType, fn, useCapture);
-		return true;
-	}else if (obj.detachEvent){
-		obj.detachEvent("on"+evType, fn);
-	}
+	obj.removeEventListener(evType, fn, useCapture);
+	return true;
 }
 var Trigger = Class.create();
 Trigger.create = function(type){

@@ -414,11 +414,8 @@ function init(){
 }
 function round_corner(el){
 	el = _$(el);
-	var browser = new BrowserDetect;
-	if(browser.isFirefox){
-		setStyle(el, {"-moz-border-radius" : "5px"});
-		return;
-	}
+	setStyle(el, {"border-radius" : "5px"});
+	return;
 	var bar_style = {position:"relative",textAlign:"left"};
 	function dot_style(o){
 		var base = {
@@ -454,7 +451,7 @@ function round_corner(el){
  Ajax and Ahah
 */
 function ajax(url, onload){
-	x= new _XMLHttpRequest;
+	x= new XMLHttpRequest;
 	x.onload = function(){
 		var res = ajax.filter(x.responseText)
 		onload(res)
@@ -463,13 +460,6 @@ function ajax(url, onload){
 	x.send("");
 }
 ajax.filter = new Pipe;
-var browser = new BrowserDetect;
-if(browser.isKHTML){
-	ajax.filter.add(function(t){
-		var esc = escape(t);
-		return(esc.indexOf("%u") < 0 && esc.indexOf("%") > -1) ? decodeURIComponent(esc) : t
-	})
-}
 
 function Pipe(label){
 	var q = [];

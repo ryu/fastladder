@@ -7,7 +7,7 @@ LDR.API.extend({
 	onCreate:   function(){},
 	onComplete: function(){},
 	post: function(param,onload){
-		this.req = new _XMLHttpRequest;
+		this.req = new XMLHttpRequest;
 		var onload = onload || this.onload;
 		var oncomplete = this.onComplete;
 		if(typeof onload != "function"){
@@ -47,7 +47,7 @@ LDR.API.extend({
 		return this;
 	},
 	get: function(param,onload){
-		this.req = new _XMLHttpRequest;
+		this.req = new XMLHttpRequest;
 		var onload = onload || this.onload;
 		var oncomplete = this.onComplete;
 		if(typeof onload != "function"){

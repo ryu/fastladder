@@ -26,10 +26,6 @@
     LDR.setup_hook = function(){
         var guide_fix = function(){
             if(!hasClass("right_container","mode-guide")) return;
-            if(browser.isIE){
-                if(!_$("guiderankbody")) return;
-                _$("guiderankbody").style.width = _$("right_container").offsetWidth - 15 + "px";
-            }
         }
         register_hook('WINDOW_RESIZE', fit_screen);
         register_hook('WINDOW_RESIZE', guide_fix);

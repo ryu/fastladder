@@ -2,11 +2,7 @@ var round_corner_init;
 
 (function(){
 	function addEvent(obj, evType, fn, useCapture){
-		if(obj.addEventListener){
-			obj.addEventListener(evType, fn, useCapture);
-		}else if (obj.attachEvent){
-			obj.attachEvent("on"+evType, fn);
-		}
+		obj.addEventListener(evType, fn, useCapture);
 	}
 	function make_corner(){
 		if(document.body.className == "top") return;
@@ -19,11 +15,8 @@ var round_corner_init;
 	}
 	function round_corner(el){
 		el = _$(el);
-		var browser = new BrowserDetect;
-		if(browser.isFirefox){
-			setStyle(el, {"-moz-border-radius" : "20px"});
-			return;
-		}
+		setStyle(el, {"border-radius" : "20px"});
+		return;
 		var bar_style = {position:"relative",textAlign:"left"};
 		function dot_style(o){
 			var base = {

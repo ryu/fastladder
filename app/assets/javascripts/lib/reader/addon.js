@@ -978,10 +978,6 @@ style_updater("subs_container", function(){
 style_updater("right_container", function(){
   var border_w = 2;
   var border_h = 0;
-  if(navigator.userAgent.indexOf("MSIE 7") != -1){
-    border_w = 6;
-    border_h = 2;
-  }
   setStyle(this,{
      height : app.state.container_height - border_h + "px",
      width  : document.body.offsetWidth - app.state.leftpane_width - border_w + "px"

@@ -107,15 +107,9 @@ function getStyle(element, style){
 	element = _$(element);
 	var value = element.style[style.camelize()];
 	if (!value) {
-		if (document.defaultView && document.defaultView.getComputedStyle) {
-			var css = document.defaultView.getComputedStyle(element, null);
-			value = css ? css.getPropertyValue(style) : null;
-		} else if (element.currentStyle) {
-			value = element.currentStyle[style.camelize()];
-		}
+		var css = getComputedStyle(element, null);
+		value = css ? css.getPropertyValue(style) : null;
 	}
-	if (window.opera && ['left', 'top', 'right', 'bottom'].include(style))
-		if (getStyle(element, 'position') == 'static') value = 'auto';
 	return value == 'auto' ? null : value;
 }
 
@@ -1176,9 +1170,8 @@ window.stop = window.stop || function(){
 	document.execCommand("Stop")
 };
 
-// delete _XMLHttpRequest;
 function check_xmlhttp(){
-	if(typeof _XMLHttpRequest == "undefined"){
+	if(typeof XMLHttpRequest == "undefined"){
 		update("error_window");
 		window.onload = null;
 	}
