@@ -308,7 +308,9 @@ Modernized mobile view viewport meta tags from fixed-width to responsive, improv
 | Mobile view viewport modernization | 4b08b1f | 2026-02-08 |
 | JS Phase 0-4: Class.create→ES6, DOM modernization | c81b89e以前 | 2026-02-06〜07 |
 | JS Phase 5: Legacy utility functions→native JS | c81b89e | 2026-02-07 |
-| JS Phase 6A: Low-frequency prototype method removal | (pending) | 2026-02-08 |
+| JS Phase 6A: Low-frequency prototype method removal | c805975 | 2026-02-08 |
+| JS bugfix: Restore True/False, replace arguments.callee | 6912326 | 2026-02-08 |
+| CSP Phase 1: Report-only mode enabled | (pending) | 2026-02-08 |
 
 ### Future Candidates
 
@@ -317,6 +319,7 @@ Modernized mobile view viewport meta tags from fixed-width to responsive, improv
 - [x] ~~Mobile view HTML5 migration~~
 - [ ] I18n integration (dynamic `lang` attribute) - low priority
 - [ ] JS Phase 6B: High-frequency prototype helpers (fill, _try, later, curry, toDF) - 72 occurrences
+- [ ] CSP Phase 2: Inline script externalization + nonce support + enforce mode
 
 ### Modernization Policy
 
@@ -324,6 +327,65 @@ Modernized mobile view viewport meta tags from fixed-width to responsive, improv
 - Don't break existing functionality
 - Run tests after each change
 - Small commits
+
+---
+
+## Content Security Policy (CSP) - Phase 1: Report-Only Mode
+
+### Overview
+
+Rails 8.1のCSP機能をreport-only modeで有効化し、XSS攻撃に対する防御層を追加。既存機能への影響なし（違反検出のみ、ブロックしない）。
+
+### Changes Made
+
+1. **config/initializers/content_security_policy.rb**
+   - CSP設定を有効化（report-only mode）
+   - Nonce generatorはPhase 2で対応
+
+2. **docs/csp_audit.md** (新規作成)
+   - インラインスクリプト/スタイルの全数調査結果
+   - CSP違反箇所のリスト
+
+3. **test/requests/csp_test.rb** (新規作成)
+   - CSPヘッダーの存在確認テスト
+
+### CSP Policy
+
+| Directive | Value | Notes |
+|-----------|-------|-------|
+| default-src | 'self' | Same-origin only |
+| img-src | 'self' data: https: | External RSS feed images |
+| script-src | 'self' | Self-hosted scripts only |
+| style-src | 'self' | Self-hosted styles only |
+| object-src | 'none' | No plugins |
+| font-src | 'self' | Self-hosted fonts |
+| frame-ancestors | 'self' | No embedding |
+| connect-src | 'self' | XHR/Fetch same-origin |
+
+### Known CSP Violations (Report-Only)
+
+| Category | Count | Notes |
+|----------|-------|-------|
+| Inline scripts (HAML) | 3 | `:javascript` filter |
+| Inline scripts (ERB) | 10 | `<script>` tags |
+| eval() | 2 | view.js, ajax.js |
+| javascript: URLs | 2 | Bookmarklet (intentional) |
+| Inline styles (HAML) | 2 | `:css` filter |
+
+See [docs/csp_audit.md](csp_audit.md) for full details.
+
+### Phase 2 Roadmap (Future)
+
+1. Convert inline scripts to `javascript_tag` helper (nonce support)
+2. Replace `eval()` with bracket notation
+3. Enable nonce generator
+4. Switch to enforce mode
+
+### Test Results
+
+```
+260 runs, 547 assertions, 0 failures, 0 errors, 0 skips
+```
 
 ---
 
