@@ -1,39 +1,50 @@
-- content_for :title do
-  = @subscription.feed.title
-  \- Fastladder Mobile
+<% content_for :title do %>
+  <%= @subscription.feed.title %>
+  - Fastladder Mobile
+<% end %>
 
-- content_for :head do
-  %link{href: "https://unpkg.com/sakura.css/css/sakura.css", media: "screen", rel: "stylesheet"}
-  %meta{name: "viewport", content: "width=device-width, initial-scale=1.0"}
+<% content_for :head do %>
+  <link href="https://unpkg.com/sakura.css/css/sakura.css" media="screen" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<% end %>
 
-%h1
-  %a{href: '/mobile'}
-    %img(src="/img/logo_small.gif" alt="Fastladder")
-%h2 #{@subscription.feed.title}
--@items.each do |item|
-  %div.item{id: "item-#{item.id}"}
-    %h3 
-      %a.read{href: item.link, target: "_blank"}=item.title
+<h1>
+  <a href="/mobile">
+    <img src="/img/logo_small.gif" alt="Fastladder">
+  </a>
+</h1>
+<h2><%= @subscription.feed.title %></h2>
+<% @items.each do |item| %>
+  <div class="item" id="item-<%= item.id %>">
+    <h3>
+      <a class="read" href="<%= item.link %>" target="_blank"><%= item.title %></a>
+    </h3>
 
-    %div!= remove_style_attr_of_all_tags(item.body)
-    %div
-      %p.smallgrey
-        = button_to "Pin", "/mobile/#{item.id}/pin", class: "pin", method: :post, form: { data: { turbo: false } }
-        Created: #{item.created_on.localtime}
-    %hr
+    <div><%== remove_style_attr_of_all_tags(item.body) %></div>
+    <div>
+      <p class="smallgrey">
+        <%= button_to "Pin", "/mobile/#{item.id}/pin", class: "pin", method: :post, form: { data: { turbo: false } } %>
+        Created: <%= item.created_on.localtime %>
+      </p>
+    </div>
+    <hr>
+  </div>
+<% end %>
 
-%div
-  = button_to "Mark as read", "/mobile/#{@subscription.id}/read?timestamp=#{@items.last.updated_on.to_i}", id: "next", style: "font-size: 1.5em;", method: :post, form: { data: { turbo: false } }
+<div>
+  <%= button_to "Mark as read", "/mobile/#{@subscription.id}/read?timestamp=#{@items.last.updated_on.to_i}", id: "next", style: "font-size: 1.5em;", method: :post, form: { data: { turbo: false } } %>
+</div>
 
-%div(style="height:2000px")
-:css
+<div style="height:2000px"></div>
+<style>
   .smallgrey {
     font-size: 0.8em;
     color: #666;
   }
+</style>
 
-:javascript
-  var current = "item-#{params[:item_id]}";
+<script>
+  var current = "item-<%= params[:item_id] %>";
 
   // Submission guard
   const isFormSubmitted = (form) => form.dataset.submitted === 'true';
@@ -90,4 +101,4 @@
       }
     }
   });
-
+</script>

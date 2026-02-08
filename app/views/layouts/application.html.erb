@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>
+      Fastladder <%= @title || [params[:controller].capitalize, (params[:action] if params[:action] != "index")].compact.join(": ") %>
+    </title>
+    <%= stylesheet_link_tag "common" %>
+    <%= stylesheet_link_tag "style" %>
+    <%= stylesheet_link_tag "main" %>
+
+    <% if content_for? :extract_header %>
+      <%= yield :extract_header %>
+    <% end %>
+  </head>
+  <body class="<%= params[:controller] %>">
+    <span id="ApiKey" style="display:none" data-api-key="<%= session[:session_id] %>"></span>
+    <div id="container">
+      <div class="navi">
+        <h1 class="logo"><%= link_to "Fastladder", root_path %></h1>
+        <% if current_member.present? and not current_member.errors %>
+          <ul>
+            <li>
+              Wellcome
+              <%= link_to current_member.username, user_path(current_member.username) %>
+            </li>
+            <li><%= link_to "My Feeds", reader_path %></li>
+            <li><%= link_to "Account", account_index_path %></li>
+            <li><%= link_to "Sign Out", logout_path %></li>
+          </ul>
+        <% end %>
+      </div>
+      <% if flash[:notice] %>
+        <div class="notice" style="text-align:center;background-color:#ff9;padding:0.5em">
+          <p style="color: green">
+            <%= flash[:notice] %>
+          </p>
+        </div>
+      <% end %>
+      <% if flash[:alert] %>
+        <div class="alert" style="text-align:center;background-color:#fdf3eb;padding:0.5em">
+          <p style="color: #e81a37">
+            <%= flash[:alert] %>
+          </p>
+        </div>
+      <% end %>
+      <%= yield %>
+    </div>
+    <script>
+      var ApiKey = '<%= escape_javascript(session[:session_id]) %>';
+    </script>
+    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "vendor/flow.min" %>
+    <%= javascript_include_tag "vendor/zepto.min" %>
+
+    <%= javascript_include_tag "lib/namespace" %>
+
+    <%= javascript_include_tag "lib/utils/DateTime" %>
+    <%= javascript_include_tag "lib/utils/common" %>
+    <%= javascript_include_tag "lib/utils/dom" %>
+    <%= javascript_include_tag "lib/utils/preload" %>
+    <%= javascript_include_tag "lib/utils/proto" %>
+    <%= javascript_include_tag "lib/utils/roma" %>
+
+    <%= javascript_include_tag "lib/events/event_dispatcher" %>
+    <%= javascript_include_tag "lib/events/hotkey" %>
+    <%= javascript_include_tag "lib/events/mouse_wheel" %>
+    <%= javascript_include_tag "lib/events/queryCSS" %>
+
+    <%= javascript_include_tag "lib/template" %>
+    <%= javascript_include_tag "lib/api" %>
+    <%= javascript_include_tag "lib/reader/style_initializer" %>
+    <%= javascript_include_tag "lib/ldr" %>
+
+    <%= javascript_include_tag "lib/ui/feed" %>
+    <%= javascript_include_tag "lib/ui/flat_menu" %>
+    <%= javascript_include_tag "lib/ui/item" %>
+    <%= javascript_include_tag "lib/ui/rate" %>
+  </body>
+</html>
