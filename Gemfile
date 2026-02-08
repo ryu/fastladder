@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gem 'rails', '8.1.2'
 
-gem 'sqlite3', '< 3.0'
+gem 'sqlite3'
 
 gem 'addressable', require: 'addressable/uri'
 gem 'feed_searcher', git: 'https://github.com/fastladder/feed_searcher'
