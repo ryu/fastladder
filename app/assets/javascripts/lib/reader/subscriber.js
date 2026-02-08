@@ -18,27 +18,26 @@ Subscribe.Items = function(id, data){
 }
 var subs_item = Subscribe.Items;
 
-Subscribe.Model = Class.create().extend({
-    initialize: function(){
+class SubscribeModel {
+    constructor(){
         this.loaded = false;
-        return this;
-    },
-    id2subs : null,
-    limited : null,
-    folder_count  : null,
-    folder_unread : null,
-    folder_names  : null,
-    load : function(list){
+        this.id2subs = null;
+        this.limited = null;
+        this.folder_count = null;
+        this.folder_unread = null;
+        this.folder_names = null;
+    }
+    load(list){
         this.load_start();
         this.load_partial_data(list);
         this.load_data(list);
-    },
-    load_data: function(list){
+    }
+    load_data(list){
         this.loaded = true;
         this.list = list;
         this.generate_cache();
-    },
-    load_start: function(){
+    }
+    load_start(){
         this.id2subs = {};
         this.folder_count = {};
         this.folder_names = [];
@@ -48,24 +47,24 @@ Subscribe.Model = Class.create().extend({
         this.min_subs = Number.POSITIVE_INFINITY;
         this.unread_count_cache = 0;
         this.unread_feeds_count_cache = 0;
-    },
-    load_partial_data: function(list){
+    }
+    load_partial_data(list){
         this._generate_cache(list);
-    },
-    get_list: function(){
+    }
+    get_list(){
         if(app.config.use_limit_subs && app.config.limit_subs){
             return this.list.slice(0, app.config.limit_subs)
         } else {
             return this.list
         }
-    },
-    generate_cache: function(){
+    }
+    generate_cache(){
         this.folder_names = keys(this.folder_count);
         this.make_subscribers_names();
         return;
-    },
+    }
     // partial
-    _generate_cache: function(list){
+    _generate_cache(list){
         function push(obj,key,value){
             if(obj[key]){
                 obj[key].push(value)
@@ -88,8 +87,8 @@ Subscribe.Model = Class.create().extend({
         });
         this.unread_count_cache += list.sum_of("unread_count");
         //alert_once(this.unread_feeds_count_cache);
-    },
-    make_domain_names: function(){
+    }
+    make_domain_names(){
         function get_domain(url){
             var start = url.indexOf('//') + 2;
             var end   = url.indexOf('/', start);
@@ -129,8 +128,8 @@ Subscribe.Model = Class.create().extend({
         this.domain_names = keys(domain_names);
         this.domain_count = domain_names;
         this.domain2subs  = domain2subs;
-    },
-    make_subscribers_names: function(){
+    }
+    make_subscribers_names(){
         var len = this.list.length;
         var split = 6;
         var limit = this.list.length / split;
@@ -157,19 +156,19 @@ Subscribe.Model = Class.create().extend({
         res.push(begin + "-" + Math.max(begin+1, this.max_subs) );
         this.subscribers_names = res.reverse();
         return res;
-    },
+    }
     // 任意フィルタ
-    filter: function(callback){
+    filter(callback){
         var filtered = this.list.filter(callback);
         return new Subscribe.Collection(filtered)
-    },
-    get_folder_names: function(){
+    }
+    get_folder_names(){
         if(this.folder_names) return this.folder_names;
-    },
-    get_rate_names: function(){
+    }
+    get_rate_names(){
         if(this.rate_names) return this.rate_names;
-    },
-    get_subscribers_names: function(){
+    }
+    get_subscribers_names(){
         if(this.subscribers_names){
             // 多い順で保存されている。
             if(app.config.sort_mode == "subscribers_count:reverse"){
@@ -178,64 +177,68 @@ Subscribe.Model = Class.create().extend({
                 return this.subscribers_names;
             }
         }
-    },
-    get_domain_names: function(){
+    }
+    get_domain_names(){
         if(this.domain_names) return this.domain_names;
-    },
-    get_by_id: function(id){
+    }
+    get_by_id(id){
         return this.id2subs[id]
-    },
-    get_by_folder: function(name){
+    }
+    get_by_folder(name){
         var filtered = this.get_list().filter_by("folder",name)
         return new Subscribe.Collection(filtered)
-    },
-    get_by_rate: function(num){
+    }
+    get_by_rate(num){
         var filtered = this.get_list().filter_by("rate",num);
         // filtered = this.rate2subs[num] || [];
         return new Subscribe.Collection(filtered)
-    },
-    get_by_subscribers_count: function(min,max){
+    }
+    get_by_subscribers_count(min,max){
         var filtered = this.get_list().filter(function(item){
             var c = item.subscribers_count;
             return (c >= min && c <= max);
         });
         return new Subscribe.Collection(filtered)
-    },
-    get_by_domain: function(domain){
+    }
+    get_by_domain(domain){
         var filtered = this.domain2subs[domain] || [];
         return new Subscribe.Collection(filtered)
-    },
-    get_unread_feeds: function(){
+    }
+    get_unread_feeds(){
         return this.filter(function(item){return item.unread_count > 0}).list;
-    },
-    get_unread_feeds_count: function(){
+    }
+    get_unread_feeds_count(){
         if(this.unread_feeds_count_cache){
             return this.unread_feeds_count_cache;
         } else {
             return 0;
             return this.unread_feeds_count_cache = this.get_unread_feeds().length;
         }
-    },
-    get_unread_count: function(){
+    }
+    get_unread_count(){
         if(this.unread_count_cache){
             return this.unread_count_cache
         } else {
             return this.unread_count_cache = this.list.sum_of("unread_count");
         }
     }
-});
+}
+Subscribe.Model = SubscribeModel;
 
 /*
  絞り込んだリスト
 */
-Subscribe.Collection = Class.create().extend({
-    initialize: function(list){ this.list = list },
-    isCollection : true,
-    get_list : function(){return this.list},
-    get_unread_count: function(){
+class SubscribeCollection {
+    constructor(list){
+        this.list = list;
+        this.isCollection = true;
+    }
+    get_list(){return this.list}
+    get_unread_count(){
         return this.list.sum_of("unread_count")
     }
-});
+}
+Subscribe.Collection = SubscribeCollection;
 
 Subscribe.Formatter = {
     item: function(v){ return new TreeItem(v) },

@@ -1,8 +1,5 @@
-var FeedFormatter = Class.create();
-FeedFormatter.TMPL = Template.get("inbox_feed");
-FeedFormatter.TMPL_ADS = Template.get("inbox_adfeeds");
-FeedFormatter.extend({
-    initialize: function(opt){
+class FeedFormatter {
+    constructor(opt) {
         if(opt && opt.ads){
             this.tmpl = new Template(FeedFormatter.TMPL_ADS);
         } else {
@@ -15,9 +12,11 @@ FeedFormatter.extend({
             }
         };
         this.tmpl.add_filters(feed_filter);
-    },
-    compile: function(){
+    }
+    compile() {
         return this.tmpl.compile()
     }
-});
+}
+FeedFormatter.TMPL = Template.get("inbox_feed");
+FeedFormatter.TMPL_ADS = Template.get("inbox_adfeeds");
 

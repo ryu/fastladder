@@ -1,16 +1,15 @@
 /*
  Pins
 */
-var Pin = Class.create();
-Pin.extend({
-    initialize: function(){
+class Pin {
+    constructor(){
         this.pins = [];
         this.hash = {};
-    },
-    has: function(url){
+    }
+    has(url){
         return this.hash[url] ? true : false;
-    },
-    add: function(url,title,info){
+    }
+    add(url,title,info){
         if(this.has(url)) return;
         this.hash[url] = true;
         var data = {
@@ -26,28 +25,41 @@ Pin.extend({
             this.has[p.url] = false;
         }
         this.update_view();
-    },
-    remove: function(url){
+        // persist
+        if(app.config.use_pinsaver){
+            new LDR.API("/api/pin/add").post({
+                link : url.unescapeHTML(),
+                title: title.unescapeHTML()
+            });
+        }
+    }
+    remove(url){
         if(!this.has(url)) return;
         this.hash[url] = false;
         this.pins = this.pins.select(function(v){
             return v.url != url
         })
         this.update_view();
-    },
-    shift: function(){
+        // persist
+        if(app.config.use_pinsaver){
+            new LDR.API("/api/pin/remove").post({
+                link:url.unescapeHTML()
+            });
+        }
+    }
+    shift(){
         var p = this.pins.shift();
         if(p){
             this.hash[p.url] = false;
             return p;
         }
-    },
-    update_view: function(){
+    }
+    update_view(){
         _$("pin_button").style.width = "29px";
         _$("pin_count").innerHTML = this.pins.length;
-    },
+    }
     //TODO move to view
-    write_list: function(){
+    write_list(){
         if(!this.pins.length) return;
         var buf = this.pins.map(function(p){
             return '<li><a href="[[url]]">[[title]]</a></li>'.fill(p)
@@ -60,16 +72,16 @@ Pin.extend({
             buf,"</ul>"
         ].join(""));
         w.document.close();
-    },
-    open: function(url){
+    }
+    open(url){
         var can_popup = (window.open(url.unescapeHTML())) ? true : false;
         if(can_popup){
             this.remove(url)
         } else {
             message('cannot_popup')
         }
-    },
-    open_group: function(){
+    }
+    open_group(){
         if(!this.pins.length) return;
         var queue = new LDR.Queue();
         var can_popup = false;
@@ -100,34 +112,12 @@ Pin.extend({
             }
         })
         queue.exec();
-    },
-    clear: function(){
+    }
+    clear(){
         this.pins = [];
         this.hash = {};
         this.update_view();
+        // persist
+        new LDR.API("/api/pin/clear").post({});
     }
-});
-
-var Pinsaver = Class.create();
-Pinsaver.extend({
-    add: function(url,title){
-        if(!app.config.use_pinsaver) return;
-        var api = new LDR.API("/api/pin/add");
-        api.post({
-            link : url.unescapeHTML(),
-            title: title.unescapeHTML()
-        })
-    },
-    remove: function(url){
-        if(!app.config.use_pinsaver) return;
-        var api = new LDR.API("/api/pin/remove");
-        api.post({
-            link:url.unescapeHTML()
-        });
-    },
-    clear: function(){
-        var api = new LDR.API("/api/pin/clear");
-        api.post({});
-    }
-})
-Pin = Class.merge(Pin, Pinsaver);
+}

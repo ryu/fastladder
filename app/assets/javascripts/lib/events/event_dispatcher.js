@@ -72,18 +72,14 @@ function removeEvent(obj, evType, fn, useCapture){
 	obj.removeEventListener(evType, fn, useCapture);
 	return true;
 }
-var Trigger = Class.create();
-Trigger.create = function(type){
-	return new Trigger(type)
-};
-Trigger.extend({
-	_type   : null,
-	initialize : function(type){
+class Trigger {
+	constructor(type){
+		this._type = null;
 		this.event_list = [];
 		this.enable = true;
 		this.type = type;
-	},
-	apply : function(target){
+	}
+	apply(target){
 		if(!target){
 			target = document.body;
 		} else {
@@ -111,9 +107,9 @@ Trigger.extend({
 			e = null;
 		}.bind(this))
 		this.destroy();
-	},
-	destroy : function(){},
-	add : function(trigger, callback){
+	}
+	destroy(){}
+	add(trigger, callback){
 		var expression;
 		if(isString(trigger)){
 			expression = cssTester(trigger);
@@ -124,15 +120,18 @@ Trigger.extend({
 			trigger, expression, callback
 		]);
 		return this
-	},
-	remove : function(trigger){
+	}
+	remove(trigger){
 		this.event_list = this.event_list.reject(function(pair){
 			return pair[0] == trigger;
 		});
 		return this;
-	},
-	toggle : function(state){
+	}
+	toggle(state){
 		this.enable = arguments.length ? !this.enable : state;
 		return this.enable;
 	}
-});
+}
+Trigger.create = function(type){
+	return new Trigger(type)
+};

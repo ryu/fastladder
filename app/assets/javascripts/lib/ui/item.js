@@ -1,7 +1,5 @@
-var ItemFormatter = Class.create();
-ItemFormatter.TMPL = Template.get("inbox_items");
-ItemFormatter.extend({
-    initialize: function(){
+class ItemFormatter {
+    constructor() {
         this.tmpl = new Template(ItemFormatter.TMPL);
         var filters = {
             created_on  : Filter.created_on,
@@ -11,12 +9,13 @@ ItemFormatter.extend({
             category    : Filter.category
         };
         this.tmpl.add_filters(filters);
-    },
-    compile: function(){
+    }
+    compile() {
         return this.tmpl.compile();
-    },
-    reset_count: function(){
+    }
+    reset_count() {
         this.item_count = 0;
     }
-});
+}
+ItemFormatter.TMPL = Template.get("inbox_items");
 

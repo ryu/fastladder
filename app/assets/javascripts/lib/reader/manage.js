@@ -51,8 +51,8 @@ updater("manage_select",function(){
 	}
 });
 
-var Selector = Class.create().extend({
-	initialize : function(){
+class Selector {
+	constructor(){
 		var self = this;
 		Object.extend(this,{
 			mousedown : function(event){self.onmousedown.call(self,this,event)},
@@ -60,8 +60,8 @@ var Selector = Class.create().extend({
 			mouseout : function(event){self.onmouseout.call(self,this,event)}
 		});
 		self.setup && self.setup.apply(this,arguments)
-	},
-	onmousedown : function(el,event){
+	}
+	onmousedown(el,event){
 		app.state.mdown = true;
 		if(hasClass(el,"selected")){
 			removeClass(el, "selected");
@@ -70,58 +70,58 @@ var Selector = Class.create().extend({
 			addClass(el, "selected");
 			app.state.turn = true;
 		}
-	},
-	onmouseover : function(el,event){
+	}
+	onmouseover(el,event){
 		if(app.state.mdown){
 			(app.state.turn) ? addClass(el, "selected") : removeClass(el, "selected")
 		} else {
 			addClass(el, "focus")
 		}
-	},
-	onmouseout : function(el,event){
+	}
+	onmouseout(el,event){
 		removeClass(el, "focus")
 	}
-});
-var Cart = Class.create();
-Cart.extend({
-	initialize : function(){
+}
+class Cart {
+	constructor(){
 		this.hash = {};
 		this.keys = [];
 		this.values = [];
-	},
-	clear : function(){
-		return this.initialize();
-	},
-	has : function(key){
+	}
+	clear(){
+		return this.constructor();
+	}
+	has(key){
 		return this.hash.hasOwnProperty("item_" + key)
-	},
-	add : function(key,value){
+	}
+	add(key,value){
 		if(!this.has(key)){
 			this.hash["item_" + key] = value;
 			this.keys.push(key);
 			this.values.push(key);
 		}
-	},
-	remove : function(key){
+	}
+	remove(key){
 		if(!this.has(key)) return false;
 		delete this.hash["item_" + key];
 		var idx = this.keys.indexOf(key);
 		this.keys.delete_at(idx);
 		this.values.delete_at(idx);
 		return this;
-	},
-	get : function(key){
+	}
+	get(key){
 		return this.hash("item_" + key)
 	}
-});
-var SelectorWithCart = Class.create().extend({
-	initialize : function(){
+}
+class ItemSelector extends Selector {
+	constructor(){
+		super();
 		this.cart = new Cart;
-	},
-	clear: function(){
+	}
+	clear(){
 		this.cart.clear();
-	},
-	_updateCart : function(element){
+	}
+	_updateCart(element){
 		var change;
 		var sid = element.getAttribute("subscribe_id") - 0;
 		var chk = hasClass(element, "selected");
@@ -132,18 +132,19 @@ var SelectorWithCart = Class.create().extend({
 			change = true;
 		}
 		change && update("manage_select")
-	},
-	onmousedown : function(){
+	}
+	onmousedown(el,event){
+		super.onmousedown(el,event);
 		this._updateCart.apply(this,arguments);
-	},
-	onmouseover : function(){
+	}
+	onmouseover(el,event){
+		super.onmouseover(el,event);
 		this._updateCart.apply(this,arguments);
-	},
-	get_selected : function(){
+	}
+	get_selected(){
 		return this.cart.keys
 	}
-});
-var ItemSelector = Class.merge(Selector, SelectorWithCart);
+}
 var TRSelector = new ItemSelector;
 
 var Manage = {};

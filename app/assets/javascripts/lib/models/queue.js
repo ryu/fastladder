@@ -1,18 +1,16 @@
 (function(){
-	LDR.Queue = Class.create();
-	LDR.Queue.extend({
-		initialize: function(){
+	class Queue {
+		constructor() {
 			this.queue = [];
-		},
+			this.step = 1;
+			this.interval = 100;
+		}
 
-		step : 1,
-		interval : 100,
-
-		push: function(f){
+		push(f) {
 			this.queue.push(f);
-		},
+		}
 
-		exec: function(){
+		exec() {
 			var queue = this.queue;
 			var step = this.step;
 			var interval = this.interval;
@@ -30,5 +28,6 @@
 			}).later(interval)();
 			//TODO あとでlasterは消す
 		}
-	});
+	}
+	LDR.Queue = Queue;
 }).call(LDR);

@@ -3,29 +3,27 @@
     /*
      Hook
     */
-    var Hook = Class.create();
-    Hook.extend({
-        initialize: function(){
+    class Hook {
+        constructor(){
             this.callbacks = [];
-        },
-        isHook: true,
-        add: function(f){
+            this.isHook = true;
+        }
+        add(f){
             this.callbacks.push(f)
-        },
-        exec: function(){
+        }
+        exec(){
             var args = arguments;
             this.callbacks.forEach(function(f){
                 isFunction(f) && f.apply(null,args)
             })
-        },
-        clear: function(){
+        }
+        clear(){
             this.callbacks = []
         }
-    });
+    }
 
-    LDR.EventTrigger = Class.create();
-    LDR.EventTrigger.extend({
-        initialize: function(){
+    class EventTrigger {
+        constructor(){
             var points = Array.from(arguments);
             var triggers = {};
             points.forEach(function(name){
@@ -33,19 +31,20 @@
                 triggers[hook_name] = new Hook;
             });
             this.triggers = triggers;
-        },
-        add_trigger: function(point, callback){
+        }
+        add_trigger(point, callback){
             var point = point.toLowerCase();
             if(this.triggers.hasOwnProperty(point)){
                 this.triggers[point].add(callback)
             }
-        },
-        call_trigger: function(point, args){
+        }
+        call_trigger(point, args){
             point = point.toLowerCase();
             if(this.triggers.hasOwnProperty(point)){
                 this.triggers[point].exec(args);
             }
         }
-    });
+    }
+    LDR.EventTrigger = EventTrigger;
 }).call(LDR);
 

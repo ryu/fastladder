@@ -4,34 +4,35 @@ ApiKey = document.querySelector('#ApiKey').dataset.apiKey;
 LDR.API.StickyQuery = { ApiKey: ApiKey };
 var LDReader = {};
 
-LDReader.Folder = Class.create();
-LDReader.Folder.create = function(name, callback){
+class Folder {
+}
+Folder.create = function(name, callback){
 	var api = new LDR.API("/api/folder/create");
 	api.post({name:name},function(res){
 		// if(res.isSuccess){callback()}
 		callback();
 	});
 };
+LDReader.Folder = Folder;
 
 
 
-var ReaderSubscribe = Class.create();
-ReaderSubscribe.extend({
-	initialize: function(){
+class ReaderSubscribe {
+	constructor(){
 
-	},
-	get_feedlinks: function(){
+	}
+	get_feedlinks(){
 		return Array.from(document.getElementsByTagName("input")).filter(function(el){
 			return el.name == "feedlink"
 		}).map(function(el){return el.value});
-	},
-	get_baseurl : function(){
+	}
+	get_baseurl(){
 		return "http://" + location.host + "/subscribe/";
-	},
-	get_target_url: function(){
+	}
+	get_target_url(){
 		return _$("target_url").value;
-	},
-	unsubscribe: function(subscribe_id, callback){
+	}
+	unsubscribe(subscribe_id, callback){
 		var self = this;
 		var url = this.get_target_url();
 		var base = this.get_baseurl();
@@ -43,8 +44,8 @@ ReaderSubscribe.extend({
 		api.post({subscribe_id:subscribe_id}, function(res){
 			onload();
 		});
-	},
-	subscribe: function(option, callback){
+	}
+	subscribe(option, callback){
 		var api = new LDR.API("/api/feed/subscribe");
 		var param = {
 			feedlink	: option.feedlink,
@@ -53,8 +54,8 @@ ReaderSubscribe.extend({
 		};
 		if(option.folder_id != "0" && option.folder_id != 0){ param.folder_id = option.folder_id; }
 		api.post(param, callback);
-	},
-	get_backurl: function(){
+	}
+	get_backurl(){
 		var base = ReaderSubscribe.get_baseurl();
 		// 無視するリファラ
 		var ignore_list = ['http://member.livedoor.com/', base];
@@ -69,7 +70,7 @@ ReaderSubscribe.extend({
 		}
 		return null
 	}
-});
+}
 
 ReaderSubscribe = new ReaderSubscribe;
 

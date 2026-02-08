@@ -1,12 +1,11 @@
 /*
  API
 */
-LDR.API = Class.create();
-LDR.API.extend({
-	initialize: function(ap){ this.ap = ap; this.raw_mode = false; },
-	onCreate:   function(){},
-	onComplete: function(){},
-	post: function(param,onload){
+class API {
+	constructor(ap){ this.ap = ap; this.raw_mode = false; }
+	onCreate(){}
+	onComplete(){}
+	post(param,onload){
 		this.req = new XMLHttpRequest;
 		var onload = onload || this.onload;
 		var oncomplete = this.onComplete;
@@ -45,8 +44,8 @@ LDR.API.extend({
 		this.onCreate();
 		this.req.send(postdata);
 		return this;
-	},
-	get: function(param,onload){
+	}
+	get(param,onload){
 		this.req = new XMLHttpRequest;
 		var onload = onload || this.onload;
 		var oncomplete = this.onComplete;
@@ -71,17 +70,18 @@ LDR.API.extend({
 		this.onCreate();
 		this.req.send(null);
 		return this;
-	},
-	requester: function(method,param){
+	}
+	requester(method,param){
 		return function(onload){
 			return this[method.toLowerCase()](param,onload)
 		}.bind(this)
-	},
-	onload:  function(){},
-	onerror: function(error_code){
+	}
+	onload(){}
+	onerror(error_code){
 		alert("エラーコード :"+ error_code)
 	}
-});
+}
+LDR.API = API;
 LDR.API.last_response = "";
 LDR.API.registerCallback = function(options){
 	each(options,function(value,key){

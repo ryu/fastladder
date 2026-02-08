@@ -25,28 +25,8 @@ HTML.IMG = function(o){
 
 // Folderを登録する。
 FolderList = {};
-var TreeView = Class.create();
-TreeView.lazy = false;
-TreeView.icon_plus = [
-    HTML.IMG({src:"/img/icon/m.gif"}),
-    HTML.IMG({src:"/img/icon/p.gif"})
-];
-TreeView.icon_open = [
-    HTML.IMG({src:"/img/icon/m.gif"}) + HTML.IMG({src:"/img/icon/open.gif"}),
-    HTML.IMG({src:"/img/icon/p.gif"}) + HTML.IMG({src:"/img/icon/close.gif"})
-];
-TreeView.count = 0;
-TreeView.get_control = function(id){
-    return TreeView.instance[id]
-}
-TreeView.instance = {};
-TreeView.destroy = function(){
-    for(var i=0;i<TreeView.count;i++){
-        TreeView.instance["treeview_" + i] = null;
-    }
-};
-TreeView.extend({
-    initialize: function(name,value,config){
+class TreeView {
+    constructor(name,value,config){
         var tv = TreeView;
         tv.count++;
         tv.instance["treeview_" + tv.count ] = this;
@@ -79,22 +59,22 @@ TreeView.extend({
             this.print( this.generator() );
             this.printed = 1;
         }
-    },
-    _onclick: function(id){
+    }
+    _onclick(id){
         return function(){ TreeView.instance["treeview_" + id].toggle() }
-    },
-    set_status: function(text){
+    }
+    set_status(text){
         this.label.innerHTML = (
                 (this.state) ? this.icon_folder[0] : this.icon_folder[1]
             ) + text;
-    },
-    print: function(text){
+    }
+    print(text){
         this.child.innerHTML = text;
-    },
-    update: function(){
+    }
+    update(){
         this.set_status(this.label_text);
-    },
-    open: function(){
+    }
+    open(){
         this.state = 1;
         /* Lazy */
         if(!this.printed){
@@ -103,16 +83,35 @@ TreeView.extend({
         }
         DOM.show(this.child);
         this.update();
-    },
-    close: function(){
+    }
+    close(){
         this.state = 0;
         DOM.hide(this.child);
         this.update();
-    },
-    toggle: function(){
+    }
+    toggle(){
         this.state ? this.close() : this.open();
     }
-});
+}
+TreeView.lazy = false;
+TreeView.icon_plus = [
+    HTML.IMG({src:"/img/icon/m.gif"}),
+    HTML.IMG({src:"/img/icon/p.gif"})
+];
+TreeView.icon_open = [
+    HTML.IMG({src:"/img/icon/m.gif"}) + HTML.IMG({src:"/img/icon/open.gif"}),
+    HTML.IMG({src:"/img/icon/p.gif"}) + HTML.IMG({src:"/img/icon/close.gif"})
+];
+TreeView.count = 0;
+TreeView.get_control = function(id){
+    return TreeView.instance[id]
+}
+TreeView.instance = {};
+TreeView.destroy = function(){
+    for(var i=0;i<TreeView.count;i++){
+        TreeView.instance["treeview_" + i] = null;
+    }
+};
 /*
   TreeItem
 */
@@ -148,8 +147,9 @@ HTMLView.prototype = {
         this.element.appendChild(el)
     }
 };
-var ListItem = Class.create().extend({
-    initialize: function(){
+class ListItem {
+    constructor(config){
+        if(config) Object.assign(this, config);
         var self = this;
         this.onhover = function(e){
             var el = this;
@@ -162,4 +162,4 @@ var ListItem = Class.create().extend({
             removeClass(el, self.focus_class);
         }
     }
-});
+}

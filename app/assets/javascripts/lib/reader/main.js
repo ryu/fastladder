@@ -296,79 +296,103 @@ function writing_complete(){
 /*
  Toggle Base
 */
-var ToggleBase = Class.create().extend({
-	initialize: function(){
+class ToggleBase {
+	constructor(){
 		this.observe("click");
-	},
-	observe: function(){
+	}
+	observe(){
 		var self = this;
 		Array.from(arguments).forEach(function(handle){
 			self[handle] = function(event){
 				self["on"+handle].call(self, this, event)
 			}
 		});
-	},
-	onclick: function(el, event){
+	}
+	onclick(el, event){
 		Event.stop(event);
 		return this.toggle(el)
-	},
-	toggle: function(el){
+	}
+	toggle(el){
 		var state = (el.clicked == true) ? this.off(el) : this.on(el);
 		return state;
-	},
-	on: function(el){
+	}
+	on(el){
 		addClass(el, "toggle_on");
 		el.clicked = true;
 		return "on";
-	},
-	off: function(el){
+	}
+	off(el){
 		removeClass(el, "toggle_on");
 		el.clicked = false;
 		return "off";
 	}
-});
+}
 
-var ShowFolder = Class.create().extend({
-	on: function(el, e){
+class FolderToggle extends ToggleBase {
+	on(el, e){
+		super.on(el);
 		var self = this;
 		this.folder_menu = Control.show_folder.call(el, e);
 		this.folder_menu.onhide = function(){
 			self.off(el, e)
 		}
-	},
-	off: function(el, e){
+	}
+	off(el, e){
+		super.off(el);
 		this.folder_menu && this.hide_menu()
-	},
-	hide_menu: function(){
+	}
+	hide_menu(){
 		this.folder_menu.hide();
 		this.folder_menu = null;
 	}
-});
-
-var FolderToggle = Class.merge(ToggleBase, ShowFolder);
+}
 FolderToggle = new FolderToggle;
 
-var ShowViewmode = Class.create().extend({
-	sw: Control.show_viewmode,
-	on: function(el, e){
+class ViewmodeToggle extends ToggleBase {
+	constructor(){
+		super();
+		this.sw = Control.show_viewmode;
+	}
+	on(el, e){
+		super.on(el);
 		var self = this;
 		this.menu = this.sw.call(el, e);
 		this.menu.onhide = function(){
 			self.off(el, e)
 		}
-	},
-	off: function(el, e){
+	}
+	off(el, e){
+		super.off(el);
 		this.menu && this.hide_menu()
-	},
-	hide_menu: function(){
+	}
+	hide_menu(){
 		this.menu.hide();
 		this.menu = null;
 	}
-});
-var ShowSortmode = Class.base(ShowViewmode).extend({sw:Control.show_sortmode});
-var ViewmodeToggle = Class.merge(ToggleBase, ShowViewmode);
+}
 ViewmodeToggle = new ViewmodeToggle;
-var SortmodeToggle = Class.merge(ToggleBase, ShowSortmode);
+class SortmodeToggle extends ToggleBase {
+	constructor(){
+		super();
+		this.sw = Control.show_sortmode;
+	}
+	on(el, e){
+		super.on(el);
+		var self = this;
+		this.menu = this.sw.call(el, e);
+		this.menu.onhide = function(){
+			self.off(el, e)
+		}
+	}
+	off(el, e){
+		super.off(el);
+		this.menu && this.hide_menu()
+	}
+	hide_menu(){
+		this.menu.hide();
+		this.menu = null;
+	}
+}
 SortmodeToggle = new SortmodeToggle;
 
 
@@ -426,59 +450,30 @@ function get_prev(){
 /*
   MenuItem共通
  */
-var MenuItem = new (Class.base(ListItem).extend({
+var MenuItem = new ListItem({
 	focus_class  : "menu-focus",
 	focus_style  : { },
 	normal_style : { }
-}));
+});
 /*
  PinItem
 */
-var PinItem = new (Class.base(ListItem).extend({
+var PinItem = new ListItem({
 	focus_class  : "pin-focus",
 	focus_style  : { },
 	normal_style : { }
-}));
+});
 /*
  Subscribe item
 */
-var SubsItem = new (Class.base(ListItem).extend({
+var SubsItem = new ListItem({
 	focus_class  : "fs-focus",
 	focus_style  : { },
 	normal_style : { }
-}));
+});
 
 
 
-/*
-
-*/
-Class.Traits["view"] = {
-	initialize: function(element){
-		this.element = _$(element);
-	},
-	print: function(v){
-		isElement(v)
-			?  this.element.appendChild(v)
-			: (this.element.innerHTML = v)
-	},
-	clear: function(){ this.print("") },
-	setClass: function(v){
-		this.element.className = v;
-	},
-	addClass: function(v){
-		addClass(this.element,v)
-	},
-	removeClass: function(v){
-		removeClass(this.element,v)
-	}
-};
-Class.Traits["controller"] = {
-	initialize: function(o){
-		this.view  = o.view;
-		this.model = o.model;
-	}
-};
 
 function alert_once(v){
 	if(alert_once.alerted) return;
@@ -488,12 +483,36 @@ function alert_once(v){
 
 //**
 LDR.VARS.USE_PARTIAL_LOAD = true;
-Subscribe.View = Class.create("view");
-Subscribe.Controller = Class.create("controller").extend({
-	loaded : false,
-	readyState: 0,
-	filter : null,
-	_update: function(reload_flag){
+class SubscribeView {
+	constructor(element){
+		this.element = _$(element);
+	}
+	print(v){
+		isElement(v)
+			?  this.element.appendChild(v)
+			: (this.element.innerHTML = v)
+	}
+	clear(){ this.print("") }
+	setClass(v){
+		this.element.className = v;
+	}
+	addClass(v){
+		addClass(this.element,v)
+	}
+	removeClass(v){
+		removeClass(this.element,v)
+	}
+}
+Subscribe.View = SubscribeView;
+class SubscribeController {
+	constructor(o){
+		this.view  = o.view;
+		this.model = o.model;
+		this.loaded = false;
+		this.readyState = 0;
+		this.filter = null;
+	}
+	_update(reload_flag){
 		var self = this;
 		if(this.loaded && !reload_flag){
 			this.show();
@@ -512,8 +531,8 @@ Subscribe.Controller = Class.create("controller").extend({
 				LDR.invoke_hook('AFTER_SUBS_LOAD');
 			});
 		}
-	},
-	update: function(reload_flag){
+	}
+	update(reload_flag){
 		if(!LDR.VARS.USE_PARTIAL_LOAD){
 			return this._update.apply(this, arguments);
 		}
@@ -606,16 +625,16 @@ Subscribe.Controller = Class.create("controller").extend({
 			self.readyState = 1;
 			load_request();
 		}
-	},
-	add_filter: function(q){
+	}
+	add_filter(q){
 		var filter = function(item){
 			return contain(item.title,q)
 		};
 		this.filter = function(model){
 			return model.filter(filter)
 		}
-	},
-	sort: function(){
+	}
+	sort(){
 		var tmp = app.config.sort_mode.split(':');
 		var key = tmp[0];
 		var option = tmp[1];
@@ -626,8 +645,8 @@ Subscribe.Controller = Class.create("controller").extend({
 		if(key == "title"){
 			this.model.folder_names.sort();
 		}
-	},
-	show: function(){
+	}
+	show(){
 		if(this.filter){
 			var mode = "flat";
 			var data = this.filter(this.model);
@@ -643,8 +662,8 @@ Subscribe.Controller = Class.create("controller").extend({
 			set_focus(app.state.now_reading)
 		}
 		this.update_order()
-	},
-	update_order: function(array){
+	}
+	update_order(array){
 		if(array){
 			Ordered.list = array;
 			return;
@@ -655,8 +674,8 @@ Subscribe.Controller = Class.create("controller").extend({
 			var sid = el.getAttribute("subscribe_id");
 			sid && Ordered.list.push(sid)
 		});
-	},
-	find: function(q){
+	}
+	find(q){
 		var self = this;
 		if(q == ""){
 			this.filter = null;
@@ -665,9 +684,12 @@ Subscribe.Controller = Class.create("controller").extend({
 			this.add_filter(q)
 			this.show();
 		}
-	},
-	get_by_id : delegator("model","get_by_id")
-});
+	}
+	get_by_id(){
+		return delegator("model","get_by_id").apply(this, arguments);
+	}
+}
+Subscribe.Controller = SubscribeController;
 
 var SF = Subscribe.Formatter;
 var ST = Subscribe.Template;
@@ -1116,25 +1138,24 @@ function get_unread(id,callback){
 
 get_unread.cache = new Cache({max:50});
 
-var LDRWidgets = Class.create();
-LDRWidgets.extend({
-	initialize: function(){
+class LDRWidgets {
+	constructor(){
 		this.widgets = [];
 		this.sep = " | ";
-	},
-	add: function(name, generator, description){
+	}
+	add(name, generator, description){
 		this.widgets.push({
 			name: name,
 			generator: generator,
 			description: description || ''
 		})
-	},
-	remove: function(name){
+	}
+	remove(name){
 		this.widgets = this.widgets.reject(function(v){
 			return v.name == name
 		})
-	},
-	process: function(){
+	}
+	process(){
 		var args = arguments;
 		return this.widgets.map(function(w){
 			var result;
@@ -1146,7 +1167,7 @@ LDRWidgets.extend({
 			return result ? '<span class="widget widget_'+ w.name +'" title="' + w.description + '">'+result+'</span>' : "";
 		}).filter(function(v){return v}).join(this.sep);
 	}
-});
+}
 
 var entry_widgets = new LDRWidgets;
 var channel_widgets = new LDRWidgets;

@@ -150,60 +150,6 @@ Function.prototype.o = function(a) {
 	}
 };
 
-/*
- Class
-*/
-Class = function(){return function(){return this}};
-Class.Traits = {};
-Class.create = function(traits){
-	var f = function(){
-		this.initialize.apply(this, arguments);
-	};
-	f.prototype.initialize = function(){};
-	f.isClass = true;
-	f.extend = function(other){
-		extend(f.prototype,other);
-		return f;
-	};
-	if(traits && Class.Traits[traits])
-		f.extend(Class.Traits[traits]);
-	return f;
-};
-// 他のクラスまたはオブジェクトをベースに新しいクラスを作成する
-Class.base = function(base_class){
-	if(base_class.isClass){
-		var child = Class.create();
-		child.prototype = new base_class;
-		return child;
-	} else {
-		var base = Class();
-		base.prototype = base_class;
-		var child = Class.create();
-		child.prototype = new base;
-		return child;
-	}
-};
-// クラスを合成
-Class.merge = function(a,b){
-	var c = Class.create();
-	var ap = a.prototype;
-	var bp = b.prototype;
-	var cp = c.prototype;
-	var methods = keys(ap).concat(keys(bp)).uniq();
-	foreach(methods,function(key){
-		if(isFunction(ap[key]) && isFunction(bp[key])){
-			cp[key] = function(){
-				ap[key].apply(this,arguments);
-				return bp[key].apply(this,arguments);
-			}
-		} else {
-			cp[key] =
-				isFunction(ap[key]) ? ap[key] :
-				isFunction(bp[key]) ? bp[key] : null
-		}
-	});
-	return c;
-}
 
 function extend(self,other){
 	for(var i in other){
@@ -721,23 +667,22 @@ Object.extend(Form,{
 
 /* Cache */
 
-var Cache = Class.create();
-Cache.extend({
-	initialize : function(option){
+class Cache {
+	constructor(option) {
 		this._index = {};
 		this._exprs = {};
 		this._cache = [];
 		if(option){
 			this.max = option.max || 0;
 		}
-	},
-	_get: function(key){
+	}
+	_get(key) {
 		return this._index["_" + key];
-	},
-	get: function(key){
+	}
+	get(key) {
 		return this._get(key)[1]
-	},
-	set: function(key,value){
+	}
+	set(key,value) {
 		// delete
 		if(this.max && this._cache.length > this.max){
 			var to_delete = this._cache.shift();
@@ -753,14 +698,14 @@ Cache.extend({
 			this._index["_"+key] = pair;
 		}
 		return value;
-	},
-	set_expr: function(key,expr){
+	}
+	set_expr(key,expr) {
 		this._exprs["_" + key] = expr;
-	},
-	get_expr: function(key){
+	}
+	get_expr(key) {
 		return this._exprs["_" + key] || null;
-	},
-	check_expr: function(key){
+	}
+	check_expr(key) {
 		var expr = this.get_expr(key);
 		if(expr){
 			var r = new Date() - expr;
@@ -770,18 +715,18 @@ Cache.extend({
 		} else {
 			return true;
 		}
-	},
-	has : function(key){
+	}
+	has(key) {
 		return (this._index.hasOwnProperty("_" + key) && this.check_expr(key));
-	},
-	clear : function(){
+	}
+	clear() {
 		this._index = {};
 		this._cache  = [];
-	},
-	find_or_create : function(key,callback){
+	}
+	find_or_create(key,callback) {
 		return this.has(key) ? this.get(key) : this.set(key,callback())
 	}
-});
+}
 
 Number.extend({
 	times: function(callback){

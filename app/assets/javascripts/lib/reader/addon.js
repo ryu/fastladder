@@ -360,44 +360,45 @@ function get_hotlevel(num){
 	return (num < 3) ? 0 : (num >= 3 && num < 10) ? 1 : 2;
 }
 app.state.now = Math.floor(new Date / 1000);
-var ListView = Class.create();
-ListView.extend({
-	element_id: "listview_items",
-	element_class: "listview",
-	get_item_by_id: function(id){
+class ListView {
+	constructor(){
+		this.element_id = "listview_items";
+		this.element_class = "listview";
+	}
+	get_item_by_id(id){
 		if(this.item_index[id]){
 			return this.item_index[id]
 		} else {
 			return null
 		}
-	},
-	get_item: function(){
+	}
+	get_item(){
 		var current_page = this.get_page();
 		return current_page[this.selected_index];
-	},
-	get_page: function(){
+	}
+	get_page(){
 		return this.items.slice(
 			this.offset,
 			this.offset + this.limit
 		);
-	},
-	get_selected_items: function(){
+	}
+	get_selected_items(){
 		return this.items.filter(this._is_selected);
-	},
+	}
 	// 複数選択モード
-	multiple: function(a){
+	multiple(a){
 		if(arguments.length){
 			this._multiple = a;
 		}
 		return this._multiple;
-	},
-	_is_selected: function(item){
+	}
+	_is_selected(item){
 		return item._selected;
-	},
-	prefetch: function(){
+	}
+	prefetch(){
 		this.load_items();
-	},
-	next_item: function(){
+	}
+	next_item(){
 		this.unfocus();
 		// roll
 		var self = this;
@@ -423,12 +424,12 @@ ListView.extend({
 				this.update_focus();
 			}
 		}
-	},
-	select_and_next_item: function(){
+	}
+	select_and_next_item(){
 		this.toggle_select();
 		this.next_item();
-	},
-	prev_item: function(){
+	}
+	prev_item(){
 		this.unfocus();
 		if(this.offset > 0 && this.selected_index <= (this.limit *  (1/3) - 1)){
 			this.rotate(-1);
@@ -436,17 +437,17 @@ ListView.extend({
 			this.selected_index--;
 		}
 		this.update_focus();
-	},
-	select_and_prev_item: function(){
+	}
+	select_and_prev_item(){
 		if(this.selected_index > 0){
 			this.prev_item();
 			this.toggle_select();
 		}
-	},
-	last_item: function(){
+	}
+	last_item(){
 
-	},
-	next_page: function(){
+	}
+	next_page(){
 		if(this.loading) return;
 		if(!this.has_next()){
 			this.last_item();
@@ -454,21 +455,21 @@ ListView.extend({
 			this.offset += this.limit;
 			this.rewrite();
 		}
-	},
-	prev_page: function(){
+	}
+	prev_page(){
 		if(this.loading) return;
 		this.offset -= this.limit;
 		this.offset = Math.max(0, this.offset);
 		this.rewrite();
-	},
-	has_next: function(){
+	}
+	has_next(){
 		if(this.total_count && this.total_count < this.offset + this.limit){
 			return false;
 		} else {
 			return true;
 		}
-	},
-	scroll: function(){
+	}
+	scroll(){
 		var item = this.selected_item;
 		var clip_window = this.window;
 		var row = item.offsetHeight;
@@ -477,8 +478,8 @@ ListView.extend({
 		if(Math.min(remain_top,remain_bottom) < (row * 1.5)){
 			clip_window.scrollTop = item.offsetTop - (row * 2);
 		}
-	},
-	update_focus: function(){
+	}
+	update_focus(){
 		var list = this.window.getElementsByTagName("li");
 		if(!list.length) return;
 		var sel = list[this.selected_index];
@@ -493,22 +494,22 @@ ListView.extend({
 			this.selected_item = sel;
 		}
 		if(browser.isOpera) this.redraw();
-	},
-	focus: function(){
+	}
+	focus(){
 
-	},
-	unfocus: function(){
+	}
+	unfocus(){
 		if(this.selected_item){
 			removeClass(this.selected_item, "focus");
 		}
-	},
-	toggle_select: function(){
+	}
+	toggle_select(){
 		if(!this.selected_item) return;
 		var id = this.selected_item.id;
 		var item = this.get_item_by_id(id);
 		(item._selected) ? this.unselect() : this.select();
-	},
-	select: function(id){
+	}
+	select(id){
 		if(id){
 			var item = this.get_item_by_id(id);
 			var item_element = _$(id);
@@ -521,8 +522,8 @@ ListView.extend({
 		item._selected = true;
 		this.last_target = item;
 		if(item_element) addClass(item_element, "selected");
-	},
-	unselect: function(id){
+	}
+	unselect(id){
 		if(id){
 			var item = this.get_item_by_id(id);
 			var item_element = _$(id);
@@ -535,13 +536,13 @@ ListView.extend({
 		item._selected = false;
 		this.last_target = item;
 		if(item_element) removeClass(item_element, "selected");
-	},
-	unselect_all: function(){
+	}
+	unselect_all(){
 		this.get_selected_items().forEach(function(item){
 			item._selected = false;
 		});
-	},
-	range_select: function(){
+	}
+	range_select(){
 		if(!this.last_target){
 			this.toggle_select();
 			return
@@ -561,16 +562,16 @@ ListView.extend({
 			}
 		}
 		this.last_target = last_target;
-	},
-	format_list: function(items){
+	}
+	format_list(items){
 		var formatter = this.make_item_from;
 		return [
 			"<ul id='", this.element_id, "' onselectstart='return false'>",
 				items.map(formatter).join(""),
 			"</ul>"
 		].join("");
-	},
-	rotate: function(num){
+	}
+	rotate(num){
 		window.status = "rotate";
 		var ul = new DOMArray(this.element_id, "li");
 		var self = this;
@@ -594,14 +595,14 @@ ListView.extend({
 			});
 		}
 		if(browser.isOpera) this.redraw();
-	},
-	redraw: function(element){
+	}
+	redraw(element){
 		element = element || _$(this.element_id);
 		var old = element.style.backgroundColor;
 		element.style.backgroundColor = 'transparent';
 		element.style.backgroundColor = old;
 	}
-});
+}
 ListView._instance = {};
 ListView.get_instance = function(id){
 	return ListView._instance[id]
@@ -638,13 +639,12 @@ ListView.mousedown = function(e){
 };
 
 
-var DOMArray = Class.create();
-DOMArray.extend({
-	initialize: function(element, child_tag){
+class DOMArray {
+	constructor(element, child_tag){
 		this.element = _$(element);
 		this.child_tag = child_tag;
-	},
-	_create: function(v, outer){
+	}
+	_create(v, outer){
 		if(outer){
 			var div = document.createElement("div");
 			div.innerHTML = v;
@@ -654,26 +654,26 @@ DOMArray.extend({
 			el.innerHTML = v;
 		}
 		return el;
-	},
-	push: function(v, outer){
+	}
+	push(v, outer){
 		var el = this._create(v,outer);
 		this.element.appendChild(el);
-	},
-	shift: function(){
+	}
+	shift(){
 		var el = this.element.firstChild
 		this.element.removeChild(el);
 		return el
-	},
-	pop: function(){
+	}
+	pop(){
 		var el = this.element.lastChild;
 		this.element.removeChild(el);
 		return el;
-	},
-	unshift: function(v, outer){
+	}
+	unshift(v, outer){
 		var el = this._create(v,outer);
 		this.element.insertBefore(el, this.element.firstChild)
 	}
-});
+}
 
 
 var clip_overlay;
