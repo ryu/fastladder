@@ -30,7 +30,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
     # Verify subscription was not modified
     @subscription.reload
     assert_equal true, @subscription.has_unread, "has_unread should not have been modified"
-    assert_equal original_viewed_on, @subscription.viewed_on, "viewed_on should not have been modified"
+    assert_nil @subscription.viewed_on, "viewed_on should not have been modified"
   end
 
   test "pin prevents access to items from unsubscribed feeds" do
