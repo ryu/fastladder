@@ -1,10 +1,6 @@
 source 'https://rubygems.org'
 gem 'rails', '8.1.2'
 
-require 'erb'
-require 'uri'
-require 'yaml'
-
 gem 'sqlite3', '< 3.0'
 
 gem 'addressable', require: 'addressable/uri'
