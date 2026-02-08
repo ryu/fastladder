@@ -145,7 +145,7 @@ function format_keybind(){
 			}
 			v = v.replace("+down","+↓");
 			v = v.replace("+up","+↑");
-			return v.aroundTag("kbd");
+			return "<kbd>" + v + "</kbd>";
 		}).join("<br>");
 	};
 	LDR.KeyHelpOrder.forEach(function(row, num){
@@ -255,7 +255,7 @@ function get_next_group(){
 	}
 	var list = Ordered.list;
 	if(!list) return;
-	var offset = list.indexOfStr(sid);
+	var offset = list.findIndex(function(v){ return "" + v == "" + sid });
 	var next_group = list.slice(offset + 1, offset + prefetch_num + 1);
 	return next_group;
 }
@@ -431,7 +431,7 @@ function get_next(){
 	}
 	var list = Ordered.list;
 	if(!list) return;
-	var offset = list.indexOfStr(sid);
+	var offset = list.findIndex(function(v){ return "" + v == "" + sid });
 	var next = list[offset+1];
 	return next;
 }
@@ -443,7 +443,7 @@ function get_prev(){
 	}
 	var list = Ordered.list;
 	if(!list) return;
-	var offset = list.indexOfStr(sid);
+	var offset = list.findIndex(function(v){ return "" + v == "" + sid });
 	var prev = list[offset-1];
 	return prev;
 }
@@ -639,7 +639,7 @@ class SubscribeController {
 		var tmp = app.config.sort_mode.split(':');
 		var key = tmp[0];
 		var option = tmp[1];
-		this.model.list.sort_by(key);
+		this.model.list.sort(function(a,b){ return a[key] == b[key] ? 0 : a[key] < b[key] ? 1 : -1 });
 		if(option == "reverse")
 			this.model.list.reverse();
 		// folderをソート
@@ -994,7 +994,7 @@ function print_discover(list){
 	} else {
 		var seen = {};
 		var uniq_list = [];
-		list.sort_by("subscribers_count");
+		list.sort(function(a,b){ return a.subscribers_count == b.subscribers_count ? 0 : a.subscribers_count < b.subscribers_count ? 1 : -1 });
 		list.forEach(function(item){
 			if(!seen[item.feedlink]){
 				uniq_list.push(item);
@@ -1064,7 +1064,7 @@ function get_first(id,callback){
 			setTimeout(arguments.callee.curry(id,callback), 10);
 			return
 		}
-		print_feed.next(callback)(cached_data);
+		print_feed(cached_data); if(typeof callback === "function") callback();
 		set_focus(id);
 		return;
 	} else {
@@ -1076,7 +1076,7 @@ function get_first(id,callback){
 			 limit  : 1
 		}, function(data){
 			get_unread.cache.set(id,data);
-			print_feed.next(callback)(data);
+			print_feed(data); if(typeof callback === "function") callback();
 		});
 	}
 }
@@ -1109,7 +1109,7 @@ function get_unread(id,callback){
 			return;
 		}
 		function loaded(cached_data){
-			print_feed.next(callback)(cached_data);
+			print_feed(cached_data); if(typeof callback === "function") callback();
 			set_focus(id);
 		}
 		loaded(cached_data);
@@ -1121,7 +1121,7 @@ function get_unread(id,callback){
 		api.post({ subscribe_id : id }, function(data){
 			success = true;
 			get_unread.cache.set(id,data);
-			print_feed.next(callback)(data);
+			print_feed(data); if(typeof callback === "function") callback();
 		});
 		// release lock
 		setTimeout(function(){

@@ -14,7 +14,7 @@ updater("manage_item", function(){
 		item = subs_item(sid);
 		var classname = TRSelector.cart.has(sid) ? "selected" : "";
 		return tmpl(item, {
-			update : (now - item.modified_on).toRelativeDate(),
+			update : toRelativeDate(now - item.modified_on),
 			notify_text: item.ignore_notify ? "無効" : "有効",
 			classname : classname
 		})
@@ -200,7 +200,8 @@ Manage.Item = {
 	do_sort: function(){
 		if(!this.sort_mode) return;
 		var data = this.get_items();
-		data.list.sort_by(this.sort_mode);
+		var sort_key = this.sort_mode;
+		data.list.sort(function(a,b){ return a[sort_key] == b[sort_key] ? 0 : a[sort_key] < b[sort_key] ? 1 : -1 });
 	},
 	sort_mode: null,
 	sort: function(sort_mode){

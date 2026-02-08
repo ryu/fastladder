@@ -38,7 +38,7 @@
             this.menu = [];
         }
         update() {
-            this.element.innerHTML = this.menu.join("").aroundTag("div");
+            this.element.innerHTML = "<div>" + this.menu.join("") + "</div>";
         }
         snap(el) {
             el = el || this.parent;

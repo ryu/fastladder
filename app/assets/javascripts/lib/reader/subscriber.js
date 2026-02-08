@@ -85,7 +85,7 @@ class SubscribeModel {
                 self.unread_feeds_count_cache += 1;
             }
         });
-        this.unread_count_cache += list.sum_of("unread_count");
+        this.unread_count_cache += list.reduce(function(acc, v){ return acc + v.unread_count }, 0);
         //alert_once(this.unread_feeds_count_cache);
     }
     make_domain_names(){
@@ -185,11 +185,11 @@ class SubscribeModel {
         return this.id2subs[id]
     }
     get_by_folder(name){
-        var filtered = this.get_list().filter_by("folder",name)
+        var filtered = this.get_list().filter(function(v){ return v.folder == name })
         return new Subscribe.Collection(filtered)
     }
     get_by_rate(num){
-        var filtered = this.get_list().filter_by("rate",num);
+        var filtered = this.get_list().filter(function(v){ return v.rate == num });
         // filtered = this.rate2subs[num] || [];
         return new Subscribe.Collection(filtered)
     }
@@ -219,7 +219,7 @@ class SubscribeModel {
         if(this.unread_count_cache){
             return this.unread_count_cache
         } else {
-            return this.unread_count_cache = this.list.sum_of("unread_count");
+            return this.unread_count_cache = this.list.reduce(function(acc, v){ return acc + v.unread_count }, 0);
         }
     }
 }
@@ -235,7 +235,7 @@ class SubscribeCollection {
     }
     get_list(){return this.list}
     get_unread_count(){
-        return this.list.sum_of("unread_count")
+        return this.list.reduce(function(acc, v){ return acc + v.unread_count }, 0)
     }
 }
 Subscribe.Collection = SubscribeCollection;
@@ -334,7 +334,7 @@ Subscribe.Formatter = {
                 return;
             }
             var filtered = model.get_by_domain(v);
-            var img = filtered.list.pluck("icon").mode();
+            var img = arrayMode(filtered.list.pluck("icon"));
             var favicon  = HTML.IMG({src:img});
             var param = {
                 name :  favicon +" "+ v,

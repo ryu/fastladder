@@ -306,13 +306,17 @@ Modernized mobile view viewport meta tags from fixed-width to responsive, improv
 | Unused gems removal (jbuilder, ostruct) | eb5ef0c | 2026-02-05 |
 | Frozen string literal warnings fix | da6181a | 2026-02-05 |
 | Mobile view viewport modernization | 4b08b1f | 2026-02-08 |
+| JS Phase 0-4: Class.create→ES6, DOM modernization | c81b89e以前 | 2026-02-06〜07 |
+| JS Phase 5: Legacy utility functions→native JS | c81b89e | 2026-02-07 |
+| JS Phase 6A: Low-frequency prototype method removal | (pending) | 2026-02-08 |
 
 ### Future Candidates
 
 - [ ] Turbo/Hotwire integration
-- [ ] Legacy JS (Prototype.js) replacement
+- [x] ~~Legacy JS (Prototype.js) replacement~~ Phase 0-6A complete, Phase 6B deferred
 - [x] ~~Mobile view HTML5 migration~~
 - [ ] I18n integration (dynamic `lang` attribute) - low priority
+- [ ] JS Phase 6B: High-frequency prototype helpers (fill, _try, later, curry, toDF) - 72 occurrences
 
 ### Modernization Policy
 
@@ -320,6 +324,363 @@ Modernized mobile view viewport meta tags from fixed-width to responsive, improv
 - Don't break existing functionality
 - Run tests after each change
 - Small commits
+
+---
+
+## JavaScript Modernization: Phase 6 - Prototype Extension Cleanup
+
+### Overview
+
+Phase 6 focuses on cleaning up prototype extensions in `proto.js`. The approach is split into two phases based on cost-benefit analysis:
+
+- **Phase 6A (Required)**: Replace low-frequency prototype methods (1-4 occurrences) with native JS
+- **Phase 6B (Optional/Deferred)**: Keep high-frequency custom helpers (7-32 occurrences) as technical debt
+
+### Background
+
+Following Phase 5 completion (legacy utility functions modernized), `proto.js` still contains prototype extensions:
+
+**String.prototype**:
+- `.aroundTag()` - HTML tag wrapping
+- `.fill()` - Template interpolation `[[key]]` → value
+
+**Number.prototype**:
+- `.toRelativeDate()` - Seconds → relative date string
+
+**Array.prototype**:
+- `.filter_by()`, `.sum()`, `.sum_of()`, `.toDF()`, `.asCallback()`, `.indexOfStr()`, `.mode()`, `.sort_by()`, `.like()`
+
+**Function.prototype**:
+- `.curry()` / `.bindArgs()` - Partial application
+- `.later()` - Delayed execution wrapper
+- `.next()` - Function chaining
+- `._try()` - Safe error handling (defined in common.js)
+
+### Phase 6A: Low-Frequency Method Replacement (Required)
+
+#### Usage Analysis
+
+| Method | Occurrences | Phase | Replacement Strategy |
+|--------|-------------|-------|---------------------|
+| `.aroundTag()` | 2 | 6A | Template literals |
+| `.toRelativeDate()` | 2 | 6A | Helper function `toRelativeDate(seconds)` |
+| `.filter_by()` | 2 | 6A | `.filter(v => v[attr] === value)` |
+| `.asCallback()` | 1 | 6A | Inline function composition |
+| `.indexOfStr()` | 3 | 6A | `.findIndex()` with string conversion |
+| `.mode()` | 1 | 6A | Helper function `arrayMode(arr)` |
+| `.sort_by()` | 3 | 6A | `.sort((a,b) => ...)` |
+| `.like()` | 1 | 6A | `.find(v => v.startsWith(str))` |
+| `.next()` | 4 | 6A | Inline wrapper functions |
+| `.sum()` / `.sum_of()` | 4 | 6A | `.reduce((a,b) => a+b, 0)` |
+
+**Total**: 23 occurrences across 11 methods
+
+#### Phase 6B: High-Frequency Method Retention (Deferred)
+
+| Method | Occurrences | Reason for Retention |
+|--------|-------------|---------------------|
+| `.fill()` | 32 | Template interpolation; would require extensive refactoring |
+| `._try()` | 14 | Error handling; try-catch wrappers would be verbose |
+| `.later()` | 12 | Delayed execution + cancellation; complex setTimeout wrapper |
+| `.curry()` / `.bindArgs()` | 7 | Partial application; simpler than `.bind()` |
+| `.toDF()` | 7 | DocumentFragment creation; useful helper |
+
+**Total**: 72 occurrences across 5 methods (kept as technical debt)
+
+### Implementation Plan
+
+#### Step 6A-1: Document Replacement Strategy
+
+**Deliverable**: `docs/phase6_prototype_cleanup_plan.md`
+
+**Content**:
+- Complete list of prototype methods
+- Usage frequency for each method
+- Phase 6A (replace) vs Phase 6B (keep) classification
+- Specific replacement patterns
+
+**Done Criteria**:
+- All methods documented with usage counts
+- Clear Phase 6A / 6B classification
+- Replacement patterns specified
+
+#### Step 6A-2: Replace String.prototype.aroundTag
+
+**Scope**: 2 occurrences
+
+**Replacement Pattern**:
+```javascript
+// Before
+str.aroundTag("div")
+
+// After
+`<div>${str}</div>`
+```
+
+**Files**:
+- `app/assets/javascripts/lib/ui/flat_menu.js`
+- `app/assets/javascripts/lib/reader/main.js`
+
+**Done Criteria**:
+- 2 occurrences replaced
+- Tests pass
+
+#### Step 6A-3: Convert Number.prototype.toRelativeDate to Helper
+
+**Scope**: 2 occurrences
+
+**Replacement Pattern**:
+```javascript
+// Before
+seconds.toRelativeDate()
+
+// After
+toRelativeDate(seconds)
+
+// Helper function (in proto.js or utils.js)
+function toRelativeDate(seconds) {
+  const k = seconds > 0 ? seconds : -seconds;
+  let u = "sec";
+  const jp = { sec: "秒", min: "分", hour: "時間", day: "日", Mon: "ヶ月" };
+  const vec = seconds >= 0 ? "前" : "後";
+  let st = 0;
+  let value = k;
+
+  if (value >= 60) { value /= 60; u = "min"; st = 1; }
+  if (st && value >= 60) { value /= 60; u = "hour"; st = 1; } else { st = 0; }
+  if (st && value >= 24) { value /= 24; u = "day"; st = 1; } else { st = 0; }
+  if (st && value >= 30) { value /= 30; u = "Mon"; st = 1; } else { st = 0; }
+
+  const floored = Math.floor(value);
+  const v = jp[u];
+  return isNaN(floored) ? "nan" : floored + v + vec;
+}
+```
+
+**Files**:
+- `app/assets/javascripts/lib/reader/commands.js`
+- `app/assets/javascripts/lib/reader/manage.js`
+
+**Done Criteria**:
+- Helper function defined
+- 2 occurrences replaced
+- Tests pass
+
+#### Step 6A-4: Replace Array Methods Batch 1
+
+**Scope**: 4 occurrences
+
+**Replacement Patterns**:
+```javascript
+// filter_by (2 occurrences)
+// Before: arr.filter_by("status", "active")
+// After: arr.filter(v => v.status === "active")
+
+// asCallback (1 occurrence)
+// Before: [fn1, fn2].asCallback()
+// After: () => { fn1(); fn2(); }
+
+// mode (1 occurrence)
+// Before: arr.mode()
+// After: arrayMode(arr)
+// Helper: function arrayMode(arr) { /* existing logic */ }
+```
+
+**Files**:
+- `app/assets/javascripts/lib/reader/subscriber.js` (filter_by: 2, mode: 1)
+- `app/assets/javascripts/lib/reader/commands.js` (asCallback: 1)
+
+**Done Criteria**:
+- 4 occurrences replaced
+- Helper function `arrayMode()` defined
+- Tests pass
+
+#### Step 6A-5: Replace Array Methods Batch 2
+
+**Scope**: 11 occurrences
+
+**Replacement Patterns**:
+```javascript
+// indexOfStr (3 occurrences)
+// Before: arr.indexOfStr(searchElement, fromIndex)
+// After: arr.findIndex((v, i) => i >= (fromIndex || 0) && String(v) === String(searchElement))
+
+// sort_by (3 occurrences)
+// Before: arr.sort_by("priority")
+// After: arr.sort((a, b) => a.priority === b.priority ? 0 : a.priority < b.priority ? 1 : -1)
+
+// like (1 occurrence)
+// Before: arr.like("prefix")
+// After: arr.find(v => v.startsWith("prefix"))
+
+// sum (1 occurrence in subscriber.js, 1 internal in proto.js)
+// Before: arr.sum()
+// After: arr.reduce((acc, v) => acc + v, 0)
+
+// sum_of (2 occurrences)
+// Before: arr.sum_of("count")
+// After: arr.map(v => v.count).reduce((acc, v) => acc + v, 0)
+```
+
+**Files**:
+- `app/assets/javascripts/lib/reader/main.js` (indexOfStr: 3, sort_by: 2)
+- `app/assets/javascripts/lib/reader/manage.js` (sort_by: 1)
+- `app/assets/javascripts/lib/reader/addon.js` (like: 1)
+- `app/assets/javascripts/lib/reader/subscriber.js` (sum: 1, sum_of: 2)
+- `app/assets/javascripts/lib/utils/proto.js` (sum internal usage: 1)
+
+**Done Criteria**:
+- 11 occurrences replaced
+- Tests pass
+
+#### Step 6A-6: Replace Function.prototype.next
+
+**Scope**: 4 occurrences
+
+**Replacement Pattern**:
+```javascript
+// Before
+fn.next(afterFn)
+
+// After
+function fnWithNext(...args) {
+  const res = fn.apply(this, args);
+  afterFn();
+  return res;
+}
+```
+
+**Files**:
+- `app/assets/javascripts/lib/reader/main.js` (4 occurrences)
+
+**Done Criteria**:
+- 4 inline wrappers created
+- Tests pass
+
+#### Step 6A-7: Remove Replaced Methods from proto.js
+
+**Content**:
+Remove method definitions for:
+- `String.prototype.aroundTag`
+- `Number.prototype.toRelativeDate` (keep helper function)
+- `Array.prototype.filter_by`
+- `Array.prototype.asCallback`
+- `Array.prototype.indexOfStr`
+- `Array.prototype.mode` (keep helper function)
+- `Array.prototype.sort_by`
+- `Array.prototype.like`
+- `Array.prototype.sum`
+- `Array.prototype.sum_of`
+- `Function.prototype.next`
+
+**Keep in proto.js** (Phase 6B):
+- `String.prototype.fill`
+- `Function.prototype.curry`
+- `Function.prototype.bindArgs`
+- `Function.prototype.later`
+- `Array.prototype.toDF`
+- `Function.prototype._try` (in common.js)
+
+**Done Criteria**:
+- All replaced methods removed from proto.js
+- Helper functions (`toRelativeDate`, `arrayMode`) properly placed
+- Tests pass
+- System tests pass
+
+#### Step 6A-8: Update Documentation
+
+**Content**:
+Update `docs/rails_8_1_migration.md` with:
+- Phase 6A completion record
+- List of remaining methods (Phase 6B)
+- Technical debt notation for deferred methods
+- Future refactoring considerations
+
+**Done Criteria**:
+- Documentation updated
+- Completion date recorded
+
+### Test Strategy
+
+**Automated Tests**:
+- `bin/rails test` - All unit/integration tests
+- `bin/rails test:system` - Selenium-based UI tests
+
+**Manual Verification**:
+1. Open feed reader UI
+2. Verify sorting functionality (sort_by replacement)
+3. Check relative date display (toRelativeDate replacement)
+4. Test filtering features (filter_by replacement)
+5. Verify search autocomplete (like replacement)
+
+### Quality Gate
+
+**Required**:
+- All 232 tests pass
+- System tests pass
+- No JavaScript console errors
+
+**Manual Checks**:
+- Feed list display works
+- Sorting functions correctly
+- Date formatting correct
+- Filtering works as expected
+
+### Completion Status
+
+All Phase 6A steps completed in a single commit:
+
+| Step | Status |
+|------|--------|
+| 6A-1: Document plan | ✅ Documented in this file |
+| 6A-2: aroundTag → template literals | ✅ 2 occurrences replaced |
+| 6A-3: toRelativeDate → helper function | ✅ 2 occurrences + helper in common.js |
+| 6A-4: filter_by, asCallback, mode | ✅ 4 occurrences + arrayMode helper |
+| 6A-5: indexOfStr, sort_by, like, sum, sum_of | ✅ 11 occurrences replaced |
+| 6A-6: Function.prototype.next | ✅ 4 occurrences inlined |
+| 6A-7: Remove from proto.js | ✅ 11 methods removed |
+| 6A-8: Update documentation | ✅ This section |
+
+### Risk Analysis
+
+| Risk Level | Impact | Mitigation |
+|------------|--------|------------|
+| Low | Syntax errors from replacements | Automated tests catch immediately |
+| Low | Behavioral changes | System tests verify UI functionality |
+| Medium | Missed occurrences | Grep verification before proto.js cleanup |
+| Medium | Phase 6B technical debt | Document clearly for future work |
+
+### Phase 6B: Future Considerations
+
+**High-frequency methods kept as technical debt**:
+
+1. **`.fill()` (32 occurrences)** - Template interpolation
+   - Future: Migrate to template literals or dedicated template engine
+
+2. **`._try()` (14 occurrences)** - Error handling
+   - Future: Standard try-catch blocks or error boundary pattern
+
+3. **`.later()` (12 occurrences)** - Delayed execution
+   - Future: Promise-based delay utility or modern async patterns
+
+4. **`.curry()` / `.bindArgs()` (7 occurrences)** - Partial application
+   - Future: Use `.bind()` or convert to helper function
+
+5. **`.toDF()` (7 occurrences)** - DocumentFragment creation
+   - Future: Convert to standalone helper function
+
+**Estimated effort for Phase 6B**: Medium (40-60 hours)
+**Priority**: Low (Phase 6A provides sufficient modernization value)
+
+### Agent Workflow
+
+| Agent | Role |
+|-------|------|
+| rails-architect | Created Phase 6A/6B split plan |
+| plan-reviewer | Reviewed and approved cost-benefit split |
+| logic-implementer | Execute replacement steps |
+| qa-engineer | Verify tests and manual checks |
+| code-reviewer | Final review before commits |
 
 ---
 

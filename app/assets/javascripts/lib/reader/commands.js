@@ -254,7 +254,7 @@ function print_feed(feed){
         app.state.last_items["_"+v.id] = v;
         var widgets = entry_widgets.process(feed, v);
         return item_formatter(v,{
-            relative_date : (v.created_on) ? (Now-v.created_on).toRelativeDate() : 'Unknown date',
+            relative_date : (v.created_on) ? toRelativeDate(Now-v.created_on) : 'Unknown date',
             item_count    : item_count,
             widgets       : widgets,
             pin_active    : app.pin.has(v.link) ? "pin_active" : "",
@@ -498,12 +498,12 @@ var Control = {
     move_to: function(folder){
         subs_item(app.state.now_reading).folder = folder;
         update("folder_label");
-        move_to(app.state.now_reading,folder,[
+        move_to(app.state.now_reading,folder,function(){
             message.bindArgs(
                 (folder ? 'Moved to ' + folder : 'Moved to Uncategolized')
-            ),
-            FlatMenu.hide
-        ].asCallback());
+            )();
+            FlatMenu.hide();
+        });
     },
     toggle_keyhelp: function(){
         (!app.state.keyhelp_visible) ?

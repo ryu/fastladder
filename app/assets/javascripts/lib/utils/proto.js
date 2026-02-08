@@ -1,14 +1,9 @@
 /*
  Prototype拡張
+ Phase 6B: 使用頻度が高く置換コストが高いメソッドを残す
 */
-/*
- String.prototype
-*/
-String.prototype.aroundTag = function(tag){
-	return ["<",tag,">",this,"</",tag,">"].join("")
-};
 
-// 簡易テンプレート
+// 簡易テンプレート (32箇所で使用)
 String.prototype.fill  = function(){
 	var param = {};
 	Array.from(arguments).forEach(function(o){
@@ -19,47 +14,8 @@ String.prototype.fill  = function(){
 		return param[key] ? param[key] : "";
 	})
 };
-/*
- Number.prototype
-*/
-Number.prototype.toRelativeDate = function(){
-	var k = this > 0 ? this : -this;
-	var u = "sec";
-	var jp = {
-		sec : "秒",
-		min : "分",
-		hour: "時間",
-		day : "日",
-		Mon : "ヶ月"
-	};
-	var vec = this >= 0 ? "前" : "後";
-	var st = 0;
-	(k>=60) ? (k/=60,u="min",st=1) : 0;
-	(st && k>=60) ? (k/=60,u="hour",st=1) : st=0;
-	(st && k>=24) ? (k/=24,u="day" ,st=1) : st=0;
-	(st && k>=30) ? (k/=30,u="Mon" ,st=1) : st=0;
-	k = Math.floor(k);
-	v = jp[u];
-	return (isNaN(k)) ? "nan" : k+v+vec;
-}
 
-
-Array.prototype.filter_by = function(attr,value){
-	return this.filter(function(v){
-		return v[attr] == value
-	})
-}
-Array.prototype.sum = function(){
-	var sum = 0;
-	this.forEach(function(v){
-		sum += v;
-	});
-	return sum;
-};
-Array.prototype.sum_of = function(name){
-	return this.pluck(name).sum();
-};
-// documentFragmentに変換
+// documentFragmentに変換 (7箇所で使用)
 Array.prototype.toDF = function(){
 	var nodelist = this;
 	var df = document.createDocumentFragment();
@@ -68,64 +24,11 @@ Array.prototype.toDF = function(){
 	});
 	return df;
 };
-// 複数の関数をひとつにまとめる
-Array.prototype.asCallback = function(){
-	var self = this;
-	var args = arguments;
-	return function(){
-		return self.map(function(fn){
-			return fn.apply(self,args)
-		})
-	}
-}
-
-Array.prototype.indexOfStr = function(searchElement,fromIndex){
-	searchElement = "" + searchElement;
-	var i = (fromIndex < 0) ? this.length+fromIndex : fromIndex || 0;
-	for(;i<this.length;i++)
-		if(searchElement == this[i]) return i;
-	return -1
-};
-
-Array.prototype.mode = function(){
-	var hash = {};
-	var len = this.length;
-	this.forEach(function(v,i){
-		hash[v] = hash[v] ? hash[v]+1 : 1;
-	});
-	var mode = Object.keys(hash).sort(function(a,b){
-		return  hash[b] - hash[a];
-	});
-	return mode[0];
-};
-
-Array.prototype.sort_by = function(key){
-	return this.sort(function(a,b){
-		return(
-			a[key] == b[key] ? 0:
-			a[key] <  b[key] ? 1: -1
-		)
-	})
-}
-
-// 補完
-Array.prototype.like = function(str){
-	var res;
-	var find = 0;
-	this.forEach(function(v){
-		if(find) return;
-		if(v.startsWith(str)){
-			find = 1;
-			res  = v;
-		}
-	});
-	return res;
-}
 
 /*
  Function.prototype
 */
-// 束縛
+// 束縛 (7箇所で使用)
 Function.prototype.curry = function () {
 	var args = Array.from(arguments);
 	var self = this;
@@ -135,6 +38,7 @@ Function.prototype.curry = function () {
 };
 Function.prototype.bindArgs = Function.prototype.curry;
 
+// 遅延実行 (12箇所で使用)
 Function.prototype.later = function(ms){
 	var self = this;
 	return function(){
@@ -153,15 +57,3 @@ Function.prototype.later = function(ms){
 		return res;
 	};
 };
-
-
-Function.prototype.next = function(fn){
-	var self = this;
-	fn = typeof fn === "function" ? fn : function(){};
-	return function(){
-		var res = self.apply(this,arguments);
-		fn();
-		return res;
-	}
-};
-

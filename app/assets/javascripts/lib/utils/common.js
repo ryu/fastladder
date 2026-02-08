@@ -1,3 +1,35 @@
+function arrayMode(arr){
+	var hash = {};
+	arr.forEach(function(v){
+		hash[v] = hash[v] ? hash[v]+1 : 1;
+	});
+	var mode = Object.keys(hash).sort(function(a,b){
+		return hash[b] - hash[a];
+	});
+	return mode[0];
+}
+
+function toRelativeDate(seconds){
+	var k = seconds > 0 ? seconds : -seconds;
+	var u = "sec";
+	var jp = {
+		sec : "秒",
+		min : "分",
+		hour: "時間",
+		day : "日",
+		Mon : "ヶ月"
+	};
+	var vec = seconds >= 0 ? "前" : "後";
+	var st = 0;
+	(k>=60) ? (k/=60,u="min",st=1) : 0;
+	(st && k>=60) ? (k/=60,u="hour",st=1) : st=0;
+	(st && k>=24) ? (k/=24,u="day" ,st=1) : st=0;
+	(st && k>=30) ? (k/=30,u="Mon" ,st=1) : st=0;
+	k = Math.floor(k);
+	var v = jp[u];
+	return (isNaN(k)) ? "nan" : k+v+vec;
+}
+
 function has_attr(id){
 	return function(target){
 		return this.getAttribute(id)

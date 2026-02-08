@@ -342,7 +342,7 @@ register_command("q|quit",function(){
 // change mode
 register_command("v|view",function(mode){
 	var modes = LDR.VARS.ViewModes;
-	var mode = modes.like(mode);
+	var mode = modes.find(function(v){ return v.startsWith(mode) });
 	if(mode){
 		Control.change_view(mode);
 		var mode_text = mode;
