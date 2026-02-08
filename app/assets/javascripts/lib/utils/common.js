@@ -30,6 +30,9 @@ function toRelativeDate(seconds){
 	return (isNaN(k)) ? "nan" : k+v+vec;
 }
 
+function True(){return true}
+function False(){return false}
+
 function has_attr(id){
 	return function(target){
 		return this.getAttribute(id)
