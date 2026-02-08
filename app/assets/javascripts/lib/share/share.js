@@ -85,7 +85,7 @@ function set_query(param){
 }
 
 function mspace_reset(t){
-	Array.forEach(_$("filter_"+t).options, function(op){
+	Array.from(_$("filter_"+t).options).forEach(function(op){
 		op.selected = true;
 	});
 	do_search();
@@ -192,10 +192,10 @@ function make_filter(){
 	var selected = function(el){return el.selected};
 	if(_$("filter_rate")){
 		var el = _$("filter_rate");
-		if(!Array.every(el.options, selected)){
+		if(!Array.from(el.options).every(selected)){
 			(function(){
 				var p = [];
-				Array.forEach(el.options, function(o){
+				Array.from(el.options).forEach(function(o){
 					o.selected && p.push(o.value);
 				});
 				var tmp = p.join("");
@@ -207,10 +207,10 @@ function make_filter(){
 	}
 	if(_$("filter_folder")){
 		var el = _$("filter_folder");
-		if(!Array.every(el.options, selected)){
+		if(!Array.from(el.options).every(selected)){
 			(function(){
 				var tmp = {};
-				Array.forEach(el.options, function(o){
+				Array.from(el.options).forEach(function(o){
 					o.selected && (tmp[o.value] = true);
 				});
 				add_filter(function(s){

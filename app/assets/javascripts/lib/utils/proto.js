@@ -6,14 +6,8 @@ Function.empty = function(){};
 /*
  String.prototype
 */
-String.prototype.startWith = function(str){
-	return this.indexOf(str) == 0
-};
 String.prototype.aroundTag = function(tag){
 	return ["<",tag,">",this,"</",tag,">"].join("")
-};
-String.prototype.strip_tags = function(){
-	return this.replace(/<.*?>/g, "")
 };
 
 /*
@@ -36,7 +30,7 @@ String.prototype.fill  = function(){
 		extend(param,o)
 	})
 	return this.replace(/\[\[(.*?)\]\]/g,function($0,$1){
-		var key = $1.strip();
+		var key = $1.trim();
 		return param[key] ? param[key] : "";
 	})
 };
@@ -92,15 +86,6 @@ Array.prototype.toDF = function(){
 	});
 	return df;
 };
-// 条件に一致する最初のoffset値を返す
-Array.prototype.indexOfA = function(callback,thisObj){
-	for(var i=0,len=this.length;i<len;i++){
-		if(callback.call(thisObj,this[i],i,this)){
-			return i
-		}
-	}
-	return -1
-}
 // 複数の関数をひとつにまとめる
 Array.prototype.asCallback = function(){
 	var self = this;
@@ -147,7 +132,7 @@ Array.prototype.like = function(str){
 	var find = 0;
 	this.forEach(function(v){
 		if(find) return;
-		if(v.startWith(str)){
+		if(v.startsWith(str)){
 			find = 1;
 			res  = v;
 		}
@@ -158,16 +143,6 @@ Array.prototype.like = function(str){
 /*
  Function.prototype
 */
-Function.prototype.add_bench = function(id){
-	var self = this;
-	return function(){
-		var start = new Date;
-		var res = self.apply(this,arguments);
-		var end = new Date;
-		_$(id).innerHTML = end-start + "ms";
-		return res;
-	}
-};
 // 束縛
 Function.prototype.curry = function () {
 	var args = Array.from(arguments);
@@ -177,18 +152,6 @@ Function.prototype.curry = function () {
 	};
 };
 Function.prototype.bindArgs = Function.prototype.curry;
-
-Function.prototype.addAfter = function(callback){
-	var self = this;
-	return function(){
-		var res = self.apply(this, arguments);
-		if(isFunction(callback)){
-			callback();
-		}
-		return res;
-	}
-}
-
 
 Function.prototype.later = function(ms){
 	var self = this;

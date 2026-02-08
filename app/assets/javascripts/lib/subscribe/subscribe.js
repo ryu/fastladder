@@ -21,7 +21,7 @@ ReaderSubscribe.extend({
 
 	},
 	get_feedlinks: function(){
-		return Array.filter(document.getElementsByTagName("input"),function(el){
+		return Array.from(document.getElementsByTagName("input")).filter(function(el){
 			return el.name == "feedlink"
 		}).map(function(el){return el.value});
 	},
@@ -203,7 +203,7 @@ function subscribe_submit(e){
 	var rate = this.rate.value;
 	var pub;
 	if(this["public"]){
-		Array.forEach(this["public"], function(el){
+		Array.from(this["public"]).forEach(function(el){
 			if(el.checked){
 				pub = el.value;
 			}
@@ -214,8 +214,8 @@ function subscribe_submit(e){
 	var feedlink_checkbox = form["check_for_subscribe[]"];
 	// multiple
 	if(feedlink.length && feedlink_checkbox.length){
-		Array.forEach(feedlink, function(el){
-			Array.some(feedlink_checkbox, function(checkbox) {
+		Array.from(feedlink).forEach(function(el){
+			Array.from(feedlink_checkbox).some(function(checkbox) {
 				if (el.value === checkbox.value) {
 					return false;
 				}
@@ -229,7 +229,7 @@ function subscribe_submit(e){
 	if(!links.length) return;
 
 	Event.stop(e);
-	Array.forEach(this.elements, function(el){
+	Array.from(this.elements).forEach(function(el){
 		if(el.tagName == "INPUT" && el.type == "submit"){
 			el.setAttribute("disabled","disabled");
 			el.className += " loading_button";
@@ -287,9 +287,9 @@ function try_back(errback, timeout){
 function update_checkbox(){
 	var ul = _$("feed_candidates");
 	if(!ul) return;
-	Array.forEach(ul.getElementsByTagName("li"), function(el){
+	Array.from(ul.getElementsByTagName("li")).forEach(function(el){
 		var check = el.getElementsByTagName("input");
-		Array.filter(check, function(el){
+		Array.from(check).filter(function(el){
 			return el.type == "checkbox"
 		}).forEach(function(check){
 			(check.checked) ? addClass(el, "selected") : removeClass(el, "selected");
@@ -299,7 +299,7 @@ function update_checkbox(){
 
 function reverse_checkbox(el){
 	var check = el.getElementsByTagName("input");
-	Array.filter(check, function(el){
+	Array.from(check).filter(function(el){
 		return el.type == "checkbox"
 	}).forEach(function(check){
 		check.checked = !check.checked;

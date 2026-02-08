@@ -379,7 +379,7 @@ var UnreadCache = new Cache({max : 30});
 function get_head(){
 	var list = Ordered.list;
 	if(!list) return;
-	var i = list.indexOfA(function(sid){
+	var i = list.findIndex(function(sid){
 		var item = subs_item(sid);
 		return (item.unread_count && app.state.now_reading != item.subscribe_id);
 	});
@@ -391,7 +391,7 @@ function get_end(){
 	var list = Ordered.list;
 	if(!list) return;
 	list = list.concat().reverse();
-	var i = list.indexOfA(function(sid){
+	var i = list.findIndex(function(sid){
 		var item = subs_item(sid);
 		return (item.unread_count && app.state.now_reading != item.subscribe_id);
 	});

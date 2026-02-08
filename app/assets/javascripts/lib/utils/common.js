@@ -133,17 +133,6 @@ function BrowserDetect(){
 }
 
 
-Array.from = function(array) {
-	// arguments
-	if(array.callee){
-		return Array.prototype.slice.call(array,0)
-	}
-	var length = array.length;
-	var result = new Array(length);
-	for (var i = 0; i < length; i++)
-		result[i] = array[i];
-	return result;
-};
 Function.prototype.cut = function() {
 	var func = this;
 	var template = Array.from(arguments);
@@ -200,7 +189,7 @@ Class.merge = function(a,b){
 	var ap = a.prototype;
 	var bp = b.prototype;
 	var cp = c.prototype;
-	var methods = Array.concat(keys(ap),keys(bp)).uniq();
+	var methods = keys(ap).concat(keys(bp)).uniq();
 	foreach(methods,function(key){
 		if(isFunction(ap[key]) && isFunction(bp[key])){
 			cp[key] = function(){
@@ -315,7 +304,7 @@ function alias(method){
  transform functions
 */
 function sender(method){
-	var args = Array.slice(arguments,1);
+	var args = Array.from(arguments).slice(1);
 	return function(self){
 		var ex_args = Array.from(arguments);
 		return send(self,method,args.concat(ex_args))
@@ -327,7 +316,7 @@ function sender(method){
  invoker(arg(1),)
 */
 function invoker(method){
-	var args = Array.slice(arguments,1);
+	var args = Array.from(arguments).slice(1);
 	if(isFunction(method)){
 		return function(){
 			var ex_args = Array.from(arguments);
@@ -567,18 +556,11 @@ Array.extend({
 });
 /* Number */
 Number.extend({
-	toHex : invoker("toString",16),
 	zerofill : function(len){
 		var n = "" + this;
 		for(;n.length < len;)
 			n = "0" + n;
 		return n;
-	},
-	// 両端を含む
-	between : function(a,b){
-		var min = Math.min(a,b);
-		var max = Math.max(a,b);
-		return (this >= min && this <= max);
 	}
 });
 /* Function */
@@ -600,7 +582,7 @@ Function.extend({
 	slicer : function(to,end){
 		var self = this;
 		return function(){
-			var sliced = Array.slice(arguments,to,end);
+			var sliced = Array.from(arguments).slice(to,end);
 			return self.apply(this,sliced);
 		}
 	}
@@ -819,7 +801,6 @@ String.unescapeRules = [
 	[/&amp;/g, "&"]
 ];
 String.extend({
-	strip : invoker("replace",/^\s+(.*?)\s+$/,"$1"),
 	repeat : function(num){
 		var buf = [];
 		for(var i=0;i<num;buf[i++]=this);
@@ -837,7 +818,7 @@ String.extend({
 	ry : function(max,str){
 		if(this.length <= max) return this;
 		var tmp = this.split("");
-		return Array.concat(this.slice(0,max/2),str,this.slice(-max/2)).join("")
+		return [].concat(this.slice(0,max/2),str,this.slice(-max/2)).join("")
 	},
 	camelize : invoker("replace",/-([a-z])/g, Arg(1).send("toUpperCase"))
 });
@@ -1124,7 +1105,7 @@ function parseCSS(text){
 	var res = {};
 	pairs.forEach(function(pair){
 		var tmp = pair.split(":");
-		res[tmp[0].strip()] = tmp[1];
+		res[tmp[0].trim()] = tmp[1];
 	});
 	return res;
 }
@@ -1333,19 +1314,10 @@ RegExp.concat = function(){
 	return new RegExp(buf.join(""), flag);
 }
 
-Array.prototype.flatten = function(){
-	var res = [];
-	this.forEach(function(a){
-		if(isArray(a))
-			a = a.flatten();
-		res = res.concat(a)
-	});
-	return res;
-};
 Function.prototype.forEachArgs = function(callback){
 	var f = this;
 	return function(){
-		var target = Array.from(arguments).flatten();
+		var target = Array.from(arguments).flat(Infinity);
 		if(!target.length) return;
 		target.forEach(function(v){
 			callback ? f(callback(v)) : f(v)

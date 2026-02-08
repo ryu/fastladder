@@ -101,7 +101,7 @@ Template.prototype = {
 			var stash = self.stash;
 			var match_text = a[0];
 			var match_idx = a[2];
-			var key = a[1].strip();
+			var key = a[1].trim();
 			buf.push(tmpl.slice(offset,match_idx));
 			offset = match_idx + match_text.length;
 			var n = {};
