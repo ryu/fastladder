@@ -2,7 +2,7 @@ require "test_helper"
 
 class UserControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, username: "bulkneets", password: "mala", password_confirmation: "mala")
+    @member = members(:bulkneets)
     @rss_mime_type = Mime::Type.lookup_by_extension(:rss).to_s
     @opml_mime_type = Mime::Type.lookup_by_extension(:opml).to_s
   end

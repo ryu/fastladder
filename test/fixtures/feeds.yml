@@ -1,0 +1,8 @@
+default:
+  feedlink: "http://feeds.feedburner.com/mala/blog/fixture"
+  link: "http://la.ma.la/blog/"
+  title: "最速インターフェース研究会"
+  description: "はてな使ったら負けかなと思っている"
+  subscribers_count: 0
+  created_on: <%= Time.now.utc.iso8601 %>
+  updated_on: <%= Time.now.utc.iso8601 %>

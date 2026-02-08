@@ -4,7 +4,7 @@ require "application_system_test_case"
 
 class SignoutStoriesTest < ApplicationSystemTestCase
   test "sign out as a member" do
-    member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    member = members(:bulkneets)
 
     visit "/login"
     fill_in "username", with: member.username

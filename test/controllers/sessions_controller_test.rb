@@ -2,7 +2,7 @@ require "test_helper"
 
 class SessionsControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    @member = members(:bulkneets)
   end
 
   test "GET new when no member exists redirects to sign up path" do
@@ -17,7 +17,7 @@ class SessionsControllerTest < ActionController::TestCase
   end
 
   test "POST create with valid credentials redirects to root path" do
-    post :create, params: { username: @member.username, password: @member.password }
+    post :create, params: { username: @member.username, password: "mala" }
     assert_redirected_to root_path
     assert_not_nil flash[:notice]
   end
@@ -29,13 +29,13 @@ class SessionsControllerTest < ActionController::TestCase
   end
 
   test "GET destroy removes session id" do
-    session[:member_id] = Member.authenticate(@member.username, @member.password)
+    session[:member_id] = Member.authenticate(@member.username, "mala")
     get :destroy
     assert_nil session[:member_id]
   end
 
   test "GET destroy redirects to root path" do
-    session[:member_id] = Member.authenticate(@member.username, @member.password)
+    session[:member_id] = Member.authenticate(@member.username, "mala")
     get :destroy
     assert_redirected_to root_path
     assert_not_nil flash[:notice]

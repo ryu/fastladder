@@ -1,0 +1,8 @@
+default:
+  member: bulkneets
+  feed: default
+  has_unread: false
+  public: true
+  rate: 0
+  created_on: <%= Time.now.utc.iso8601 %>
+  updated_on: <%= Time.now.utc.iso8601 %>

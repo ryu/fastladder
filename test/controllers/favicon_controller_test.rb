@@ -2,7 +2,7 @@ require "test_helper"
 
 class FaviconControllerTest < ActionController::TestCase
   def setup
-    @feed = FactoryBot.create(:feed)
+    @feed = create_feed
     favicon = Favicon.create(feed: @feed, image: "dummy_image_data")
     @feed.update(favicon: favicon)
   end

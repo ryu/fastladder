@@ -2,15 +2,15 @@ require "test_helper"
 
 class ApiControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
-    @feed = FactoryBot.create(:feed)
-    @item = FactoryBot.create(:item, feed: @feed)
-    @subscription = FactoryBot.create(:subscription, feed: @feed, member: @member)
-    @crawl_status = FactoryBot.create(:crawl_status, feed: @feed)
+    @member = members(:bulkneets)
+    @feed = feeds(:default)
+    @item = create_item(feed: @feed)
+    @subscription = subscriptions(:default)
+    @crawl_status = create_crawl_status(feed: @feed)
   end
 
   test "GET all renders json" do
-    @items = Array.new(3) { FactoryBot.create(:item, feed: @feed) }
+    @items = Array.new(3) { create_item(feed: @feed) }
 
     get :all, params: { subscribe_id: @subscription.id }, session: { member_id: @member.id }
 
@@ -18,7 +18,7 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET all limit works" do
-    @items = Array.new(3) { FactoryBot.create(:item, feed: @feed) }
+    @items = Array.new(3) { create_item(feed: @feed) }
 
     get :all, params: { subscribe_id: @subscription.id, limit: 2 }, session: { member_id: @member.id }
 
@@ -26,7 +26,7 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET all offset works" do
-    @items = Array.new(3) { FactoryBot.create(:item, feed: @feed) }
+    @items = Array.new(3) { create_item(feed: @feed) }
 
     get :all, params: { subscribe_id: @subscription.id, offset: 1 }, session: { member_id: @member.id }
 
@@ -37,9 +37,9 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET all renders purified link" do
-    feed = FactoryBot.create :feed
-    item = FactoryBot.create :item, feed: feed, link: "http://www.example.com/get?x=1&y=2"
-    subscription = FactoryBot.create :subscription, feed: feed, member: @member
+    feed = create_feed
+    item = create_item(feed: feed, link: "http://www.example.com/get?x=1&y=2")
+    subscription = create_subscription(feed: feed, member: @member)
 
     get :all, params: { subscribe_id: subscription.id }, session: { member_id: @member.id }
 
@@ -78,7 +78,7 @@ class ApiControllerTest < ActionController::TestCase
       "User-Agent" => "Fastladder FeedFetcher/0.0.3 (http://fastladder.org/)",
     }
 
-    stub_request(:get, %r[http://feeds.feedburner.com/mala/blog/]).with { |request|
+    stub_request(:get, @feed.feedlink).with { |request|
       request.headers = headers
     }.to_return(status: 200, body: "", headers: {})
 
@@ -88,7 +88,9 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET subs has read and unread subscriptions" do
-    @unread_subscription = FactoryBot.create(:unread_subscription, member: @member)
+    unread_feed = create_feed
+    create_item(feed: unread_feed, stored_on: 1.hour.ago)
+    create_subscription(feed: unread_feed, member: @member, has_unread: true, viewed_on: 2.hours.ago)
 
     get :subs, session: { member_id: @member.id }
 
@@ -96,7 +98,9 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "GET subs with unread has only unread subscriptions" do
-    @unread_subscription = FactoryBot.create(:unread_subscription, member: @member)
+    unread_feed = create_feed
+    create_item(feed: unread_feed, stored_on: 1.hour.ago)
+    create_subscription(feed: unread_feed, member: @member, has_unread: true, viewed_on: 2.hours.ago)
 
     get :subs, params: { unread: 1 }, session: { member_id: @member.id }
 
@@ -144,8 +148,8 @@ class ApiControllerTest < ActionController::TestCase
   # IDOR vulnerability tests for touch and crawl
 
   test "POST touch ignores other user's subscription ID" do
-    other_member = FactoryBot.create(:member, username: "other", password: "other", password_confirmation: "other")
-    other_subscription = FactoryBot.create(:subscription, member: other_member, has_unread: true, viewed_on: 1.hour.ago)
+    other_member = members(:other)
+    other_subscription = create_subscription(member: other_member, has_unread: true, viewed_on: 1.hour.ago)
 
     post :touch, params: {
       timestamp: Time.now.to_i,
@@ -160,9 +164,9 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "POST touch processes only own subscription IDs in mixed batch" do
-    other_member = FactoryBot.create(:member, username: "other", password: "other", password_confirmation: "other")
-    other_subscription = FactoryBot.create(:subscription, member: other_member, has_unread: true, viewed_on: 1.hour.ago)
-    own_subscription = FactoryBot.create(:subscription, member: @member, has_unread: true, viewed_on: 1.hour.ago)
+    other_member = members(:other)
+    other_subscription = create_subscription(member: other_member, has_unread: true, viewed_on: 1.hour.ago)
+    own_subscription = create_subscription(member: @member, has_unread: true, viewed_on: 1.hour.ago)
 
     timestamp = Time.now.to_i
     post :touch, params: {
@@ -180,10 +184,10 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "POST crawl ignores other user's subscription ID" do
-    other_member = FactoryBot.create(:member, username: "other", password: "other", password_confirmation: "other")
-    other_feed = FactoryBot.create(:feed, feedlink: "http://other.example.com/feed")
-    FactoryBot.create(:crawl_status, feed: other_feed)
-    other_subscription = FactoryBot.create(:subscription, member: other_member, feed: other_feed)
+    other_member = members(:other)
+    other_feed = create_feed(feedlink: "http://other.example.com/feed")
+    create_crawl_status(feed: other_feed)
+    other_subscription = create_subscription(member: other_member, feed: other_feed)
 
     headers = {
       "Accept" => "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5",
@@ -203,14 +207,14 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "POST crawl processes only own subscription IDs in mixed batch" do
-    other_member = FactoryBot.create(:member, username: "other", password: "other", password_confirmation: "other")
-    other_feed = FactoryBot.create(:feed, feedlink: "http://other.example.com/feed")
-    FactoryBot.create(:crawl_status, feed: other_feed)
-    other_subscription = FactoryBot.create(:subscription, member: other_member, feed: other_feed)
+    other_member = members(:other)
+    other_feed = create_feed(feedlink: "http://other.example.com/feed")
+    create_crawl_status(feed: other_feed)
+    other_subscription = create_subscription(member: other_member, feed: other_feed)
 
-    own_feed = FactoryBot.create(:feed, feedlink: "http://own.example.com/feed")
-    FactoryBot.create(:crawl_status, feed: own_feed)
-    own_subscription = FactoryBot.create(:subscription, member: @member, feed: own_feed)
+    own_feed = create_feed(feedlink: "http://own.example.com/feed")
+    create_crawl_status(feed: own_feed)
+    own_subscription = create_subscription(member: @member, feed: own_feed)
 
     headers = {
       "Accept" => "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5",
@@ -267,13 +271,13 @@ class ApiControllerTest < ActionController::TestCase
   end
 
   test "POST crawl returns last valid result with multiple valid IDs" do
-    feed1 = FactoryBot.create(:feed, feedlink: "http://feed1.example.com/feed")
-    FactoryBot.create(:crawl_status, feed: feed1)
-    subscription1 = FactoryBot.create(:subscription, member: @member, feed: feed1)
+    feed1 = create_feed(feedlink: "http://feed1.example.com/feed")
+    create_crawl_status(feed: feed1)
+    subscription1 = create_subscription(member: @member, feed: feed1)
 
-    feed2 = FactoryBot.create(:feed, feedlink: "http://feed2.example.com/feed")
-    FactoryBot.create(:crawl_status, feed: feed2)
-    subscription2 = FactoryBot.create(:subscription, member: @member, feed: feed2)
+    feed2 = create_feed(feedlink: "http://feed2.example.com/feed")
+    create_crawl_status(feed: feed2)
+    subscription2 = create_subscription(member: @member, feed: feed2)
 
     headers = {
       "Accept" => "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5",

@@ -2,7 +2,7 @@ require "test_helper"
 
 class ImportControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    @member = members(:bulkneets)
   end
 
   test "POST fetch calls simple_fetch" do

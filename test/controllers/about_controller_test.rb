@@ -2,7 +2,7 @@ require "test_helper"
 
 class AboutControllerTest < ActionController::TestCase
   test "GET index with existing url assigns feed" do
-    feed = FactoryBot.create(:feed)
+    feed = create_feed
     # faviconを作成してfeedに関連付け
     favicon = Favicon.create(feed: feed, image: "dummy")
     feed.update(favicon: favicon)

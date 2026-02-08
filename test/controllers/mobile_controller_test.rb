@@ -2,17 +2,17 @@ require "test_helper"
 
 class MobileControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @member = FactoryBot.create(:member, password: "pass", password_confirmation: "pass")
-    @other_member = FactoryBot.create(:member, username: "other_user", email: "other@example.com", password: "pass", password_confirmation: "pass")
-    @feed = FactoryBot.create(:feed)
-    @item = FactoryBot.create(:item, feed: @feed)
-    @subscription = FactoryBot.create(:subscription, feed: @feed, member: @member)
-    @other_subscription = FactoryBot.create(:subscription, feed: @feed, member: @other_member)
+    @member = members(:bulkneets)
+    @other_member = members(:other)
+    @feed = feeds(:default)
+    @item = create_item(feed: @feed)
+    @subscription = subscriptions(:default)
+    @other_subscription = create_subscription(feed: @feed, member: @other_member)
   end
 
   # Security tests - Unauthorized access prevention
   test "read_feed prevents access to other user's subscription" do
-    login_as(@other_member)
+    login_as(@other_member, "pass")
 
     get "/mobile/#{@subscription.id}"
 
@@ -20,7 +20,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "mark_as_read prevents access to other user's subscription" do
-    login_as(@other_member)
+    login_as(@other_member, "pass")
     @subscription.update!(has_unread: true)
     original_viewed_on = @subscription.viewed_on
 
@@ -35,11 +35,11 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
 
   test "pin prevents access to items from unsubscribed feeds" do
     # Create a feed that only @member is subscribed to
-    unsubscribed_feed = FactoryBot.create(:feed, feedlink: "http://example.com/unsubscribed")
-    unsubscribed_item = FactoryBot.create(:item, feed: unsubscribed_feed)
-    FactoryBot.create(:subscription, feed: unsubscribed_feed, member: @member)
+    unsubscribed_feed = create_feed(feedlink: "http://example.com/unsubscribed")
+    unsubscribed_item = create_item(feed: unsubscribed_feed)
+    create_subscription(feed: unsubscribed_feed, member: @member)
 
-    login_as(@other_member)
+    login_as(@other_member, "pass")
     initial_pins_count = @other_member.pins.count
 
     post "/mobile/#{unsubscribed_item.id}/pin"
@@ -52,7 +52,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
 
   # Positive tests - Authorized access
   test "read_feed allows access to own subscription" do
-    login_as(@member)
+    login_as(@member, "mala")
 
     get "/mobile/#{@subscription.id}"
 
@@ -61,7 +61,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "mark_as_read allows access to own subscription" do
-    login_as(@member)
+    login_as(@member, "mala")
     @subscription.update!(has_unread: true)
 
     post "/mobile/#{@subscription.id}/read", params: { timestamp: Time.now.to_i }
@@ -72,7 +72,7 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "pin allows access to items from subscribed feeds" do
-    login_as(@member)
+    login_as(@member, "mala")
     initial_pins_count = @member.pins.count
 
     post "/mobile/#{@item.id}/pin"
@@ -83,8 +83,8 @@ class MobileControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def login_as(member)
-    post session_url, params: { username: member.username, password: 'pass' }
+  def login_as(member, password)
+    post session_url, params: { username: member.username, password: password }
     follow_redirect! if response.redirect?
   end
 end

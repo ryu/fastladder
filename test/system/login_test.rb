@@ -4,6 +4,7 @@ require "application_system_test_case"
 
 class LoginTest < ApplicationSystemTestCase
   test "can create new member" do
+    Member.destroy_all
     assert_equal 0, Member.count
     visit "/"
     assert_current_path "/signup"

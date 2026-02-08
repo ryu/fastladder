@@ -2,7 +2,7 @@ require "test_helper"
 
 class Api::ConfigControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala", config_dump: { "use_wait" => "0" })
+    @member = create_member(config_dump: { "use_wait" => "0" })
   end
 
   test "getter renders json when logged in" do

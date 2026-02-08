@@ -2,17 +2,17 @@ require "test_helper"
 
 class Api::PinControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    @member = members(:bulkneets)
   end
 
   test "POST all renders json" do
-    3.times { FactoryBot.create(:pin, member: @member) }
+    3.times { create_pin(member: @member) }
     post :all, session: { member_id: @member.id }
     assert_valid_json response.body
   end
 
   test "POST all renders purified link" do
-    FactoryBot.create(:pin, member: @member, link: "http://www.example.com/get?x=1&y=2")
+    create_pin(member: @member, link: "http://www.example.com/get?x=1&y=2")
     post :all, session: { member_id: @member.id }
     json = JSON.parse(response.body)
     assert_includes json.last["link"], "&amp;"
@@ -48,7 +48,7 @@ class Api::PinControllerTest < ActionController::TestCase
 
   test "POST remove returns success when pin exists" do
     link = "http://la.ma.la/blog/diary_200810292006.htm"
-    FactoryBot.create(:pin, member: @member, link: link)
+    create_pin(member: @member, link: link)
     post :remove, params: { link: link }, session: { member_id: @member.id }
     json = JSON.parse(response.body)
     assert_includes json, "isSuccess"
@@ -56,13 +56,13 @@ class Api::PinControllerTest < ActionController::TestCase
   end
 
   test "POST clear renders json" do
-    FactoryBot.create(:pin, member: @member)
+    create_pin(member: @member)
     post :clear, session: { member_id: @member.id }
     assert_valid_json response.body
   end
 
   test "POST clear deletes all pins" do
-    FactoryBot.create(:pin, member: @member)
+    create_pin(member: @member)
     assert_changes -> { @member.pins.count }, from: 1, to: 0 do
       post :clear, session: { member_id: @member.id }
     end

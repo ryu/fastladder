@@ -4,19 +4,19 @@ require "fastladder/crawler"
 class Fastladder::CrawlerTest < ActiveSupport::TestCase
   def setup
     @crawler = Fastladder::Crawler.new(Rails.logger)
-    @feed = FactoryBot.create(:feed)
+    @feed = create_feed
   end
 
   test "reject_duplicated takes the first when some items have same guid" do
-    items = FactoryBot.build_list(:item_has_fixed_guid, 2)
+    items = Array.new(2) { Item.new(link: "http://example.com/item", title: "Test", body: "body", guid: "guid", stored_on: Time.now, modified_on: Time.now, created_on: Time.now) }
 
     result = @crawler.send(:reject_duplicated, @feed, items)
     assert_equal items.take(1), result
   end
 
   test "reject_duplicated rejects duplicated items" do
-    items = FactoryBot.build_list(:item_has_fixed_guid, 1)
-    FactoryBot.create(:item_has_fixed_guid, feed: @feed)
+    items = [Item.new(link: "http://example.com/item", title: "Test", body: "body", guid: "guid", stored_on: Time.now, modified_on: Time.now, created_on: Time.now)]
+    create_item(feed: @feed, guid: "guid", title: "Test", body: "body")
     items.each { |item| item.create_digest }
 
     result = @crawler.send(:reject_duplicated, @feed, items)
@@ -40,7 +40,7 @@ class Fastladder::CrawlerTest < ActiveSupport::TestCase
   end
 
   test "cut_off limits items when too large feed" do
-    items = FactoryBot.build_list(:item, Fastladder::Crawler::ITEMS_LIMIT + 1)
+    items = Array.new(Fastladder::Crawler::ITEMS_LIMIT + 1) { Item.new(link: "http://example.com/item/#{SecureRandom.hex(4)}", title: "Test", body: "body", guid: SecureRandom.hex(8), stored_on: Time.now, modified_on: Time.now, created_on: Time.now) }
     @feed.items << items
 
     result = @crawler.send(:cut_off, @feed, items)

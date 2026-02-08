@@ -4,7 +4,7 @@ class MembersControllerTest < ActionController::TestCase
   def setup
     @valid_params = {
       member: {
-        username: "bulkneets",
+        username: "newuser",
         password: "mala",
         password_confirmation: "mala",
       },

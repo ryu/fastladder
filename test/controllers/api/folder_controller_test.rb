@@ -2,8 +2,8 @@ require "test_helper"
 
 class Api::FolderControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
-    @folder = FactoryBot.create(:folder)
+    @member = members(:bulkneets)
+    @folder = create_folder
   end
 
   test "POST create creates new folder" do

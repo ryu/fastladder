@@ -2,7 +2,7 @@ require "test_helper"
 
 class SubscribeControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    @member = members(:bulkneets)
   end
 
   test "GET confirm searches url by FeedSearcher" do

@@ -1,0 +1,17 @@
+<% salt = Digest::SHA1.hexdigest("--fixture-salt--bulkneets--") %>
+bulkneets:
+  username: bulkneets
+  email: bulkneets@ma.la
+  salt: <%= salt %>
+  crypted_password: <%= Digest::SHA1.hexdigest("--#{salt}--mala--") %>
+  created_on: <%= Time.now.utc.iso8601 %>
+  updated_on: <%= Time.now.utc.iso8601 %>
+
+<% other_salt = Digest::SHA1.hexdigest("--fixture-salt--other--") %>
+other:
+  username: other
+  email: other@example.com
+  salt: <%= other_salt %>
+  crypted_password: <%= Digest::SHA1.hexdigest("--#{other_salt}--pass--") %>
+  created_on: <%= Time.now.utc.iso8601 %>
+  updated_on: <%= Time.now.utc.iso8601 %>

@@ -10,9 +10,12 @@ gem 'mini_magick'
 gem 'nokogiri'
 gem 'opml', git: 'https://github.com/ssig33/opml'
 
+group :development, :test do
+  gem 'bundler-audit'
+end
+
 group :test do
   gem 'capybara'
-  gem 'factory_bot_rails'
   gem 'minitest-retry'
   gem 'webmock'
   gem 'selenium-webdriver'
@@ -27,3 +30,5 @@ gem "settings_cabinet", "~> 1.1.0"
 gem "http", "~> 5.3"
 
 gem "propshaft", "~> 1.3.1"
+
+gem "importmap-rails"

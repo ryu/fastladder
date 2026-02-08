@@ -2,10 +2,10 @@ require "test_helper"
 
 class Api::FeedControllerTest < ActionController::TestCase
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
-    @feed = FactoryBot.create(:feed, feedlink: "http://feeds.feedburner.com/mala/blog")
-    @subscription = FactoryBot.create(:subscription, feed: @feed, member: @member)
-    @folder = FactoryBot.create(:folder, member: @member)
+    @member = members(:bulkneets)
+    @feed = create_feed(feedlink: "http://feeds.feedburner.com/mala/blog")
+    @subscription = create_subscription(feed: @feed, member: @member)
+    @folder = create_folder(member: @member)
   end
 
   test "POST discover renders json" do

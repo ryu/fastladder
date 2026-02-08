@@ -4,6 +4,7 @@ require "application_system_test_case"
 
 class SignupStoriesTest < ApplicationSystemTestCase
   test "sign up as a first member" do
+    Member.destroy_all
     initial_count = Member.count
 
     visit "/"
@@ -18,7 +19,6 @@ class SignupStoriesTest < ApplicationSystemTestCase
   end
 
   test "sign up as a second member" do
-    Member.create!(username: "bulkneets", password: "mala", password_confirmation: "mala")
     initial_count = Member.count
 
     visit "/signup"

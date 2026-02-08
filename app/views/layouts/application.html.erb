@@ -11,6 +11,7 @@
     <% if content_for? :extract_header %>
       <%= yield :extract_header %>
     <% end %>
+    <%= javascript_importmap_tags %>
   </head>
   <body class="<%= params[:controller] %>">
     <span id="ApiKey" style="display:none" data-api-key="<%= session[:session_id] %>"></span>

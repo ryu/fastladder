@@ -17,7 +17,7 @@ class ApplicationControllerTest < ActionController::TestCase
   tests TestApplicationController
 
   def setup
-    @member = FactoryBot.create(:member, password: "mala", password_confirmation: "mala")
+    @member = members(:bulkneets)
     Rails.application.routes.draw do
       get "test_login_required", to: "test_application#test_login_required"
       get "test_current_member", to: "test_application#test_current_member"
