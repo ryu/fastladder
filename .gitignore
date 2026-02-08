@@ -2,7 +2,6 @@
 log
 tmp
 config/secret.txt
-config/database.yml
 config/secrets.yml
 lib/*.dylib
 db/*.sqlite3
@@ -11,7 +10,6 @@ coverage
 .rbenv-gemsets
 .DS_Store
 db/*.sqlite3-*
-mysqldata
 .env*
 
 # IDE

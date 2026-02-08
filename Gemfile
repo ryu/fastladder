@@ -5,8 +5,6 @@ require 'erb'
 require 'uri'
 require 'yaml'
 
-gem 'mysql2'
-gem 'pg'
 gem 'sqlite3', '< 3.0'
 
 gem 'addressable', require: 'addressable/uri'

@@ -14,7 +14,6 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: cp config/database.yml.sqlite3 config/database.yml
       - run: bundle exec rake db:create db:migrate setup
       - run: ./bin/rails test
       - uses: browser-actions/setup-chrome@v2

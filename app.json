@@ -17,6 +17,5 @@
       "value": "UTC",
       "required": "false"
     }
-  },
-  "addons": ["heroku-postgresql"]
+  }
 }
