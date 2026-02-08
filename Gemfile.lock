@@ -189,9 +189,6 @@ GEM
       logger
     mini_mime (1.1.5)
     minitest (5.27.0)
-    minitest-rails (8.1.0)
-      minitest (~> 5.20)
-      railties (>= 8.1.0, < 8.2.0)
     minitest-retry (0.3.1)
       minitest (>= 5.0)
     mysql2 (0.5.7)
@@ -339,10 +336,8 @@ DEPENDENCIES
   haml
   http (~> 5.3)
   mini_magick
-  minitest-rails (~> 8.0)
   minitest-retry
   mysql2
-  nkf (~> 0.2.0)
   nokogiri
   opml!
   pg
@@ -353,7 +348,6 @@ DEPENDENCIES
   selenium-webdriver
   settings_cabinet (~> 1.1.0)
   sqlite3 (< 3.0)
-  stringio (= 3.2.0)
   webmock
 
 CHECKSUMS
@@ -413,7 +407,6 @@ CHECKSUMS
   mini_magick (5.3.1) sha256=29395dfd76badcabb6403ee5aff6f681e867074f8f28ce08d78661e9e4a351c4
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minitest (5.27.0) sha256=2d3b17f8a36fe7801c1adcffdbc38233b938eb0b4966e97a6739055a45fa77d5
-  minitest-rails (8.1.0) sha256=baf92080456ab3ffb352e038114728a25469b89001b76da0d0db2433d8192eca
   minitest-retry (0.3.1) sha256=9b8282c5c1684a04b330526b90f39e42b7cec1b91abf70af6526e64131df186f
   mysql2 (0.5.7) sha256=ba09ede515a0ae8a7192040a1b778c0fb0f025fa5877e9be895cd325fa5e9d7b
   net-http-digest_auth (1.4.1) sha256=4b8ad50ed8d180a58db5d6c49449b987dd0466fe01e24037945bc007562a08db
