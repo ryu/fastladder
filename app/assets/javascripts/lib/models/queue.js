@@ -14,8 +14,7 @@
 			var queue = this.queue;
 			var step = this.step;
 			var interval = this.interval;
-			(function(){
-				var self = arguments.callee;
+			(function processQueue(){
 				var count = 0;
 				while(count < step){
 					var f = queue.shift();
@@ -23,7 +22,7 @@
 					count++;
 				}
 				if(queue.length){
-					self.later(interval)()
+					processQueue.later(interval)()
 				}
 			}).later(interval)();
 			//TODO あとでlasterは消す

@@ -1061,7 +1061,7 @@ function get_first(id,callback){
 		var cached_data = get_unread.cache.get(id);
 		// 読み込み中
 		if(cached_data == "prefetch"){
-			setTimeout(arguments.callee.curry(id,callback), 10);
+			setTimeout(get_first.curry(id,callback), 10);
 			return
 		}
 		print_feed(cached_data); if(typeof callback === "function") callback();

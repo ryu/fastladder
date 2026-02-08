@@ -6,7 +6,7 @@
    kb.add("A",function(){alert("Shift+a")});
 */
 function HotKey(element, name){
-	var ctor = arguments.callee;
+	var ctor = HotKey;
 	var target = element || document;
 	this._target = target;
 	this._keyfunc = {};

@@ -902,9 +902,9 @@ new function(){
 		if(LastClicked){
 			// message(now - LastClicked);
 			var interval = now - LastClicked;
-			AutoPlay = function(){
+			AutoPlay = function autoPlayStep(){
 				Control.go_next();
-				AutoPlay = arguments.callee.later(interval)();
+				AutoPlay = autoPlayStep.later(interval)();
 			}.later(interval)();
 		}
 		LastClicked = new Date - 0;
